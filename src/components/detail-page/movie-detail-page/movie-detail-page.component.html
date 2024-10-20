@@ -27,8 +27,7 @@
       <p class="overview">{{ movie?.overview }}</p>
 
       <div class="rating">
-        <span class="rating__value">{{ movie?.vote_average?.toPrecision(3) }}</span>
-        <span class="rating__max">/ 10</span>
+        <span>{{ movie?.vote_average?.toPrecision(3) }} / 10</span>
       </div>
 
       <div class="genres">
@@ -43,11 +42,14 @@
         <span>{{ movie?.budget | currency:'USD':'symbol':'1.0-0' }}</span>
       </div>
 
-      <div class="providers">
-        <span *ngFor="let provider of movie?.watch_providers">
-          <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
-          <p>{{ provider.provider_name }}</p>
-        </span>
+      <div class="providers_section">
+        <p>Watch on:</p>
+        <div class="providers">
+          <span *ngFor="let provider of movie?.watch_providers">
+            <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
+            <p>{{ provider.provider_name }}</p>
+          </span>
+        </div>
       </div>
 
     </div>

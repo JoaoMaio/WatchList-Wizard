@@ -3,7 +3,6 @@
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
 
   .card {
     position: relative;
@@ -47,38 +46,6 @@
           margin: 0;
           padding: 0;
           align-items: center;
-
-          .title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white; 
-            margin: 0;
-            padding: 0;
-          }
-      
-          .markAsWatched {
-            .markAsWatchedbutton {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 20px;
-              height: 20px;
-              border-radius: 50%;
-              color: white;
-              background-color: rgba(131, 125, 125, 0.5); /* Default color */
-              border: none;
-              cursor: pointer;
-              transition: background-color 0.3s ease, color 0.3s ease;
-            
-              font-size: 12px; /* Adjust the size of the checkmark */
-            
-              /* When the 'watched' class is applied */
-              &.watched {
-                background-color: green; /* Changes the background to green */
-                color: white; /* Keep the checkmark color white */
-              }
-            }
-          }
         }
 
         .countSeasons_RunTime{  
@@ -91,11 +58,10 @@
             color: $textColor; 
             margin: 0;
             padding: 0;
-          }
+          }        
         }
         
       }
-
     }
   }
 
@@ -111,6 +77,40 @@
       row-gap: 10px;
     } 
 
+  }
+}
+
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  color: white; 
+  margin: 0;
+  padding: 0;
+  
+}
+
+.markAsWatched {
+  .markAsWatchedbutton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    background-color: rgba(131, 125, 125, 0.5); /* Default color */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  
+    font-size: 12px; /* Adjust the size of the checkmark */
+  
+    /* When the 'watched' class is applied */
+    &.watched {
+      background-color: green; /* Changes the background to green */
+      color: white; /* Keep the checkmark color white */
+    }
   }
 }
 
@@ -140,9 +140,40 @@
   margin-bottom: 5px;
 }
 
+.overview-container {
+  position: relative;
+  max-width: 100%; /* You can adjust the width as needed */
+}
+
 .overview {
   font-size: 12px;
-  margin: 0px;
+  display: -webkit-box; /* Required for webkit-based browsers */
+  -webkit-box-orient: vertical; /* Required for webkit-based browsers */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  line-height: 13px; 
+  margin-bottom: 2px;
+}
+
+.overview.expanded {
+  -webkit-line-clamp: unset; /* Remove the line clamp */
+  max-height: none; /* Allow full height */
+}
+
+.toggle-button {
+  font-family: $fontFamily;
+  background: none;
+  border: none;
+  color: $quinaryColor;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.divider {
+  border-top: 1px solid $tertiaryColor;
+  margin: 5px 0;
 }
 
 .release_date {
@@ -153,34 +184,48 @@
   font-size: 0.8rem;
 }
 
-.providers {
+.providers_section {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 5px;
+  flex-direction: column;
+  gap: 10px;
+  
+  p{
+    margin:  0;
+    padding: 0;
+  }
 
-    span {
-      display:flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 10px;
-      background-color: $tertiaryColor; 
-      border-radius: 20px; 
-      border: 1px solid $secondaryColor;
-      color: $textColor; 
-
-      img{
-        width: 20px;
-        height: 20px;
+  .providers {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    overflow-x: auto;
+    white-space: nowrap; 
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  
+      span {
+        display:flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        background-color: $tertiaryColor; 
+        border-radius: 20px; 
+        border: 1px solid $secondaryColor;
+        color: $textColor; 
+  
+        img{
+          width: 20px;
+          height: 20px;
+        }
+  
+        p{
+          margin: 2px;
+          padding: 2px;
+          font-size: 0.8rem;
+        }
       }
-
-      p{
-        margin: 2px;
-        padding: 2px;
-        font-size: 0.8rem;
-      }
-    }
+  }
 }
 
 .last_episode_to_air {
@@ -205,4 +250,97 @@
   transform: translate(-50%, -50%);
   color: white;
   font-size: 1.5rem;
+}
+
+//----
+
+
+mat-expansion-panel {
+  background-color: $secondaryColor;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  padding: 0;
+
+  mat-expansion-panel-header {
+    color: $textColor;
+    width: 100%;
+    background-color: $secondaryColor;
+    border-radius: 10px 10px 0 0;
+    font-weight: bold;
+    font-size: 16px;
+
+    .mat-panel-title {
+      font-size: 12px;
+    }
+
+    .mat-panel-description {
+      font-size: 14px;
+      color: $textColor;
+    }
+
+    &.mat-expanded {
+      background-color: $tertiaryColor;
+    }
+  }
+
+  .episode-details {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    border: 1px solid $tertiaryColor;
+    margin-top: 10px;
+    align-items: center; 
+    margin-bottom: 10px; 
+
+    .image_container {
+        width: 30%; /* Set width to 30% */
+        height: 80px; 
+        overflow: hidden; 
+        border-radius: 8px; 
+        margin-right: 10px; 
+        position: relative; 
+
+        img {
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            width: 100%;
+            height: 100%; 
+            object-fit: cover; 
+            transform: translate(-50%, -50%); 
+        }
+    }
+
+    .text_container { 
+      width: 60%; 
+      overflow: hidden; 
+
+      .episode-title {
+          font-size: 14px; 
+          margin: 0; 
+          line-height: 1.2; 
+          overflow: hidden; 
+          text-overflow: ellipsis;
+          white-space: normal;
+      }
+    }
+
+    .markAsWatched{
+      width: 10%; 
+    }
+  }
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+
+}
+
+
+
+mat-accordion {
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }

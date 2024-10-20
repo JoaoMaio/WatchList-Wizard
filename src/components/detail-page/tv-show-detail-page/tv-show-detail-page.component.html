@@ -5,19 +5,20 @@
       <div class="title_checkmark">
         <div class="info">
           <h1 class="title">{{ tvshow?.name }}</h1>
-
-          <div class="markAsWatched">
-            <div class="markAsWatched">
-              <button (click)="addToWatchList()" class="markAsWatchedbutton" [ngClass]="{'watched': watchList}">
-                +
-              </button>
-            </div>
-          </div>
         </div>
 
         <div class="countSeasons_RunTime">
           <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
           <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
+
+          <div class="markAsWatched">
+            <div class="markAsWatched">
+              <button (click)="addShowToWatchList()" class="markAsWatchedbutton" [ngClass]="{'watched': watched}">
+                +
+              </button>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -27,11 +28,30 @@
 
   <div class="content">
     <div class="tvshow_info">
-      <p class="overview">{{ tvshow?.overview }}</p>
+      <div class="overview-container">
+        <p class="overview" [ngClass]="{ 'expanded': isOverviewExpanded }">{{ tvshow?.overview }}</p>
+        <button class="toggle-button" (click)="isOverviewExpanded = !isOverviewExpanded">
+          {{ isOverviewExpanded ? 'Show Less' : 'Show More' }}
+        </button>
+      </div>
+      
+      <div class="divider"></div>
+
+      <div class="providers_section">
+        <p>Watch on:</p>
+        <div class="providers">
+          <span *ngFor="let provider of tvshow?.watch_providers">
+            <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
+            <p>{{ provider.provider_name }}</p>
+          </span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
 
       <div class="rating">
-        <span class="rating__value">{{ tvshow?.vote_average?.toPrecision(3) }}</span>
-        <span class="rating__max">/ 10</span>
+        <span>{{ tvshow?.vote_average?.toPrecision(3) }} / 10</span>
       </div>
 
       <div class="release_date">
@@ -44,11 +64,35 @@
         <span>{{ tvshow?.last_episode_to_air?.air_date }}</span>
       </div>
 
-      <div class="providers">
-        <span *ngFor="let provider of tvshow?.watch_providers">
-          <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
-          <p>{{ provider.provider_name }}</p>
-        </span>
+      <div class="divider"></div>
+
+      <div class="seasons">
+        <mat-accordion *ngFor="let season of seasons">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header class="custom-header">
+                <mat-panel-title>
+                  Season {{ season.season_number }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ season.watchedEpisodes }} / {{ season.episode_count }} episodes
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+          
+              <div *ngFor="let episode of season.episodes" class="episode-details">
+                  <div class="image_container">
+                    <img *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' " src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
+                  </div>
+                  <div class="text_container">
+                    <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
+                  </div>
+                  <div class="markAsWatched">
+                    <button (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton" [ngClass]="{'watched': episode.watched}">
+                      +
+                    </button>
+                  </div>
+              </div>
+            </mat-expansion-panel>
+        </mat-accordion>
       </div>
     </div>
 

@@ -37,9 +37,7 @@ export class MovieDetailPageComponent implements OnInit {
         error: (error) => {
           console.error('Error fetching movies:', error);
       }});
-    });
-
-    
+    });    
   }
 
   markAsWatched() {
@@ -52,22 +50,8 @@ export class MovieDetailPageComponent implements OnInit {
       return;
     }
     else 
-      this.saveMovie();
-  }
-
-  //Function to save the movie to the json file
-  async saveMovie() {
-    var res = await this.api.movieExistsById(this.movie!.id);
-
-    if (res) 
     {
-      console.log('Movie already exists');
-      return;
+      this.api.saveMoviesToFile(this.movie!);
     }
-
-
-    await this.api.saveMoviesToFile(this.movie!);
   }
-
-
 }
