@@ -1,0 +1,5 @@
+<p>Popular Movies Right Now</p>
+<app-suggestion-component *ngIf="!isLoading" [suggestions]="suggestedMovies"></app-suggestion-component>
+
+<p>Popular TvShows Right Now</p>
+<app-suggestion-component *ngIf="!isLoading" [suggestions]="suggestedShows"></app-suggestion-component>

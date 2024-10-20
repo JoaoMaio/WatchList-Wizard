@@ -1,0 +1,16 @@
+$primaryColor: #11001C;
+$secondaryColor: #1A0129;
+$tertiaryColor: #220135;
+$quaternaryColor: #3A025B;
+$quinaryColor: #520380;
+$textColor: #DFE0E2;
+$fontFamily: 'Montserrat', sans-serif;
+
+
+
+//set the same font-family for the entire app
+body {
+  font-family: $fontFamily;
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,21 @@
+@import '../../colors';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+p {
+    color: $textColor;
+    font-size: 12px;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 3px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+
+a {
+    color: $textColor;;
+    text-decoration: none;
+    font-weight: 200;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+}

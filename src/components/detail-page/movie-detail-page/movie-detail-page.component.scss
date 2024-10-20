@@ -1,0 +1,208 @@
+@import "../../../colors";
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .card {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+
+    .backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      img {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 100%;
+        height: auto;
+        min-height: 100%;
+        min-width: 100%;
+        transform: translateX(-50%);
+        object-fit: contain;
+        object-position: top center;
+      }
+
+      .title_checkmark {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        position: absolute;
+        bottom: 10px;
+        left: 10px; 
+        z-index: 1; 
+    
+        .info{
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          margin: 0;
+          padding: 0;
+          align-items: center;
+
+          .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white; 
+            margin: 0;
+            padding: 0;
+          }
+      
+          .markAsWatched {
+            .markAsWatchedbutton {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              color: white;
+              background-color: rgba(131, 125, 125, 0.5); /* Default color */
+              border: none;
+              cursor: pointer;
+              transition: background-color 0.3s ease, color 0.3s ease;
+            
+              font-size: 12px; /* Adjust the size of the checkmark */
+            
+              /* When the 'watched' class is applied */
+              &.watched {
+                background-color: green; /* Changes the background to green */
+                color: white; /* Keep the checkmark color white */
+              }
+            }
+          }
+        }
+
+        .countSeasons_RunTime{  
+          margin: 0;
+          padding: 0;
+
+          span{
+            font-size: 10px;
+            font-weight: bold;
+            color: $textColor; 
+            margin: 0;
+            padding: 0;
+          }
+        }
+        
+      }
+
+    }
+  }
+
+  .content {
+    position: relative;
+    margin: 5px;
+    z-index: 1;
+    color: $textColor;
+
+    .movie_info, .tvshow_info{
+      display: flex;
+      flex-direction: column;
+      row-gap: 10px;
+    } 
+
+  }
+}
+
+.genres {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+
+    span {
+      display: inline-block; 
+      padding: 5px 15px;
+      background-color: $tertiaryColor; 
+      border-radius: 20px; 
+      border: 1px solid $secondaryColor;
+      color: $textColor; 
+      font-size: 0.8rem; 
+      white-space: nowrap; 
+      text-align: center; 
+    }
+}
+  
+.rating {
+  display: flex;
+  flex-direction: row;
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+}
+
+.overview {
+  font-size: 12px;
+  margin: 0px;
+}
+
+.release_date {
+  font-size: 0.8rem;
+}
+
+.budget {
+  font-size: 0.8rem;
+}
+
+.providers {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+
+    span {
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background-color: $tertiaryColor; 
+      border-radius: 20px; 
+      border: 1px solid $secondaryColor;
+      color: $textColor; 
+
+      img{
+        width: 20px;
+        height: 20px;
+      }
+
+      p{
+        margin: 2px;
+        padding: 2px;
+        font-size: 0.8rem;
+      }
+    }
+}
+
+.last_episode_to_air {
+  display: flex;
+  flex-direction: row;
+  column-gap : 5px;
+
+  .last_episode_to_air__title {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .last_episode_to_air__date {
+    font-size: 0.8rem;
+  }
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.5rem;
+}

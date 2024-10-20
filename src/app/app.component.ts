@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { HomeComponentComponent } from '../components/home/home-component.component';
+import { RouterModule } from '@angular/router';
+import { NavBarComponent } from "../components/navbar/nav-bar/nav-bar.component";
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  standalone: true,
+  imports: [HomeComponentComponent, RouterModule, NavBarComponent],
 })
+
 export class AppComponent {
   title = 'TMDBApp';
 }

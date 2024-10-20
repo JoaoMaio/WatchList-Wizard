@@ -1,0 +1,62 @@
+<div *ngIf="!isLoading" class="page">
+  <div class="card">
+    <div class="backdrop">
+      <img src="{{tvshow?.backdrop_path}}" alt="backdrop" />
+      <div class="title_checkmark">
+        <div class="info">
+          <h1 class="title">{{ tvshow?.name }}</h1>
+
+          <div class="markAsWatched">
+            <div class="markAsWatched">
+              <button (click)="addToWatchList()" class="markAsWatchedbutton" [ngClass]="{'watched': watchList}">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="countSeasons_RunTime">
+          <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
+          <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="tvshow_info">
+      <p class="overview">{{ tvshow?.overview }}</p>
+
+      <div class="rating">
+        <span class="rating__value">{{ tvshow?.vote_average?.toPrecision(3) }}</span>
+        <span class="rating__max">/ 10</span>
+      </div>
+
+      <div class="release_date">
+        <span>{{ tvshow?.release_date }}</span>
+      </div>
+
+      <div class="last_episode_to_air">
+        <span>{{ tvshow?.last_episode_to_air?.name }}</span>
+        <span> - Season {{ tvshow?.last_episode_to_air?.season_number }} - </span>
+        <span>{{ tvshow?.last_episode_to_air?.air_date }}</span>
+      </div>
+
+      <div class="providers">
+        <span *ngFor="let provider of tvshow?.watch_providers">
+          <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
+          <p>{{ provider.provider_name }}</p>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Optionally handle loading state -->
+<div *ngIf="isLoading" class="loading">
+  <p>Loading...</p>
+</div>

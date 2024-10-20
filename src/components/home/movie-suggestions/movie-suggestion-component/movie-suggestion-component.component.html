@@ -1,0 +1,8 @@
+<div class="carouselContainer">
+    <div class="suggestionsContainer" >
+        <div *ngFor="let sugestion of visibleSuggestions" class="movie">
+            <img *ngIf="isShowingMovies()" [src]="sugestion.poster_path" alt="Movie Poster" (click)="movieInfo(sugestion)" />
+            <img *ngIf="!isShowingMovies()"[src]="sugestion.poster_path" alt="Show Poster" (click)="showInfo(sugestion)" />
+        </div>
+    </div>
+</div>
