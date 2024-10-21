@@ -681,19 +681,24 @@ export class ApiService {
 
       let episodeList : SavedEpisodeInfo[] = [];
 
-      if (file.data) {
+      if (file.data) 
+      {
         try 
         {
           episodeList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-
-          //filter the episodes by showId
           episodeList = episodeList.filter(s => s.showId === showId);
         } 
         catch (error) {
           console.error('Error parsing JSON file:', error);
           throw new Error('Invalid JSON in file.');
         }
-        return episodeList[0].einfo;
+
+        console.log('Episode list:', episodeList);
+
+        if (episodeList.length > 0)
+          return episodeList[0].einfo;
+        else
+          return [];
       }
       return [];
     }

@@ -77,24 +77,29 @@
                   Season {{ season.season_number }}
                 </mat-panel-title>
                 <mat-panel-description>
-                  {{ getCountWatchedEpisodes() }} / {{ season.episode_count }} episodes
+                  {{ getCountWatchedEpisodes(season) }} / {{ season.episode_count }} episodes
                 </mat-panel-description>
               </mat-expansion-panel-header>
           
               <div *ngFor="let episode of season.episodes" class="episode-details">
                   <div class="image_container">
-                    <img *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' " src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
+                    <img *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' &&  episode.still_path" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
+                    <img *ngIf="episode.still_path === 'https://image.tmdb.org/t/p/w500null'" src="tba.png" alt="to be announced" />
+
                   </div>
                   <div class="text_container">
                     <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
                   </div>
-                  <div class="markAsWatched">
+                  <div class="markAsWatched" *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' &&  episode.still_path">
                     <button *ngIf="!episode.watched" (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton">
                       +
                     </button>
                     <button *ngIf="episode.watched" (click)="markEpisodeAsUnWatched(episode)" class="markAsWatchedbutton watched">
                       ✓
                     </button>
+                  </div>
+                  <div class="tba_days" *ngIf="episode.still_path === 'https://image.tmdb.org/t/p/w500null'">
+                      <p>{{getDaysUntiItsOut(episode)}} days </p>
                   </div>
               </div>
             </mat-expansion-panel>

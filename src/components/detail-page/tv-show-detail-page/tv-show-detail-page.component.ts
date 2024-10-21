@@ -34,6 +34,7 @@ export class TvShowDetailPageComponent {
           this.api.showExistsById(this.tvshow.id).then(exists => {
             this.isOnWatchList = exists;
           });
+
         },
         complete: () => {
          this.isLoading = false;
@@ -44,17 +45,33 @@ export class TvShowDetailPageComponent {
     });
   }
 
-  getSeasons() {
-    this.api.getTvShowSeasons(this.tvshow?.id!, 1).subscribe({
-      next: (response) => {
-        response.episode_count = response.episodes.length;
-        this.seasons.push(response);
+  async getSeasons() {
+    const seasonPromises = [];
+
+    for (let i = 0; i < this.tvshow!.number_of_seasons; i++) {
+        const seasonPromise = new Promise<void>((resolve, reject) => {
+            this.api.getTvShowSeasons(this.tvshow?.id!, i + 1).subscribe({
+                next: (response) => {
+                    response.episode_count = response.episodes.length;
+                    this.seasons.push(response);
+                    resolve();
+                },
+                error: (error) => {
+                    console.error('Error fetching seasons:', error);
+                    reject(error);
+                }
+            });
+        });
+        seasonPromises.push(seasonPromise);
+    }
+
+    try {
+        await Promise.all(seasonPromises);
         this.getEpisodes();
-      },
-      error: (error) => {
+        this.seasons.sort((a, b) => a.season_number - b.season_number);
+    } catch (error) {
         console.error('Error fetching seasons:', error);
-      }
-    });
+    }
   }
 
   getEpisodes() {
@@ -70,15 +87,11 @@ export class TvShowDetailPageComponent {
       });
   }
 
-  getCountWatchedEpisodes() {
+  getCountWatchedEpisodes(season: Season) {
     let count = 0;
-    this.seasons.forEach(season => {
-      season.episodes.forEach(episode => {
-        if (episode.watched) {
-          count++;
-        }
+    season.episodes.forEach(episode => {
+        if (episode.watched) count++;
       });
-    });
     return count;
   }
 
@@ -113,6 +126,14 @@ export class TvShowDetailPageComponent {
       });
     });
 
+  }
+
+  getDaysUntiItsOut(episode: Episode) {
+    const today = new Date();
+    const releaseDate = new Date(episode.air_date);
+    const timeDiff = releaseDate.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysDiff;
   }
 
 }
