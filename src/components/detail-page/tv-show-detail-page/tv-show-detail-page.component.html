@@ -13,8 +13,11 @@
 
           <div class="markAsWatched">
             <div class="markAsWatched">
-              <button (click)="addShowToWatchList()" class="markAsWatchedbutton" [ngClass]="{'watched': watched}">
+              <button *ngIf="!isOnWatchList" (click)="addShowToWatchList()" class="markAsWatchedbutton">
                 +
+              </button>
+              <button *ngIf="isOnWatchList" (click)="removeShowsFromWatchList()" class="markAsWatchedbutton watched">
+                ✓
               </button>
             </div>
           </div>
@@ -74,7 +77,7 @@
                   Season {{ season.season_number }}
                 </mat-panel-title>
                 <mat-panel-description>
-                  {{ season.watchedEpisodes }} / {{ season.episode_count }} episodes
+                  {{ getCountWatchedEpisodes() }} / {{ season.episode_count }} episodes
                 </mat-panel-description>
               </mat-expansion-panel-header>
           
@@ -86,8 +89,11 @@
                     <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
                   </div>
                   <div class="markAsWatched">
-                    <button (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton" [ngClass]="{'watched': episode.watched}">
+                    <button *ngIf="!episode.watched" (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton">
                       +
+                    </button>
+                    <button *ngIf="episode.watched" (click)="markEpisodeAsUnWatched(episode)" class="markAsWatchedbutton watched">
+                      ✓
                     </button>
                   </div>
               </div>
