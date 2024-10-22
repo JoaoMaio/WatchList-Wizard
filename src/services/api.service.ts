@@ -4,75 +4,78 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
-
-export interface MovieResponse {
-    page: number;
-    total_results: number;
-    total_pages: number;
-    results: SimpleMovie[];
+export interface SimpleObject {
+  id: number;
+  original_title: string;
+  poster_path: string;
+  title: string;
+  type: string;
+  popularity: number;
 }
 
-export interface SimpleMovie {
-    id: number;
-    original_title: string;
-    poster_path: string;
-    title: string;
-    type: string;
+//--------------------------------------------------------------------------------//
+
+
+export interface MovieResponse {
+  page: number;
+  total_results: number;
+  total_pages: number;
+  results: SimpleObject[];
 }
 
 export interface ComplexMovie {
-    adult: boolean;
-    backdrop_path: string;
-    belongs_to_collection: Collection;
-    budget: number;
-    genres: Genre[];
-    homepage: string;
-    id: number;
-    imdb_id: string;
-    origin_country : string[];
-    original_language: string;
-    original_title: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    production_companies: Production_Company[];
-    production_countries: Production_Country[];
-    release_date: string;
-    revenue: number;
-    runtime: number;
-    spoken_languages: Spoken_Languages[];
-    status: string;
-    tagline: string;
-    title: string;
-    video: boolean;
-    vote_average: number;
-    vote_count: number;
-    watch_providers: Provider[];
+  adult: boolean;
+  backdrop_path: string;
+  belongs_to_collection: Collection;
+  budget: number;
+  genres: Genre[];
+  homepage: string;
+  id: number;
+  imdb_id: string;
+  origin_country: string[];
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  production_companies: Production_Company[];
+  production_countries: Production_Country[];
+  release_date: string;
+  revenue: number;
+  runtime: number;
+  spoken_languages: Spoken_Languages[];
+  status: string;
+  tagline: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+  watch_providers: Provider[];
 }
-  
+
 export interface Collection {
-    id: number;
-    name: string;
-    poster_path: string;
-    backdrop_path: string;
+  id: number;
+  name: string;
+  poster_path: string;
+  backdrop_path: string;
 }
 
 export interface Production_Company {
-    id: number;
-    logo_path: string;
-    name: string;
-    origin_country: string;
+  id: number;
+  logo_path: string;
+  name: string;
+  origin_country: string;
 }
 
 export interface Production_Country {
-    iso_3166_1: string;
-    name: string;
+  iso_3166_1: string;
+  name: string;
 }
 
 export interface Spoken_Languages {
-    english_name: string;
-    iso_639_1: string;
-    name: string;
+  english_name: string;
+  iso_639_1: string;
+  name: string;
 }
 
 export type Genre = {
@@ -86,14 +89,6 @@ export type GenresDot = {
 
 //--------------------------------------------------------------------------------//
 //----------------------------  TV SHOWS  ----------------------------------------//
-
-export type SimpleTvshow = {
-  id: number;
-  original_title: string;
-  poster_path: string;
-  title: string;
-  type: string;
-}
 
 export type ComplexTvshow = {
   id: number
@@ -135,7 +130,7 @@ export type Provider = {
 
 export type TvShowResponse = {
   page: number
-  results: SimpleTvshow[]
+  results: SimpleObject[]
   total_pages: number
   total_results: number
 }
@@ -180,12 +175,10 @@ export type EInfo = {
   providedIn: 'root'
 })
 export class ApiService {
-  private API_KEY : string = '75ed341317b0320f7fe3d41f435318b6';
-  private BASE_API_URL : string = 'https://api.themoviedb.org/3/';
-  private MOVIE_API_URL : string = 'https://api.themoviedb.org/3/search/movie?include_adult=true&language=en-US&';
-  private IMAGE_PATH : string = 'https://image.tmdb.org/t/p/w500';
-  private BACKDROP_IMAGE_PATH : string = 'https://image.tmdb.org/t/p/w780';
-  private page = 1;
+  private API_KEY: string = '75ed341317b0320f7fe3d41f435318b6';
+  private BASE_API_URL: string = 'https://api.themoviedb.org/3/';
+  private IMAGE_PATH: string = 'https://image.tmdb.org/t/p/w500';
+  private BACKDROP_IMAGE_PATH: string = 'https://image.tmdb.org/t/p/w780';
   private headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Authorization': "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3NWVkMzQxMzE3YjAzMjBmN2ZlM2Q0MWY0MzUzMThiNiIsIm5iZiI6MTcyODY4MjkxMy4xOTYwMDIsInN1YiI6IjY3MDk5YWQ0NTQxNjgwMjI4MWE1ZTFhMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5zc5-y6w12GWPHK0KH0iqmW10fgMpsZWbLj9RcNv3Eg"
@@ -195,37 +188,31 @@ export class ApiService {
   flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
 
   //get all watch providers from all countries and remove duplicates
   getWatchProviders(object: any): Provider[] {
     try {
 
-      var response : Provider[] = []; 
+      var response: Provider[] = [];
       let watchProviders = object['watch/providers']?.results;
 
-      if (watchProviders) 
-      {
-        for (const country in watchProviders) 
-        {
-          if (watchProviders[country].flatrate) 
-          {
-            for (const provider of watchProviders[country].flatrate) 
-            {
-              if (!response.some(p => p.provider_id === provider.provider_id) &&  this.flatrateProviders.includes(provider.provider_name)) 
+      if (watchProviders) {
+        for (const country in watchProviders) {
+          if (watchProviders[country].flatrate) {
+            for (const provider of watchProviders[country].flatrate) {
+              if (!response.some(p => p.provider_id === provider.provider_id) && this.flatrateProviders.includes(provider.provider_name))
                 response.push(provider);
             }
           }
 
-          if(watchProviders[country].buy)
-          {
-            for (const provider of watchProviders[country].buy) 
-            {
-              if (!response.some(p => p.provider_id === provider.provider_id) && this.buyProviders.includes(provider.provider_name)) 
+          if (watchProviders[country].buy) {
+            for (const provider of watchProviders[country].buy) {
+              if (!response.some(p => p.provider_id === provider.provider_id) && this.buyProviders.includes(provider.provider_name))
                 response.push(provider);
             }
-          }     
+          }
         }
       }
       //order response by display_priority
@@ -252,40 +239,77 @@ export class ApiService {
     }
   }
 
+  //https://api.themoviedb.org/3/search/tv/query=Lost?include_adult=true&language=en-US&page=1
+
+  search(query: string, type: string, page: number = 1): Observable<SimpleObject[] | SimpleObject[]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=true&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        if (type === 'movie') {
+          return response.results.map((movie: any) => {
+            const SimpleObject: SimpleObject = {
+              id: movie.id,
+              original_title: movie.original_title,
+              title: movie.title,
+              poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
+              type: "movie",
+              popularity: movie.popularity
+            };
+            return SimpleObject;
+          });
+        }
+        else {
+          return response.results.map((tvshow: any) => {
+            const SimpleObject: SimpleObject = {
+              id: tvshow.id,
+              original_title: tvshow.original_title,
+              title: tvshow.title,
+              poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
+              type: "tvshow",
+              popularity: tvshow.popularity
+            };
+            return SimpleObject;
+          });
+        }
+      })
+    )
+  }
+
   //--------------------------------------------------------------------------------//
   //----------------------------   MOVIES   ----------------------------------------//
   //--------------------------------------------------------------------------------//
 
 
-  getMoviesByType(type: string, count = 20): Observable<SimpleMovie[]> {
+  getMoviesByType(type: string, count = 20): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/${type}`, { headers: this.headers }).pipe(
       map((response: MovieResponse) => {
         return response.results.map((movie: any) => {
-          const simpleMovie: SimpleMovie = {
+          const SimpleObject: SimpleObject = {
             id: movie.id,
             original_title: movie.original_title,
             title: movie.title,
             poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
             type: "movie",
+            popularity: movie.popularity
           };
-          return simpleMovie;
+          return SimpleObject;
         });
       })
     )
   }
 
-  getTrendingMovies(): Observable<SimpleMovie[]> {
+  getTrendingMovies(): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse>(`${this.BASE_API_URL}/trending/movie/week?language=en-US`, { headers: this.headers }).pipe(
       map((response: MovieResponse) => {
         return response.results.map((movie: any) => {
-          const simpleMovie: SimpleMovie = {
+          const SimpleObject: SimpleObject = {
             id: movie.id,
             original_title: movie.original_title,
             title: movie.title,
             poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
             type: "movie",
+            popularity: movie.popularity
           };
-          return simpleMovie;
+          return SimpleObject;
         });
       })
     )
@@ -295,31 +319,30 @@ export class ApiService {
     try {
       const filename = 'movies.json';
       let currentContentList: Number[] = [];
-  
+
       const fileExists = await this.checkIfFileExists(filename);
-  
+
       if (fileExists) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
-  
-        if (file.data) 
-        {
+
+        if (file.data) {
           try {
             currentContentList = JSON.parse(file.data as string);
-          } 
+          }
           catch (error) {
             console.error('Error parsing existing JSON file:', error);
             throw new Error('Invalid JSON in file.');
           }
         }
       }
-  
+
       currentContentList.push(newMovie.id);
       const updatedContent = JSON.stringify(currentContentList, null, 2);
-        
+
       // Write the updated content back to the file
       await Filesystem.writeFile({
         path: filename,
@@ -331,25 +354,25 @@ export class ApiService {
       console.error('Unable to write file', e);
     }
   }
-  
+
   async movieExistsById(movieId: number): Promise<boolean> {
     try {
       const filename = 'movies.json';
       const fileExists = await this.checkIfFileExists(filename);
-  
+
       if (!fileExists) {
         console.log('File does not exist.');
         return false;
       }
-  
+
       const file = await Filesystem.readFile({
         path: filename,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-  
+
       let movieList: Number[] = [];
-  
+
       if (file.data) {
         try {
 
@@ -358,7 +381,7 @@ export class ApiService {
           console.error('Error parsing JSON file:', error);
           throw new Error('Invalid JSON in file.');
         }
-  
+
         const movieExists = movieList.some(movie => movie === movieId);
         return movieExists;
       }
@@ -383,43 +406,45 @@ export class ApiService {
       })
     )
   }
-  
   //--------------------------------------------------------------------------------//
   //----------------------------  TV SHOWS  ----------------------------------------//
   //--------------------------------------------------------------------------------//
 
 
-  getTvShowsByType(type: string, count = 20): Observable<SimpleTvshow[]> {
+  getTvShowsByType(type: string, count = 20): Observable<SimpleObject[]> {
     return this.http
       .get<TvShowResponse>(`${this.BASE_API_URL}/tv/${type}?&language=en-US`, { headers: this.headers }).pipe(
         map((response: TvShowResponse) => {
           return response.results.map((tvshow: any) => {
-            const simpleTvShow: SimpleTvshow = {
+            const SimpleObject: SimpleObject = {
               id: tvshow.id,
               original_title: tvshow.original_title,
               title: tvshow.title,
               poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
               type: "tvshow",
+              popularity: tvshow.popularity
             };
-            return simpleTvShow;
+            return SimpleObject;
           });
         })
       )
   }
 
-  getTrendingTvShows(): Observable<SimpleTvshow[]> {
+  getTrendingTvShows(): Observable<SimpleObject[]> {
     return this.http
       .get<TvShowResponse>(`${this.BASE_API_URL}/trending/tv/week?language=en-US`, { headers: this.headers }).pipe(
         map((response: TvShowResponse) => {
           return response.results.map((tvshow: any) => {
-            const simpleTvShow: SimpleTvshow = {
+            const SimpleObject: SimpleObject = {
               id: tvshow.id,
               original_title: tvshow.original_title,
               title: tvshow.title,
               poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
               type: "tvshow",
+              popularity: tvshow.popularity
+
             };
-            return simpleTvShow;
+            return SimpleObject;
           });
         })
       )
@@ -427,8 +452,8 @@ export class ApiService {
 
   getTvShowById(id: string): Observable<ComplexTvshow> {
     return this.http.get<ComplexTvshow>(`${this.BASE_API_URL}/tv/${id}?append_to_response=watch/providers`, { headers: this.headers }).pipe(
-      map((tvshow: any) => {  
-        	
+      map((tvshow: any) => {
+
         let watchProvidersR = this.getWatchProviders(tvshow)
 
         return {
@@ -440,50 +465,47 @@ export class ApiService {
       })
     );
   }
-    
-  getTvShowSeasons(id: number, s_number:number ): Observable<Season> {
+
+  getTvShowSeasons(id: number, s_number: number): Observable<Season> {
     return this.http.get<Season>(`${this.BASE_API_URL}/tv/${id}/season/${s_number}`, { headers: this.headers }).pipe(
       map((response: any) => {
         return {
           ...response,
           poster_path: `${this.IMAGE_PATH}${response.poster_path}`,
-          episodes : response.episodes.map((episode: any) => {
-                      return {
-                        ...episode,
-                        still_path: `${this.IMAGE_PATH}${episode.still_path}`
-                      }
-                    }),          
+          episodes: response.episodes.map((episode: any) => {
+            return {
+              ...episode,
+              still_path: `${this.IMAGE_PATH}${episode.still_path}`
+            }
+          }),
         };
       }
-    ))
+      ))
   }
-  
+
   async saveShowsToFile(newShow: ComplexTvshow) {
     try {
       const filename = 'shows.json';
-      let currentContentList : Number[] = [];
-    
-      if (await this.checkIfFileExists(filename)) 
-      {
+      let currentContentList: Number[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
-  
-        if (file.data) 
-        {
-          try 
-          {
+
+        if (file.data) {
+          try {
             currentContentList = JSON.parse(file.data as string) as Number[];
-          } 
+          }
           catch (error) {
             console.error('Error parsing existing JSON file:', error);
             throw new Error('Invalid JSON in file.');
           }
         }
       }
-  
+
       currentContentList.push(newShow.id);
       const updatedContent = JSON.stringify(currentContentList, null, 2);
 
@@ -493,7 +515,7 @@ export class ApiService {
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-    } 
+    }
     catch (e) {
       console.error('Unable to write file', e);
     }
@@ -502,20 +524,20 @@ export class ApiService {
   async showExistsById(showID: number): Promise<boolean> {
     try {
       const filename = 'shows.json';
-  
+
       if (!await this.checkIfFileExists(filename)) {
         console.log('File does not exist.');
         return false;
       }
-  
+
       const file = await Filesystem.readFile({
         path: filename,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-  
-      let showList : Number[] = [];
-  
+
+      let showList: Number[] = [];
+
       if (file.data) {
         try {
           showList = JSON.parse(file.data as string);
@@ -523,7 +545,7 @@ export class ApiService {
           console.error('Error parsing JSON file:', error);
           throw new Error('Invalid JSON in file.');
         }
-        
+
         const movieExists = showList.some(show => show === showID);
         return movieExists;
       }
@@ -533,55 +555,49 @@ export class ApiService {
       return false;
     }
   }
-  
+
   async saveEpisodeToFile(newEpisode: Episode, showID: number) {
     try {
       const filename = 'episodes.json';
-      let currentContentList : SavedEpisodeInfo[] = [];
-    
-      if (await this.checkIfFileExists(filename)) 
-      {
+      let currentContentList: SavedEpisodeInfo[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
 
-        if (file.data) 
-          {
-            try 
-            {
-              currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-            } 
-            catch (error) {
-              console.error('Error parsing existing JSON file:', error);
-              throw new Error('Invalid JSON in file.');
-            }
+        if (file.data) {
+          try {
+            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
           }
+          catch (error) {
+            console.error('Error parsing existing JSON file:', error);
+            throw new Error('Invalid JSON in file.');
+          }
+        }
       }
 
       let show = currentContentList.find(s => s.showId === showID);
 
       //if the show is not in the list, add it
-      if (!show) 
-      {
-        show = { 
-          showId: showID,       
+      if (!show) {
+        show = {
+          showId: showID,
           einfo: [{
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
-          }] 
-       };
+          }]
+        };
         currentContentList.push(show);
       }
-      else
-      {
+      else {
         //get the episode from the show
         let episode = show.einfo.find(e => e.seasonNumber === newEpisode.season_number && e.episodeNumber === newEpisode.episode_number);
 
         //if the episode is not in the show, add it
-        if (!episode) 
-        {
+        if (!episode) {
           show.einfo.push({
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
@@ -607,33 +623,29 @@ export class ApiService {
   async removeEpisodeFromFile(episode: Episode, showID: number) {
     try {
       const filename = 'episodes.json';
-      let currentContentList : SavedEpisodeInfo[] = [];
-  
-      if (await this.checkIfFileExists(filename)) 
-      {
+      let currentContentList: SavedEpisodeInfo[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
 
-        if (file.data) 
-          {
-            try 
-            {
-              currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-            } 
-            catch (error) {
-              console.error('Error parsing existing JSON file:', error);
-              throw new Error('Invalid JSON in file.');
-            }
+        if (file.data) {
+          try {
+            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
           }
+          catch (error) {
+            console.error('Error parsing existing JSON file:', error);
+            throw new Error('Invalid JSON in file.');
+          }
+        }
       }
 
-      let show = currentContentList.find(s => s.showId === showID);      
+      let show = currentContentList.find(s => s.showId === showID);
       if (!show) return;
-      else
-      {
+      else {
         //get the episode from the show
         let episodeIndex = show.einfo.findIndex(e => e.seasonNumber === episode.season_number && e.episodeNumber === episode.episode_number);
 
@@ -644,8 +656,7 @@ export class ApiService {
       }
 
       //if currentContentList is empty, remove the show from the list
-      if (show.einfo.length === 0) 
-      {
+      if (show.einfo.length === 0) {
         let showIndex = currentContentList.findIndex(s => s.showId === showID);
         currentContentList.splice(showIndex, 1);
       }
@@ -667,27 +678,25 @@ export class ApiService {
   async getAllEpisodesFromFile(showId: number): Promise<EInfo[]> {
     try {
       const filename = 'episodes.json';
-  
+
       if (!await this.checkIfFileExists(filename)) {
         console.log('File does not exist.');
         return [];
       }
-  
+
       const file = await Filesystem.readFile({
         path: filename,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
 
-      let episodeList : SavedEpisodeInfo[] = [];
+      let episodeList: SavedEpisodeInfo[] = [];
 
-      if (file.data) 
-      {
-        try 
-        {
+      if (file.data) {
+        try {
           episodeList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
           episodeList = episodeList.filter(s => s.showId === showId);
-        } 
+        }
         catch (error) {
           console.error('Error parsing JSON file:', error);
           throw new Error('Invalid JSON in file.');
@@ -711,22 +720,19 @@ export class ApiService {
   async removeShowsFromFile(showId: number) {
     try {
       const filename = 'shows.json';
-      let currentContentList : Number[] = [];
-  
-      if (await this.checkIfFileExists(filename)) 
-      {
+      let currentContentList: Number[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
 
-        if (file.data) 
-        {
-          try 
-          {
+        if (file.data) {
+          try {
             currentContentList = JSON.parse(file.data as string) as Number[];
-          } 
+          }
           catch (error) {
             console.error('Error parsing existing JSON file:', error);
             throw new Error('Invalid JSON in file.');
@@ -758,27 +764,24 @@ export class ApiService {
   async removeAllEpisodesFromFile(showID: number) {
     try {
       const filename = 'episodes.json';
-      let currentContentList : SavedEpisodeInfo[] = [];
-  
-      if (await this.checkIfFileExists(filename)) 
-      {
+      let currentContentList: SavedEpisodeInfo[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
           path: filename,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
 
-        if (file.data) 
-          {
-            try 
-            {
-              currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-            } 
-            catch (error) {
-              console.error('Error parsing existing JSON file:', error);
-              throw new Error('Invalid JSON in file.');
-            }
+        if (file.data) {
+          try {
+            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
           }
+          catch (error) {
+            console.error('Error parsing existing JSON file:', error);
+            throw new Error('Invalid JSON in file.');
+          }
+        }
       }
 
       let showIndex = currentContentList.findIndex(s => s.showId === showID);
@@ -833,13 +836,7 @@ export class ApiService {
   //     .pipe(map((data) => data.cast))
   // }
 
-  // searchMovies(page: number, searchValue?: string) {
-  //   const url = searchValue ? 'search/movie' : 'movie/popular'
 
-  //   return this.http.get<MovieResponse>(
-  //     `${this.BASE_API_URL}/${url}?query=${searchValue}&page=${page}&include_adult=true&api_key=${this.apiKey}`
-  //   )
-  // }
 
   // getMovieGenres() {
   //   return this.http

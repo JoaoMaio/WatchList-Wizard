@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { ApiService, ComplexMovie, SimpleMovie, SimpleTvshow } from '../../../../services/api.service';
+import { ApiService, ComplexMovie, SimpleObject } from '../../../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -13,9 +13,9 @@ import { Router } from '@angular/router';
 })
 export class MovieSuggestionComponentComponent implements OnInit, OnChanges {
 
-  @Input() suggestions: SimpleMovie[] | SimpleTvshow[] = [];
+  @Input() suggestions: SimpleObject[] | SimpleObject[] = [];
 
-  visibleSuggestions: SimpleMovie[] | SimpleTvshow[] = [];
+  visibleSuggestions: SimpleObject[] | SimpleObject[] = [];
   currentIndex: number = 0;
 
   constructor(private api : ApiService,
@@ -33,11 +33,11 @@ export class MovieSuggestionComponentComponent implements OnInit, OnChanges {
     }
   }
 
-  movieInfo(movie: SimpleMovie) {
+  movieInfo(movie: SimpleObject) {
     this.router.navigate(['/info/movie', movie.id]);
   }
 
-  showInfo(show: SimpleTvshow) {
+  showInfo(show: SimpleObject) {
     this.router.navigate(['/info/tvshow', show.id]);
   }
 

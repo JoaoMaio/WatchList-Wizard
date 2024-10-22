@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, SimpleMovie, SimpleTvshow } from '../../services/api.service';
+import { ApiService, SimpleObject } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { MovieSuggestionComponentComponent } from "./movie-suggestions/movie-suggestion-component/movie-suggestion-component.component";
 
@@ -14,8 +14,8 @@ export class HomeComponentComponent implements OnInit {
 
   isLoading: boolean = true;  
   imageUrl: string = '';  
-  suggestedMovies: SimpleMovie[] = [];
-  suggestedShows: SimpleTvshow[] = [];
+  suggestedMovies: SimpleObject[] = [];
+  suggestedShows: SimpleObject[] = [];
 
   constructor(private api: ApiService) { }
 
@@ -30,7 +30,7 @@ export class HomeComponentComponent implements OnInit {
   getPopularMovies()
   {
     this.api.getMoviesByType('popular').subscribe({
-      next: (response: SimpleMovie[]) => {
+      next: (response: SimpleObject[]) => {
         this.suggestedMovies = response;
       },
       complete: () => {
@@ -44,7 +44,7 @@ export class HomeComponentComponent implements OnInit {
   getTrendingMovies()
   {
     this.api.getTrendingMovies().subscribe({
-      next: (response: SimpleMovie[]) => {
+      next: (response: SimpleObject[]) => {
         this.suggestedMovies = response;
       },
       complete: () => {
@@ -59,7 +59,7 @@ export class HomeComponentComponent implements OnInit {
   getPopularShows()
   {
     this.api.getTvShowsByType('popular').subscribe({
-      next: (response: SimpleTvshow[]) => {
+      next: (response: SimpleObject[]) => {
         this.suggestedShows = response;
       },
       complete: () => {
@@ -73,7 +73,7 @@ export class HomeComponentComponent implements OnInit {
   getTrendingTvShows()
   {
     this.api.getTrendingTvShows().subscribe({
-      next: (response: SimpleTvshow[]) => {
+      next: (response: SimpleObject[]) => {
         this.suggestedShows = response;
       },
       complete: () => {

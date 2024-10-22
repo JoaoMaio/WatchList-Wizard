@@ -1,0 +1,100 @@
+@import "../../../../colors.scss";
+
+.search-container {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  padding: 10px;
+  overflow: hidden;
+
+  .search-type {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 5px;
+
+    .custom-radio {
+      position: relative;
+      font-size: 14px;
+      font-weight: bold;
+      color: $textColor;
+      display: flex;
+      align-items: center;
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input {
+        position: absolute;
+        opacity: 0;
+      }
+
+      .radio-label {
+        padding: 7px 15px;
+        border: 2px solid $quaternaryColor;
+        border-radius: 30px;
+        background-color: transparent;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      input:checked + .radio-label {
+        background-color: $quinaryColor;
+        color: $textColor;
+      }
+    }
+  }
+
+  .search-input {
+    display: flex;
+    margin-bottom: 20px;
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      border: 2px solid #ddd;
+      border-radius: 15px;
+      outline: none;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: $quaternaryColor;
+      }
+    }
+  }
+
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+
+    .search-item {
+      position: relative;
+      width: 100%;
+      padding-top: 150%; /* Aspect ratio 1:1.5 for poster style */
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .item-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures the image covers the area */
+        border-radius: 8px;
+      }
+    }
+  }
+}

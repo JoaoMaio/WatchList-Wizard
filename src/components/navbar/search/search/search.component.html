@@ -1,0 +1,25 @@
+<div class="search-container">
+    <div class="search-type">
+      <label class="custom-radio">
+        <input type="radio" name="searchType" value="movie" (change)="changeSearchType('movie')" />
+        <span class="radio-label">Movie</span>
+      </label>
+      <label class="custom-radio">
+        <input type="radio" name="searchType" value="tvshow" (change)="changeSearchType('tv')" />
+        <span class="radio-label">TV Show</span>
+      </label>
+    </div>
+  
+    <!-- Search Input -->
+    <div class="search-input">
+      <input type="text" placeholder="Search shows and movies" [(ngModel)]="searchTerm" (keyup.enter)="search()"/>
+    </div>
+  
+    <!-- Search Results Grid -->
+    <div class="search-results">
+      <div *ngFor="let item of response" class="search-item">
+        <img [src]="item.poster_path" alt="{{item.title}}" class="item-image" (click)="showInfo(item)" />
+      </div>
+    </div>
+  </div>
+  
