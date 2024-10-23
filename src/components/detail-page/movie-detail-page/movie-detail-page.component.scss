@@ -33,6 +33,11 @@
         object-position: top center;
       }
 
+      .error_image{
+        filter: blur(5px);
+        opacity: 0.5;
+      }
+
       .title_checkmark {
         display: flex;
         flex-direction: column;

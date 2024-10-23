@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { ApiService, ComplexMovie, SimpleObject } from '../../../../services/api.service';
+import { ApiService, SimpleObject } from '../../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -8,19 +8,17 @@ import { Router } from '@angular/router';
   selector: 'app-suggestion-component',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './movie-suggestion-component.component.html',
-  styleUrls: ['./movie-suggestion-component.component.scss']
+  templateUrl: './suggestion.component.html',
+  styleUrls: ['./suggestion.component.scss']
 })
-export class MovieSuggestionComponentComponent implements OnInit, OnChanges {
+export class SuggestionComponent implements OnInit, OnChanges {
 
   @Input() suggestions: SimpleObject[] | SimpleObject[] = [];
 
   visibleSuggestions: SimpleObject[] | SimpleObject[] = [];
   currentIndex: number = 0;
 
-  constructor(private api : ApiService,
-              private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
   }
@@ -41,7 +39,7 @@ export class MovieSuggestionComponentComponent implements OnInit, OnChanges {
     this.router.navigate(['/info/tvshow', show.id]);
   }
 
-  isShowingMovies() {
+  isShowingSuggestions() {
     return this.visibleSuggestions[0].type === 'movie';
   }
 

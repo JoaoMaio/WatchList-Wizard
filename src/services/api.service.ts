@@ -239,7 +239,11 @@ export class ApiService {
     }
   }
 
-  //https://api.themoviedb.org/3/search/tv/query=Lost?include_adult=true&language=en-US&page=1
+  doesBackDropExist(string: string | undefined): boolean { 
+    if (!string) return false;
+
+    return string.endsWith('null') ? false : true;
+  }
 
   search(query: string, type: string, page: number = 1): Observable<SimpleObject[] | SimpleObject[]> {
     return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=true&language=en-US&page=${page}`, { headers: this.headers }).pipe(
@@ -261,8 +265,8 @@ export class ApiService {
           return response.results.map((tvshow: any) => {
             const SimpleObject: SimpleObject = {
               id: tvshow.id,
-              original_title: tvshow.original_title,
-              title: tvshow.title,
+              original_title: tvshow.original_name,
+              title: tvshow.name,
               poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
               type: "tvshow",
               popularity: tvshow.popularity

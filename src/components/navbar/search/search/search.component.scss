@@ -94,7 +94,37 @@
         height: 100%;
         object-fit: cover; /* Ensures the image covers the area */
         border-radius: 8px;
+        z-index: 1; 
       }
+
+      .error{
+        filter: blur(5px);
+        opacity: 0.5;
+      }
+
+      .fallback-wrapper {
+        width: 100%;
+        height: 100%;
+      }
+      
+      .item-title {
+        position: absolute;
+        bottom: 0; /* Position the title at the bottom */
+        left: 0;
+        width: 100%;
+        color: $textColor;
+        text-align: center;
+        font-size: 14px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        z-index: 2; 
+        font-family: $fontFamily;
+      }
+      
     }
+
+
+
+
   }
 }

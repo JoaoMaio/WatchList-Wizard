@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, SimpleObject } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
-import { MovieSuggestionComponentComponent } from "./movie-suggestions/movie-suggestion-component/movie-suggestion-component.component";
+import { SuggestionComponent } from "./suggestion-component/suggestion.component";
 
 @Component({
   selector: 'app-home-component',
   standalone: true,
-  imports: [CommonModule, MovieSuggestionComponentComponent],
+  imports: [CommonModule, SuggestionComponent],
   templateUrl: './home-component.component.html',
   styleUrls: ['./home-component.component.scss']
 })
@@ -21,25 +21,24 @@ export class HomeComponentComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-
     this.getTrendingMovies();
     this.getTrendingTvShows();
   }
 
 
-  getPopularMovies()
-  {
-    this.api.getMoviesByType('popular').subscribe({
-      next: (response: SimpleObject[]) => {
-        this.suggestedMovies = response;
-      },
-      complete: () => {
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error fetching movies:', error);
-    }});
-  }
+  // getPopularMovies()
+  // {
+  //   this.api.getMoviesByType('popular').subscribe({
+  //     next: (response: SimpleObject[]) => {
+  //       this.suggestedMovies = response;
+  //     },
+  //     complete: () => {
+  //       this.isLoading = false;
+  //     },
+  //     error: (error) => {
+  //       console.error('Error fetching movies:', error);
+  //   }});
+  // }
 
   getTrendingMovies()
   {
@@ -55,20 +54,19 @@ export class HomeComponentComponent implements OnInit {
     }});
   }
 
-
-  getPopularShows()
-  {
-    this.api.getTvShowsByType('popular').subscribe({
-      next: (response: SimpleObject[]) => {
-        this.suggestedShows = response;
-      },
-      complete: () => {
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error fetching tvshows:', error);
-    }});
-  }
+  // getPopularShows()
+  // {
+  //   this.api.getTvShowsByType('popular').subscribe({
+  //     next: (response: SimpleObject[]) => {
+  //       this.suggestedShows = response;
+  //     },
+  //     complete: () => {
+  //       this.isLoading = false;
+  //     },
+  //     error: (error) => {
+  //       console.error('Error fetching tvshows:', error);
+  //   }});
+  // }
 
   getTrendingTvShows()
   {

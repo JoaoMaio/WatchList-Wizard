@@ -17,7 +17,7 @@ export class SearchComponent {
   searchTerm: string = ""
   response: SimpleObject[] | SimpleObject [] = []
 
-  constructor( private api: ApiService,
+  constructor( public api: ApiService,
                 private router: Router
   ) { }
 
@@ -25,27 +25,33 @@ export class SearchComponent {
   }
 
   changeSearchType(type: string) {
-    console.log('Search type changed to:', type)
     this.searchType = type
   }
 
   setTerm(term: string) {
-    console.log('Search term changed to:', term)
     this.searchTerm = term
   }
 
   search() {
-    this.api.search(this.searchTerm, this.searchType).subscribe({
+    this.api.search(this.searchTerm, 'tv').subscribe({
       next: (response) => {
         this.response = response  
 
-        //order by popularity
-        this.response.sort((a: SimpleObject, b: SimpleObject) => {
-          return b.popularity - a.popularity
+        this.api.search(this.searchTerm, 'movie').subscribe({
+          next: (response) => {
+            this.response.push(...response)   
+            
+            this.response.sort((a: SimpleObject, b: SimpleObject) => {
+              return b.popularity - a.popularity
+            })
+          },
+          error: (error) => {
+            console.error('Error fetching search movie results:', error);
+          }
         })
       },
       error: (error) => {
-        console.error('Error fetching search results:', error);
+        console.error('Error fetching search tv results:', error);
       }
     })
 

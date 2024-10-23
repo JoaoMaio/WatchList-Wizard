@@ -20,8 +20,8 @@ export class TvShowDetailPageComponent {
   isAccordionOpen = false;
   seasons: Season[] = [];
 
-  constructor(private api: ApiService,
-    private route: ActivatedRoute,
+  constructor(public api: ApiService,
+              private route: ActivatedRoute,
 ) { }
 
   ngOnInit(): void {

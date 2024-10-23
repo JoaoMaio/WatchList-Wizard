@@ -1,16 +1,11 @@
 <div *ngIf="!isLoading" class="page">
   <div class="card">
     <div class="backdrop">
-      <img src="{{tvshow?.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="api.doesBackDropExist(tvshow?.backdrop_path)" src="{{tvshow?.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="!api.doesBackDropExist(tvshow?.backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
           <h1 class="title">{{ tvshow?.name }}</h1>
-        </div>
-
-        <div class="countSeasons_RunTime">
-          <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
-          <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
-
           <div class="markAsWatched">
             <div class="markAsWatched">
               <button *ngIf="!isOnWatchList" (click)="addShowToWatchList()" class="markAsWatchedbutton">
@@ -21,7 +16,11 @@
               </button>
             </div>
           </div>
+        </div>
 
+        <div class="countSeasons_RunTime">
+          <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
+          <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
         </div>
 
       </div>
@@ -83,14 +82,14 @@
           
               <div *ngFor="let episode of season.episodes" class="episode-details">
                   <div class="image_container">
-                    <img *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' &&  episode.still_path" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
-                    <img *ngIf="episode.still_path === 'https://image.tmdb.org/t/p/w500null'" src="tba.png" alt="to be announced" />
+                    <img *ngIf="api.doesBackDropExist(episode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
+                    <img *ngIf="!api.doesBackDropExist(episode.still_path)" src="tba.png" alt="to be announced" />
 
                   </div>
                   <div class="text_container">
                     <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
                   </div>
-                  <div class="markAsWatched" *ngIf="episode.still_path != 'https://image.tmdb.org/t/p/w500null' &&  episode.still_path">
+                  <div class="markAsWatched" *ngIf="api.doesBackDropExist(episode.still_path)">
                     <button *ngIf="!episode.watched" (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton">
                       +
                     </button>
@@ -98,7 +97,7 @@
                       ✓
                     </button>
                   </div>
-                  <div class="tba_days" *ngIf="episode.still_path === 'https://image.tmdb.org/t/p/w500null'">
+                  <div class="tba_days" *ngIf="api.doesBackDropExist(episode.still_path)">
                       <p>{{getDaysUntiItsOut(episode)}} days </p>
                   </div>
               </div>
