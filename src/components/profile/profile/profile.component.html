@@ -1,0 +1,15 @@
+<div class="show-container">
+    <div class="show-header">
+        <p>Your Shows</p>
+        <p>See More ></p>
+    </div>
+    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
+</div>
+
+<div class="show-container">
+    <div class="show-header">
+        <p>Your Movies</p>
+        <p>See More ></p>
+    </div>
+    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
+</div>

@@ -7,8 +7,11 @@
           <h1 class="title">{{ movie?.title }}</h1>
           <div class="markAsWatched"> 
             <div class="markAsWatched"> 
-              <button (click)="markAsWatched()" class="markAsWatchedbutton" [ngClass]="{'watched': watched}">
-                &#10003;
+              <button *ngIf="!watched" (click)="addMovieToWatchList()" class="markAsWatchedbutton">
+                +
+              </button>
+              <button *ngIf="watched" (click)="removeMovieFromWatchList()" class="markAsWatchedbutton watched">
+                ✓
               </button>
             </div>
           </div>

@@ -97,7 +97,7 @@
                       ✓
                     </button>
                   </div>
-                  <div class="tba_days" *ngIf="api.doesBackDropExist(episode.still_path)">
+                  <div class="tba_days" *ngIf="!api.doesBackDropExist(episode.still_path)">
                       <p>{{getDaysUntiItsOut(episode)}} days </p>
                   </div>
               </div>

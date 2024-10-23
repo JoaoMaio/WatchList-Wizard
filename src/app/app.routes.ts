@@ -3,6 +3,7 @@ import { HomeComponentComponent } from '../components/home/home-component.compon
 import { MovieDetailPageComponent } from '../components/detail-page/movie-detail-page/movie-detail-page.component';
 import { TvShowDetailPageComponent } from '../components/detail-page/tv-show-detail-page/tv-show-detail-page.component';
 import { SearchComponent } from '../components/navbar/search/search/search.component';
+import { ProfileComponent } from '../components/profile/profile/profile.component';
 
 export const routes: Routes = [
 
@@ -10,8 +11,6 @@ export const routes: Routes = [
     { path: 'info/movie/:id', component: MovieDetailPageComponent },
     { path: 'info/tvshow/:id', component: TvShowDetailPageComponent },
     { path: 'search', component: SearchComponent },
-    // { path: 'detail/:type/:id', component: ShowDetailComponent },
-    // { path: 'genres', component: GenresComponent },
-    // { path: 'genres/:genreId', component: GenresComponent },
+    { path: 'profile', component: ProfileComponent },
 ];
 

@@ -14,7 +14,7 @@ export interface SimpleObject {
 }
 
 //--------------------------------------------------------------------------------//
-
+//----------------------------   MOVIES   ----------------------------------------//
 
 export interface MovieResponse {
   page: number;
@@ -278,10 +278,112 @@ export class ApiService {
     )
   }
 
+  async removeShowOrMovieFromFile(objectId: number, type: string) {
+    try {
+      var filename = '';
+
+      if (type === 'movie')
+        filename = 'movies.json';
+      else
+        filename = 'shows.json';
+
+      let currentContentList: SimpleObject[] = [];
+
+      if (await this.checkIfFileExists(filename)) {
+        const file = await Filesystem.readFile({
+          path: filename,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
+
+        if (file.data) {
+          try {
+            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
+          }
+          catch (error) {
+            console.error('Error parsing existing JSON file:', error);
+            throw new Error('Invalid JSON in file.');
+          }
+        }
+      }
+
+      //get the show from the list
+      let showIndex = currentContentList.findIndex(s => s.id === objectId);
+      if (showIndex === -1) return;
+
+      //remove the show from the list
+      currentContentList.splice(showIndex, 1);
+      const updatedContent = JSON.stringify(currentContentList, null, 2);
+
+      await Filesystem.writeFile({
+        path: filename,
+        data: updatedContent,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+
+    }
+    catch (e) {
+      console.error('Error checking if movie exists', e);
+    }
+  }
+
+  async getAllShowsOrMovies(quantity: number = 0, type: string): Promise<SimpleObject[]> {
+    try {
+
+      var filename = '';
+
+      if (type === 'movie')
+        filename = 'movies.json';
+      else
+        filename = 'shows.json';
+
+      if (!await this.checkIfFileExists(filename)) {
+        return [];
+      }
+
+      const file = await Filesystem.readFile({
+        path: filename,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+
+      let showList: SimpleObject[] = [];
+
+      if (file.data) 
+      {
+        try {
+          showList = JSON.parse(file.data as string);
+        } catch (error) {
+          console.error('Error parsing JSON file:', error);
+          throw new Error('Invalid JSON in file.');
+        }
+        
+        if (quantity > 0)
+        {
+          if (showList.length-quantity-1 < 0)
+            return showList;
+
+          showList = showList.slice(showList.length-quantity, showList.length);
+          return showList;
+        }
+        else
+          return showList;
+      }
+
+      return [];
+    } catch (e) {
+      console.error('Error checking if movie exists', e);
+      return [];
+    }
+  }
+
+
   //--------------------------------------------------------------------------------//
   //----------------------------   MOVIES   ----------------------------------------//
   //--------------------------------------------------------------------------------//
 
+  //Movie Gets
 
   getMoviesByType(type: string, count = 20): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/${type}`, { headers: this.headers }).pipe(
@@ -319,10 +421,27 @@ export class ApiService {
     )
   }
 
+  getMovieById(id: string): Observable<ComplexMovie> {
+    return this.http.get<ComplexMovie>(`${this.BASE_API_URL}/movie/${id}?append_to_response=watch/providers`, { headers: this.headers }).pipe(
+      map((movie: any) => {
+        let watchProvidersR = this.getWatchProviders(movie)
+
+        return {
+          ...movie,
+          poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
+          backdrop_path: `${this.BACKDROP_IMAGE_PATH}${movie.backdrop_path}`,
+          watch_providers: watchProvidersR // Save the selected watch provider          
+        };
+      })
+    )
+  }
+
+  //Movie File Related 
+
   async saveMoviesToFile(newMovie: ComplexMovie) {
     try {
       const filename = 'movies.json';
-      let currentContentList: Number[] = [];
+      let currentContentList: SimpleObject[] = [];
 
       const fileExists = await this.checkIfFileExists(filename);
 
@@ -335,7 +454,7 @@ export class ApiService {
 
         if (file.data) {
           try {
-            currentContentList = JSON.parse(file.data as string);
+            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
           }
           catch (error) {
             console.error('Error parsing existing JSON file:', error);
@@ -344,7 +463,16 @@ export class ApiService {
         }
       }
 
-      currentContentList.push(newMovie.id);
+      const SimpleObject: SimpleObject = {
+        id: newMovie.id,
+        original_title: newMovie.original_title,
+        title: newMovie.title,
+        poster_path: newMovie.poster_path,
+        type: "movie",
+        popularity: newMovie.popularity
+      };
+
+      currentContentList.push(SimpleObject);
       const updatedContent = JSON.stringify(currentContentList, null, 2);
 
       // Write the updated content back to the file
@@ -365,7 +493,6 @@ export class ApiService {
       const fileExists = await this.checkIfFileExists(filename);
 
       if (!fileExists) {
-        console.log('File does not exist.');
         return false;
       }
 
@@ -375,18 +502,18 @@ export class ApiService {
         encoding: Encoding.UTF8,
       });
 
-      let movieList: Number[] = [];
+      let movieList: SimpleObject[] = [];
 
       if (file.data) {
         try {
 
-          movieList = JSON.parse(file.data as string);
+          movieList = JSON.parse(file.data as string) as SimpleObject[];
         } catch (error) {
           console.error('Error parsing JSON file:', error);
           throw new Error('Invalid JSON in file.');
         }
 
-        const movieExists = movieList.some(movie => movie === movieId);
+        const movieExists = movieList.some(movie => movie.id === movieId);
         return movieExists;
       }
       return false;
@@ -395,25 +522,12 @@ export class ApiService {
       return false;
     }
   }
-
-  getMovieById(id: string): Observable<ComplexMovie> {
-    return this.http.get<ComplexMovie>(`${this.BASE_API_URL}/movie/${id}?append_to_response=watch/providers`, { headers: this.headers }).pipe(
-      map((movie: any) => {
-        let watchProvidersR = this.getWatchProviders(movie)
-
-        return {
-          ...movie,
-          poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
-          backdrop_path: `${this.BACKDROP_IMAGE_PATH}${movie.backdrop_path}`,
-          watch_providers: watchProvidersR // Save the selected watch provider          
-        };
-      })
-    )
-  }
+  
   //--------------------------------------------------------------------------------//
   //----------------------------  TV SHOWS  ----------------------------------------//
   //--------------------------------------------------------------------------------//
 
+  //Show Gets
 
   getTvShowsByType(type: string, count = 20): Observable<SimpleObject[]> {
     return this.http
@@ -487,50 +601,13 @@ export class ApiService {
       ))
   }
 
-  async saveShowsToFile(newShow: ComplexTvshow) {
-    try {
-      const filename = 'shows.json';
-      let currentContentList: Number[] = [];
-
-      if (await this.checkIfFileExists(filename)) {
-        const file = await Filesystem.readFile({
-          path: filename,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
-        });
-
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as Number[];
-          }
-          catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-            throw new Error('Invalid JSON in file.');
-          }
-        }
-      }
-
-      currentContentList.push(newShow.id);
-      const updatedContent = JSON.stringify(currentContentList, null, 2);
-
-      await Filesystem.writeFile({
-        path: filename,
-        data: updatedContent,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-    catch (e) {
-      console.error('Unable to write file', e);
-    }
-  }
+  //Show File Related
 
   async showExistsById(showID: number): Promise<boolean> {
     try {
       const filename = 'shows.json';
 
       if (!await this.checkIfFileExists(filename)) {
-        console.log('File does not exist.');
         return false;
       }
 
@@ -540,7 +617,7 @@ export class ApiService {
         encoding: Encoding.UTF8,
       });
 
-      let showList: Number[] = [];
+      let showList: SimpleObject[] = [];
 
       if (file.data) {
         try {
@@ -550,7 +627,7 @@ export class ApiService {
           throw new Error('Invalid JSON in file.');
         }
 
-        const movieExists = showList.some(show => show === showID);
+        const movieExists = showList.some(show => show.id === showID);
         return movieExists;
       }
       return false;
@@ -609,7 +686,6 @@ export class ApiService {
         }
       }
 
-      console.log('Current content list:', currentContentList);
       const updatedContent = JSON.stringify(currentContentList, null, 2);
 
       await Filesystem.writeFile({
@@ -684,7 +760,6 @@ export class ApiService {
       const filename = 'episodes.json';
 
       if (!await this.checkIfFileExists(filename)) {
-        console.log('File does not exist.');
         return [];
       }
 
@@ -706,8 +781,6 @@ export class ApiService {
           throw new Error('Invalid JSON in file.');
         }
 
-        console.log('Episode list:', episodeList);
-
         if (episodeList.length > 0)
           return episodeList[0].einfo;
         else
@@ -721,10 +794,10 @@ export class ApiService {
     }
   }
 
-  async removeShowsFromFile(showId: number) {
+  async saveShowsToFile(newShow: ComplexTvshow) {
     try {
       const filename = 'shows.json';
-      let currentContentList: Number[] = [];
+      let currentContentList: SimpleObject[] = [];
 
       if (await this.checkIfFileExists(filename)) {
         const file = await Filesystem.readFile({
@@ -735,7 +808,7 @@ export class ApiService {
 
         if (file.data) {
           try {
-            currentContentList = JSON.parse(file.data as string) as Number[];
+            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
           }
           catch (error) {
             console.error('Error parsing existing JSON file:', error);
@@ -744,12 +817,17 @@ export class ApiService {
         }
       }
 
-      //get the show from the list
-      let showIndex = currentContentList.findIndex(s => s === showId);
-      if (showIndex === -1) return;
+      //transform complexMOvie to SimpleObject
+      const SimpleObject: SimpleObject = {
+        id: newShow.id,
+        original_title: newShow.original_name,
+        title: newShow.name,
+        poster_path: newShow.poster_path,
+        type: "tvshow",
+        popularity: newShow.popularity
+      };
 
-      //remove the show from the list
-      currentContentList.splice(showIndex, 1);
+      currentContentList.push(SimpleObject);
       const updatedContent = JSON.stringify(currentContentList, null, 2);
 
       await Filesystem.writeFile({
@@ -758,10 +836,9 @@ export class ApiService {
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-
     }
     catch (e) {
-      console.error('Error checking if movie exists', e);
+      console.error('Unable to write file', e);
     }
   }
 
@@ -805,7 +882,6 @@ export class ApiService {
       console.error('Error checking if movie exists', e);
     }
   }
-
 
   // getSimilarMovies(id: string, count = 20) {
   //   return this.http

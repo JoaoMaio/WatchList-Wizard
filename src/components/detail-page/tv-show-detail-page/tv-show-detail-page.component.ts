@@ -116,7 +116,7 @@ export class TvShowDetailPageComponent {
   removeShowsFromWatchList()
   {
     this.isOnWatchList = false;
-    this.api.removeShowsFromFile(this.tvshow!.id);
+    this.api.removeShowOrMovieFromFile(this.tvshow!.id, 'tv');
     this.api.removeAllEpisodesFromFile(this.tvshow!.id);
     this.seasons.forEach(season => {
       season.episodes.forEach(episode => {

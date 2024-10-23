@@ -1,0 +1,32 @@
+@import '../../../colors.scss';
+
+.show-container {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    background-color: $secondaryColor;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.show-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.show-header p:first-child {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 0 10px;
+    color: $textColor;
+}
+
+.show-header p:last-child {
+    font-size: 1rem;
+    color: $textColor;
+    margin: 10px 0;
+    cursor: pointer;
+    align-self: flex-end;
+}

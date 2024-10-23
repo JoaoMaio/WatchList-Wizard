@@ -40,18 +40,14 @@ export class MovieDetailPageComponent implements OnInit {
     });    
   }
 
-  markAsWatched() {
-    const alreadyMarked = this.watched;
-    this.watched = !this.watched;
-
-    if (alreadyMarked) 
-    {
-      //TODO - remove movie from the json file
-      return;
-    }
-    else 
-    {
-      this.api.saveMoviesToFile(this.movie!);
-    }
+  addMovieToWatchList() {
+    this.watched = true;
+    this.api.saveMoviesToFile(this.movie!);
   }
+
+  removeMovieFromWatchList() {
+    this.watched = false;
+    this.api.removeShowOrMovieFromFile(this.movie!.id, 'movie');
+  }
+
 }
