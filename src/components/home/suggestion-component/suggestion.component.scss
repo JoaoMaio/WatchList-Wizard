@@ -9,6 +9,8 @@ $movies-to-show: 4.5;
     display: flex;
     overflow-x: scroll; 
     scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
     gap: 2px;
     width: 100%; 
     
@@ -24,6 +26,7 @@ $movies-to-show: 4.5;
         height: 100%;
         object-fit: cover; 
         display: block; 
+        border-radius: 5px;
       }
     }
   }

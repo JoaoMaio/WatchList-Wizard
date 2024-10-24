@@ -93,7 +93,6 @@
   }
 }
 
-
 .title {
   font-size: 20px;
   font-weight: bold;
@@ -108,21 +107,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px;
-    height: 20px;
+    width: 23px;
+    height: 23px;
     border-radius: 50%;
-    color: white;
-    background-color: rgba(131, 125, 125, 0.5); /* Default color */
+    color: $textColor;
+    background-color: rgba(131, 125, 125, 0.5); 
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 14px; 
   
-    font-size: 12px; /* Adjust the size of the checkmark */
-  
-    /* When the 'watched' class is applied */
     &.watched {
-      background-color: green; /* Changes the background to green */
-      color: white; /* Keep the checkmark color white */
+      background-color: rgb(13, 174, 13); 
+      color: $textColor 
     }
   }
 }
@@ -265,8 +262,7 @@
   font-size: 1.5rem;
 }
 
-//----
-
+//----------------- Seasons -----------------//
 
 mat-expansion-panel {
   background-color: $secondaryColor;
@@ -277,7 +273,7 @@ mat-expansion-panel {
   mat-expansion-panel-header {
     color: $textColor;
     width: 100%;
-    background-color: $secondaryColor;
+    background-color: transparent;
     border-radius: 10px 10px 0 0;
     font-weight: bold;
     font-size: 16px;

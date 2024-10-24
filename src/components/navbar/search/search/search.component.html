@@ -1,15 +1,4 @@
-<div class="search-container">
-    <div class="search-type">
-      <label class="custom-radio">
-        <input type="radio" name="searchType" value="movie" (change)="changeSearchType('movie')" />
-        <span class="radio-label">Movie</span>
-      </label>
-      <label class="custom-radio">
-        <input type="radio" name="searchType" value="tvshow" (change)="changeSearchType('tv')" />
-        <span class="radio-label">TV Show</span>
-      </label>
-    </div>
-  
+<div class="search-container">  
     <!-- Search Input -->
     <div class="search-input">
       <input type="text" placeholder="Search shows and movies" [(ngModel)]="searchTerm" (keyup.enter)="search()"/>

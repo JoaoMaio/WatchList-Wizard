@@ -30,3 +30,73 @@
     cursor: pointer;
     align-self: flex-end;
 }
+
+
+.timer-slider{
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: scroll; 
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.tv-time-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tv-time-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: thin solid $borderColor;
+    background-color: #000000;
+    border-radius: 5px;
+    color: $borderColor;
+}
+
+.tv-time-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal_divider{
+    width: 100%;
+    height: 1px;
+    background-color: $borderColor;
+}
+
+.tv-time-row1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.tv-time-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tv-time-value {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.tv-time-label {
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+}

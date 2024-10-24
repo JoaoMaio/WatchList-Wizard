@@ -1,0 +1,60 @@
+@import '../../colors.scss';
+
+
+.confirmModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    border-radius: 5px;
+  }
+  
+  .confirmModal__content {
+    background-color: $secondaryColor;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    max-width: 80%;
+  }
+  
+  .confirmModal__content__header h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+  }
+  
+  .confirmModal__content__body {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+  .confirmModal__content__footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .btn--primary {
+    background-color: $quinaryColor;
+    color: #fff;
+    margin-right: 10px;
+  }
+  
+  .btn--secondary {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  

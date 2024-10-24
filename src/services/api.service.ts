@@ -11,6 +11,7 @@ export interface SimpleObject {
   title: string;
   type: string;
   popularity: number;
+  runtime?: number;
 }
 
 //--------------------------------------------------------------------------------//
@@ -168,6 +169,7 @@ export type SavedEpisodeInfo = {
 export type EInfo = {
   seasonNumber: number
   episodeNumber: number
+  runtime?: number
 }
 
 
@@ -246,7 +248,7 @@ export class ApiService {
   }
 
   search(query: string, type: string, page: number = 1): Observable<SimpleObject[] | SimpleObject[]> {
-    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=true&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
       map((response: MovieResponse | TvShowResponse) => {
         if (type === 'movie') {
           return response.results.map((movie: any) => {
@@ -437,7 +439,6 @@ export class ApiService {
   }
 
   //Movie File Related 
-
   async saveMoviesToFile(newMovie: ComplexMovie) {
     try {
       const filename = 'movies.json';
@@ -469,7 +470,8 @@ export class ApiService {
         title: newMovie.title,
         poster_path: newMovie.poster_path,
         type: "movie",
-        popularity: newMovie.popularity
+        popularity: newMovie.popularity,
+        runtime: newMovie.runtime
       };
 
       currentContentList.push(SimpleObject);
@@ -522,7 +524,7 @@ export class ApiService {
       return false;
     }
   }
-  
+
   //--------------------------------------------------------------------------------//
   //----------------------------  TV SHOWS  ----------------------------------------//
   //--------------------------------------------------------------------------------//
@@ -669,6 +671,7 @@ export class ApiService {
           einfo: [{
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
+            runtime: newEpisode.runtime ? newEpisode.runtime : 0
           }]
         };
         currentContentList.push(show);
@@ -682,6 +685,7 @@ export class ApiService {
           show.einfo.push({
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
+            runtime: newEpisode.runtime ? newEpisode.runtime : 0
           });
         }
       }
@@ -882,6 +886,20 @@ export class ApiService {
       console.error('Error checking if movie exists', e);
     }
   }
+
+
+  calculateShowRuntime(showId: number): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      let total = 0;
+      let episodes = await this.getAllEpisodesFromFile(showId);
+      episodes.forEach(e => {
+        total += e.runtime ? e.runtime : 0;
+      });
+      resolve(total);
+    });
+  }
+
+
 
   // getSimilarMovies(id: string, count = 20) {
   //   return this.http

@@ -51,19 +51,8 @@
 
       <div class="divider"></div>
 
-
       <div class="rating">
         <span>{{ tvshow?.vote_average?.toPrecision(3) }} / 10</span>
-      </div>
-
-      <div class="release_date">
-        <span>{{ tvshow?.release_date }}</span>
-      </div>
-
-      <div class="last_episode_to_air">
-        <span>{{ tvshow?.last_episode_to_air?.name }}</span>
-        <span> - Season {{ tvshow?.last_episode_to_air?.season_number }} - </span>
-        <span>{{ tvshow?.last_episode_to_air?.air_date }}</span>
       </div>
 
       <div class="divider"></div>
@@ -114,3 +103,11 @@
 <div *ngIf="isLoading" class="loading">
   <p>Loading...</p>
 </div>
+
+<app-confirm-modal
+    *ngIf="showConfirmModal"
+    [title]="'You have missing episodes'" 
+    [message]="'Do you want to mark all episodes before this one?'"
+    (confirm)="onConfirm()"
+    (cancel)="onCancel()"
+></app-confirm-modal>

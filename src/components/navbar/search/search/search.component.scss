@@ -66,8 +66,8 @@
 
   .search-results {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    grid-gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-gap: 10px;
     width: 100%;
     max-width: 1200px;
     margin-top: 20px;
@@ -87,7 +87,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Ensures the image covers the area */
+        object-fit: cover;
         border-radius: 8px;
         z-index: 1; 
       }
@@ -104,7 +104,7 @@
       
       .item-title {
         position: absolute;
-        bottom: 0; /* Position the title at the bottom */
+        bottom: 0; 
         left: 0;
         width: 100%;
         color: $textColor;

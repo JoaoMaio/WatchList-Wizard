@@ -13,3 +13,36 @@
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
 </div>
+
+
+<div class="timer-slider">
+    <div class="tv-time-container" *ngFor="let time of timeList">
+        <div class="tv-time-box">
+            <div class="tv-time-col">
+                <div *ngIf="time.title != 'Total'" class="tv-time-title"> Wasted Time in {{ time.title }}s</div>
+                <div *ngIf="time.title === 'Total'" class="tv-time-title"> Wasted Time in {{ time.title }} </div>
+                <div class="horizontal_divider"></div>
+                <div class="tv-time-row1">
+                    <div class="tv-time-row">
+                        <div class="tv-time-value">{{ time.months }}</div>
+                        <div class="tv-time-label">MONTHS</div>
+                    </div>
+                    <div class="tv-time-row">
+                        <div class="tv-time-value">{{ time.days }}</div>
+                        <div class="tv-time-label">DAYS</div>
+                    </div>
+                    <div class="tv-time-row">
+                        <div class="tv-time-value">{{ time.hours }}</div>
+                        <div class="tv-time-label">HOURS</div>
+                    </div>
+                    <div class="tv-time-row">
+                        <div class="tv-time-value">{{ time.minutes }}</div>
+                        <div class="tv-time-label">MINUTES</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+  

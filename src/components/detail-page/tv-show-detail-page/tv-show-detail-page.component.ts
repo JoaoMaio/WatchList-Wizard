@@ -3,11 +3,12 @@ import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../serv
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ConfirmModalComponent } from "../../confirm-modal/confirm-modal.component";
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule],
+  imports: [CommonModule, MatExpansionModule, ConfirmModalComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
@@ -18,7 +19,9 @@ export class TvShowDetailPageComponent {
   isOnWatchList: boolean = false;
   isOverviewExpanded = false;
   isAccordionOpen = false;
+  showConfirmModal = false;
   seasons: Season[] = [];
+  selectedEpisode: Episode | undefined;
 
   constructor(public api: ApiService,
               private route: ActivatedRoute,
@@ -37,7 +40,6 @@ export class TvShowDetailPageComponent {
 
         },
         complete: () => {
-         this.isLoading = false;
         },
         error: (error) => {
           console.error('Error fetching movies:', error);
@@ -76,13 +78,15 @@ export class TvShowDetailPageComponent {
 
   getEpisodes() {
     this.api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
-        if (response) {
+        if (response) 
+        {
           this.seasons.forEach(season => {
             season.episodes.forEach(episode => {
               const watched = response .find((e: EInfo) => e.episodeNumber === episode.episode_number && e.seasonNumber === episode.season_number);
               if (watched) episode.watched = true;
             });
           });
+          this.isLoading = false;
         }
       });
   }
@@ -99,8 +103,50 @@ export class TvShowDetailPageComponent {
     if(!this.isOnWatchList)
       this.addShowToWatchList();
 
+    //if episode before current episode is not watched pop up a message
+    if(episode.episode_number > 1)
+    {
+      const previousEpisode = this.seasons.find(season => season.season_number === episode.season_number)?.episodes.find(e => e.episode_number === episode.episode_number - 1);
+      if(previousEpisode && !previousEpisode.watched)
+      {
+        this.openModal(episode)
+        return;
+      }
+    }
+
     episode.watched = true;
     this.api.saveEpisodeToFile(episode, this.tvshow!.id);
+  }
+
+  openModal(episode: Episode) {
+    this.showConfirmModal = true;
+    this.selectedEpisode = episode
+  }
+
+   async onConfirm() {
+    this.showConfirmModal = false;
+    
+    //mark all episodes before the selected episode as watched
+    for (const season of this.seasons) {
+      for (const episode of season.episodes) {
+        if (episode.season_number === this.selectedEpisode?.season_number &&
+            episode.episode_number <= this.selectedEpisode?.episode_number &&
+            !episode.watched) 
+          {
+            episode.watched = true;
+
+            try {
+              await this.api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+            } catch (error) {
+              console.error('Error saving episode:', episode, error);
+            }
+        }
+      }
+    }
+  }
+
+  onCancel() {
+    this.showConfirmModal = false;  
   }
 
   markEpisodeAsUnWatched(episode: Episode) {
