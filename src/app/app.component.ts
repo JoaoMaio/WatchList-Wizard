@@ -3,6 +3,7 @@ import { HomeComponentComponent } from '../components/home/home-component.compon
 import { RouterModule } from '@angular/router';
 import { NavBarComponent } from "../components/navbar/nav-bar/nav-bar.component";
 import { App } from '@capacitor/app';
+import { CacheDateService } from '../services/cache.service';
 
 
 @Component({
@@ -16,30 +17,25 @@ import { App } from '@capacitor/app';
 export class AppComponent implements OnInit {
   title = 'TMDBApp';
 
-  constructor() {}
+  constructor(private cacheDateService: CacheDateService) {}
 
   ngOnInit() {
     this.setupBackButtonListener();
+    this.cacheDateService.checkAndClearCache();
   }
 
   setupBackButtonListener() {
-    // Listen for the backButton event on Android
     App.addListener('backButton', ({ canGoBack }) => {
-      // Logic to handle back button
-      if (canGoBack) {
-        // If the app can navigate back in the webview history
+      if (canGoBack) 
         window.history.back();
-      } else {
-        // Handle the case where there is no history, maybe exit the app
-        this.showExitConfirmation();  // Implement your own logic here
-      }
+      else 
+        this.showExitConfirmation();
     });
   }
 
   showExitConfirmation() {
-    // Show confirmation dialog before exiting the app
     if (confirm('Do you want to exit the app?')) {
-      App.exitApp();  // Exit the app
+      App.exitApp(); 
     }
   }
 

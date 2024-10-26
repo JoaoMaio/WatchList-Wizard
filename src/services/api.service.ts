@@ -11,7 +11,9 @@ export interface SimpleObject {
   title: string;
   type: string;
   popularity: number;
-  runtime?: number;
+  runtime?: number; //only for saved movies
+  // timesWatched?: number; //only for movies
+  // saveType?: string; // toWatch, watched, watching, stoppedWatching
 }
 
 //--------------------------------------------------------------------------------//
@@ -170,6 +172,7 @@ export type EInfo = {
   seasonNumber: number
   episodeNumber: number
   runtime?: number
+  // timesWatched?: number;
 }
 
 
@@ -886,7 +889,6 @@ export class ApiService {
       console.error('Error checking if movie exists', e);
     }
   }
-
 
   calculateShowRuntime(showId: number): Promise<number> {
     return new Promise(async (resolve, reject) => {
