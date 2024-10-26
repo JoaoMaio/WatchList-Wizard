@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
-import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../services/api.service';
+import { ApiService, ComplexTvshow, EInfo, Season } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { ConfirmModalComponent } from "../../confirm-modal/confirm-modal.component";
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CustomExpansionPanelComponent } from "../../custom-expansion-panel/custom-expansion-panel.component";
 
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, ConfirmModalComponent, MatProgressBarModule ],
+  imports: [CommonModule, CustomExpansionPanelComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
@@ -20,10 +18,8 @@ export class TvShowDetailPageComponent {
   isLoading: boolean = true;
   isOnWatchList: boolean = false;
   isOverviewExpanded = false;
-  isAccordionOpen = false;
-  showConfirmModal = false;
+
   seasons: Season[] = [];
-  selectedEpisode: Episode | undefined;
 
   constructor(public api: ApiService,
               private route: ActivatedRoute,
@@ -101,61 +97,6 @@ export class TvShowDetailPageComponent {
     return count;
   }
 
-  markEpisodeAsWatched(episode: Episode) {
-    if(!this.isOnWatchList)
-      this.addShowToWatchList();
-
-    //if episode before current episode is not watched pop up a message
-    if(episode.episode_number > 1)
-    {
-      const previousEpisode = this.seasons.find(season => season.season_number === episode.season_number)?.episodes.find(e => e.episode_number === episode.episode_number - 1);
-      if(previousEpisode && !previousEpisode.watched)
-      {
-        this.openModal(episode)
-        return;
-      }
-    }
-
-    episode.watched = true;
-    this.api.saveEpisodeToFile(episode, this.tvshow!.id);
-  }
-
-  openModal(episode: Episode) {
-    this.showConfirmModal = true;
-    this.selectedEpisode = episode
-  }
-
-   async onConfirm() {
-    this.showConfirmModal = false;
-    
-    //mark all episodes before the selected episode as watched
-    for (const season of this.seasons) {
-      for (const episode of season.episodes) {
-        if (episode.season_number === this.selectedEpisode?.season_number &&
-            episode.episode_number <= this.selectedEpisode?.episode_number &&
-            !episode.watched) 
-          {
-            episode.watched = true;
-
-            try {
-              await this.api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
-            } catch (error) {
-              console.error('Error saving episode:', episode, error);
-            }
-        }
-      }
-    }
-  }
-
-  onCancel() {
-    this.showConfirmModal = false;  
-  }
-
-  markEpisodeAsUnWatched(episode: Episode) {
-    episode.watched = false;
-    this.api.removeEpisodeFromFile(episode, this.tvshow!.id);
-  }
-
   addShowToWatchList() {
     this.isOnWatchList = true;
     this.api.saveShowsToFile(this.tvshow!);
@@ -176,17 +117,5 @@ export class TvShowDetailPageComponent {
 
   }
 
-  getDaysUntiItsOut(episode: Episode) {
-    const today = new Date();
-    const releaseDate = new Date(episode.air_date);
-    const timeDiff = releaseDate.getTime() - today.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return daysDiff;
-  }
 
-  getWatchedPercentage(season: any): number {
-    const watchedEpisodes = this.getCountWatchedEpisodes(season);
-    const totalEpisodes = season.episode_count;
-    return (watchedEpisodes / totalEpisodes) * 100;
-  }
 }

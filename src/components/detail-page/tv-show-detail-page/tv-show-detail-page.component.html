@@ -54,43 +54,15 @@
       <div class="divider"></div>
 
       <div class="seasons">
-        <mat-accordion *ngFor="let season of seasons">
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <div class="m_desc">
-                  <mat-panel-title>
-                    Season {{ season.season_number }}
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    {{ getCountWatchedEpisodes(season) }} / {{ season.episode_count }}
-                  </mat-panel-description>
-                </div>
-                <mat-progress-bar mode="determinate" [value]="getWatchedPercentage(season)"></mat-progress-bar>
-              </mat-expansion-panel-header>
-              
-              <div *ngFor="let episode of season.episodes" class="episode-details">
-                  <div class="image_container">
-                    <img *ngIf="api.doesBackDropExist(episode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
-                    <img *ngIf="!api.doesBackDropExist(episode.still_path)" src="tba.png" alt="to be announced" />
-
-                  </div>
-                  <div class="text_container">
-                    <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
-                  </div>
-                  <div class="markAsWatched" *ngIf="api.doesBackDropExist(episode.still_path)">
-                    <button *ngIf="!episode.watched" (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton">
-                      +
-                    </button>
-                    <button *ngIf="episode.watched" (click)="markEpisodeAsUnWatched(episode)" class="markAsWatchedbutton watched">
-                      ✓
-                    </button>
-                  </div>
-                  <div class="tba_days" *ngIf="!api.doesBackDropExist(episode.still_path)">
-                      <p>{{getDaysUntiItsOut(episode)}} days </p>
-                  </div>
-              </div>
-            </mat-expansion-panel>
-        </mat-accordion>
+        <div *ngFor="let season of seasons">
+          <app-custom-expansion-panel
+            [title]="'Season ' + season.season_number"
+            [season]="season"
+            [tvshow]="tvshow"
+            [isOnWatchList]="isOnWatchList"
+          >
+          </app-custom-expansion-panel>
+        </div>
       </div>
     </div>
 
@@ -103,10 +75,3 @@
   <p>Loading...</p>
 </div>
 
-<app-confirm-modal
-    *ngIf="showConfirmModal"
-    [title]="'You have missing episodes'" 
-    [message]="'Do you want to mark all episodes before this one?'"
-    (confirm)="onConfirm()"
-    (cancel)="onCancel()"
-></app-confirm-modal>
