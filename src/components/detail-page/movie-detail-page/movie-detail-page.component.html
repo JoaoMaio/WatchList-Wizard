@@ -5,21 +5,18 @@
       <div class="title_checkmark">
         <div class="info">
           <h1 class="title">{{ movie?.title }}</h1>
-          <div class="markAsWatched"> 
-            <div class="markAsWatched"> 
-              <button *ngIf="!watched" (click)="addMovieToWatchList()" class="markAsWatchedbutton">
-                +
-              </button>
-              <button *ngIf="watched" (click)="removeMovieFromWatchList()" class="markAsWatchedbutton watched">
-                ✓
-              </button>
-            </div>
+          <div class="countSeasons_RunTime">
+            <span>{{ movie?.runtime }} min</span>
           </div>
         </div>
-
-        <div class="countSeasons_RunTime">
-            <span>{{ movie?.runtime }} min</span>
-        </div>
+          <div class="markAsWatchedTitle"> 
+            <button *ngIf="!watched" (click)="addMovieToWatchList()" class="markAsWatchedbutton">
+              +
+            </button>
+            <button *ngIf="watched" (click)="removeMovieFromWatchList()" class="markAsWatchedbutton watched">
+              ✓
+            </button>
+          </div>
       </div>
     </div>
   </div>

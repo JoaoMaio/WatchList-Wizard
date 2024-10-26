@@ -4,6 +4,7 @@ android {
     namespace "com.example.app"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
+        archivesBaseName = "Watchlist Wizard"
         applicationId "com.example.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

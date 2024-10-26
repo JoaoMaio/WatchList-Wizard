@@ -4,11 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ConfirmModalComponent } from "../../confirm-modal/confirm-modal.component";
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, ConfirmModalComponent],
+  imports: [CommonModule, MatExpansionModule, ConfirmModalComponent, MatProgressBarModule ],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
@@ -182,4 +184,9 @@ export class TvShowDetailPageComponent {
     return daysDiff;
   }
 
+  getWatchedPercentage(season: any): number {
+    const watchedEpisodes = this.getCountWatchedEpisodes(season);
+    const totalEpisodes = season.episode_count;
+    return (watchedEpisodes / totalEpisodes) * 100;
+  }
 }

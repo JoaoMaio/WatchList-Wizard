@@ -6,7 +6,6 @@
   height: 100%;
   overflow: hidden;
 
-
   .card {
     position: relative;
     width: 100%;
@@ -40,34 +39,52 @@
 
       .title_checkmark {
         display: flex;
-        flex-direction: column;
-        gap: 2px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         position: absolute;
-        bottom: 10px;
-        left: 10px; 
+        bottom: 0px;
         z-index: 1; 
+        background-color: rgba(0, 0, 0, 0.2);
+        width: 100%;
+
+          /* Background blur */
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: -1;
+          backdrop-filter: blur(1px); 
+        }
     
         .info{
           display: flex;
-          flex-direction: row;
-          gap: 10px;
+          flex-direction: column;
           margin: 0;
-          padding: 0;
-          align-items: center;
-        }
-
-        .countSeasons_RunTime{  
-          margin: 0;
-          padding: 0;
-
-          span{
-            font-size: 10px;
-            font-weight: bold;
-            color: $textColor; 
+          padding-left: 5px;
+          padding-right: 5px;
+          align-items: flex-start;
+          
+          .countSeasons_RunTime{  
             margin: 0;
             padding: 0;
-          }        
+  
+            span{
+              font-size: 10px;
+              font-weight: bold;
+              color: $textColor; 
+              margin: 0;
+              padding: 0;
+            }        
+          }
+        
+          
         }
+
+
         
       }
     }
@@ -100,6 +117,29 @@
   margin: 0;
   padding: 0;
   
+}
+
+.markAsWatchedTitle {
+  margin-right: 5px;
+  .markAsWatchedbutton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: $textColor;
+    background-color: rgba(131, 125, 125, 0.2); 
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 17px; 
+  
+    &.watched {
+      background-color: rgb(13, 174, 13); 
+      color: $textColor 
+    }
+  }
 }
 
 .markAsWatched {
@@ -264,31 +304,61 @@
 
 //----------------- Seasons -----------------//
 
+
+::ng-deep .mat-expansion-indicator {
+  display: none !important;
+}
+
 mat-expansion-panel {
   background-color: $secondaryColor;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 0;
   padding: 0;
+  margin-bottom: 10px;
 
   mat-expansion-panel-header {
     color: $textColor;
-    width: 100%;
-    background-color: transparent;
-    border-radius: 10px 10px 0 0;
+    background-color: $tertiaryColor;
     font-weight: bold;
-    font-size: 16px;
+    font-family: $fontFamily !important;
+    
+    ::ng-deep .mat-content{
+      display: inline-block ;
+      width: 100%;
+    }
+    
+    
+    ::ng-deep .mdc-linear-progress__bar-inner  {
+      border-color: #1bf004;
+    }
+
+    .m_desc{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .mat-expansion-panel-header-description {
+      margin: 0;
+      flex-grow: 0 !important;
+      flex-basis: auto !important; /* Set flex-basis to auto */
+    }
 
     .mat-panel-title {
       font-size: 12px;
+      margin-right: auto;
     }
 
     .mat-panel-description {
       font-size: 14px;
       color: $textColor;
+      text-align: right; /* Aligns the description text to the right */
     }
 
     &.mat-expanded {
-      background-color: $tertiaryColor;
+      background-color: $quaternaryColor;
+      height: 48px;
     }
   }
 
@@ -342,8 +412,9 @@ mat-expansion-panel {
   ::ng-deep .mat-expansion-panel-body {
     padding: 0 !important;
   }
-
 }
+
+
 
 .tba_days {
   display: flex;          
@@ -358,12 +429,4 @@ mat-expansion-panel {
   font-size: 14px;       
   margin: 0;              
   line-height: 1.5;       
-}
-
-mat-accordion {
-  border-radius: 5px;
-  max-height: 200px;
-  overflow-y: hidden;
-  margin: 0;
-  padding: 0;
 }

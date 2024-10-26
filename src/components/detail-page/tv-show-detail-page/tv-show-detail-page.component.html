@@ -6,23 +6,19 @@
       <div class="title_checkmark">
         <div class="info">
           <h1 class="title">{{ tvshow?.name }}</h1>
-          <div class="markAsWatched">
-            <div class="markAsWatched">
-              <button *ngIf="!isOnWatchList" (click)="addShowToWatchList()" class="markAsWatchedbutton">
-                +
-              </button>
-              <button *ngIf="isOnWatchList" (click)="removeShowsFromWatchList()" class="markAsWatchedbutton watched">
-                ✓
-              </button>
-            </div>
+          <div class="countSeasons_RunTime">
+            <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
+            <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
           </div>
         </div>
-
-        <div class="countSeasons_RunTime">
-          <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
-          <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
-        </div>
-
+          <div class="markAsWatchedTitle">
+            <button *ngIf="!isOnWatchList" (click)="addShowToWatchList()" class="markAsWatchedbutton">
+              +
+            </button>
+            <button *ngIf="isOnWatchList" (click)="removeShowsFromWatchList()" class="markAsWatchedbutton watched">
+              ✓
+            </button>
+          </div>
       </div>
 
     </div>
@@ -60,15 +56,18 @@
       <div class="seasons">
         <mat-accordion *ngFor="let season of seasons">
             <mat-expansion-panel>
-              <mat-expansion-panel-header class="custom-header">
-                <mat-panel-title>
-                  Season {{ season.season_number }}
-                </mat-panel-title>
-                <mat-panel-description>
-                  {{ getCountWatchedEpisodes(season) }} / {{ season.episode_count }} episodes
-                </mat-panel-description>
+              <mat-expansion-panel-header>
+                <div class="m_desc">
+                  <mat-panel-title>
+                    Season {{ season.season_number }}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{ getCountWatchedEpisodes(season) }} / {{ season.episode_count }}
+                  </mat-panel-description>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="getWatchedPercentage(season)"></mat-progress-bar>
               </mat-expansion-panel-header>
-          
+              
               <div *ngFor="let episode of season.episodes" class="episode-details">
                   <div class="image_container">
                     <img *ngIf="api.doesBackDropExist(episode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
