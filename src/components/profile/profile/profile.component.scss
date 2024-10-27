@@ -7,6 +7,10 @@
     background-color: $secondaryColor;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    &.last {
+        margin-bottom: 50px;
+    }
 }
 
 .show-header {
@@ -16,13 +20,6 @@
     width: 100%;
 }
 
-.show-header p:first-child {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0 0 10px;
-    color: $textColor;
-}
-
 .show-header p:last-child {
     font-size: 1rem;
     color: $textColor;
@@ -30,7 +27,6 @@
     cursor: pointer;
     align-self: flex-end;
 }
-
 
 .timer-slider{
     width: 100%;
@@ -84,10 +80,19 @@
     gap: 20px;
 }
 
+.tv-time-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: $textColor;
+    margin: 0;
+    padding: 0;
+}
+
 .tv-time-row {
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 12px;
 }
 
 .tv-time-value {
@@ -99,4 +104,34 @@
     font-size: 10px;
     font-weight: bold;
     margin-top: 5px;
+}
+
+.banner {
+    height: 200px;
+    margin-bottom: 10px;
+
+    img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.section-title{
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0px;
+    color: $textColor;
+}
+
+.edit-banner-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.5);     
+    color: white;
+    border: none;
+    padding-left: 10px;
+    padding-top: 4px;
+    border-radius: 5px;
 }

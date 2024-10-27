@@ -1,26 +1,20 @@
-<div class="show-container">
-    <div class="show-header">
-        <p>Your Shows</p>
-        <p>See More ></p>
-    </div>
-    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
+<div class="banner">
+    <img src="banner.jpg" alt="profile image">
+    
+    <!--Button to Change Banner Image -->
+    <button (click)="openModalEditBanner()" class="edit-banner-button">
+        <i class="material-symbols-outlined">edit</i>
+    </button>
+
 </div>
 
-<div class="show-container">
-    <div class="show-header">
-        <p>Your Movies</p>
-        <p>See More ></p>
-    </div>
-    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
-</div>
-
-
+<p class="section-title">Your Stats</p>
 <div class="timer-slider">
     <div class="tv-time-container" *ngFor="let time of timeList">
         <div class="tv-time-box">
             <div class="tv-time-col">
-                <div *ngIf="time.title != 'Total'" class="tv-time-title"> Wasted Time in {{ time.title }}s</div>
-                <div *ngIf="time.title === 'Total'" class="tv-time-title"> Wasted Time in {{ time.title }} </div>
+                <div class="tv-time-title" *ngIf="time.title === 'Show'"> Wasted Time in {{ totalEpisodesWatched }} {{ time.title }}s</div>
+                <div class="tv-time-title" *ngIf="time.title === 'Movie'"> Wasted Time in {{ totalMoviesWatched }} {{ time.title }}s</div>
                 <div class="horizontal_divider"></div>
                 <div class="tv-time-row1">
                     <div class="tv-time-row">
@@ -45,4 +39,20 @@
     </div>
 </div>
 
+
+<div class="show-container">
+    <div class="show-header">
+        <p class="section-title">Your Shows</p>
+        <p>See More ></p>
+    </div>
+    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
+</div>
+
+<div class="show-container last">
+    <div class="show-header">
+        <p class="section-title">Your Movies</p>
+        <p>See More ></p>
+    </div>
+    <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
+</div>
   

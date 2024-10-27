@@ -54,6 +54,11 @@
         flex-direction: row;
         justify-content: space-between; 
         align-items: center; 
+
+        p {
+          margin: 10px 1px;
+        }
+
       }
 
       .nameChev{
@@ -119,6 +124,13 @@
       }
     }
 
+    .ep_and_checkmark {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
 
   }
   

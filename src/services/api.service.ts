@@ -95,11 +95,9 @@ export type GenresDot = {
 
 export type ComplexTvshow = {
   id: number
-  adult: boolean
   backdrop_path: string
-  genre_ids: number[]
+  genres: Genre[];
   name: string
-  origin_country: string[]
   original_language: string
   original_name: string
   overview: string
@@ -175,7 +173,6 @@ export type EInfo = {
   // timesWatched?: number;
 }
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -194,7 +191,6 @@ export class ApiService {
 
 
   constructor(private http: HttpClient) { }
-
 
   //get all watch providers from all countries and remove duplicates
   getWatchProviders(object: any): Provider[] {
@@ -527,6 +523,39 @@ export class ApiService {
       return false;
     }
   }
+
+  async getAllMoviesFromFile(): Promise<SimpleObject[]> {
+    try {
+      const filename = 'movies.json';
+
+      if (!await this.checkIfFileExists(filename)) {
+        return [];
+      }
+
+      const file = await Filesystem.readFile({
+        path: filename,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+
+      let movieList: SimpleObject[] = [];
+
+      if (file.data) {
+        try {
+
+          movieList = JSON.parse(file.data as string) as SimpleObject[];
+        } catch (error) {
+          console.error('Error parsing JSON file:', error);
+          throw new Error('Invalid JSON in file.');
+        }
+      }
+      return movieList;
+    } catch (e) {
+      console.error('Error checking if movie exists', e);
+      return [];
+    }
+  }
+
 
   //--------------------------------------------------------------------------------//
   //----------------------------  TV SHOWS  ----------------------------------------//
@@ -901,6 +930,48 @@ export class ApiService {
     });
   }
 
+  async countAllWatchedEpisodes(): Promise<number> {
+    try {
+      const filename = 'episodes.json';
+
+      if (!await this.checkIfFileExists(filename)) {
+        return 0;
+      }
+
+      const file = await Filesystem.readFile({
+        path: filename,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+
+      let episodeList: SavedEpisodeInfo[] = [];
+
+      if (file.data) {
+        try {
+          episodeList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
+        }
+        catch (error) {
+          console.error('Error parsing JSON file:', error);
+          throw new Error('Invalid JSON in file.');
+        }
+
+        let total = 0;
+        episodeList.forEach(show => {
+          show.einfo.forEach(e => {
+            total++;
+          });
+        });
+
+        return total;
+      }
+      return 0;
+    }
+    catch (e) {
+      console.error('Error checking if episodes exists', e);
+      return 0;
+    }
+  }
+  
 
 
   // getSimilarMovies(id: string, count = 20) {

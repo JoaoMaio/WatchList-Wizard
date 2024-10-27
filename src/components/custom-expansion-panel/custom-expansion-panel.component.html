@@ -5,15 +5,17 @@
                 <p> Season {{ season!.season_number }}</p>
                 <mat-icon>{{ expanded ? 'expand_less' : 'chevron_right' }}</mat-icon>
             </div>
-            <div class="markAsWatched">
-              <button *ngIf="!isFullSseasonWatched()" (click)="markAllSeasonAsWatched()" class="markAsWatchedbutton">
-                +
-              </button>
-              <button *ngIf="isFullSseasonWatched()" (click)="markAllSeasonAsUnWatched()" class="markAsWatchedbutton watched">
-                ✓
-              </button>
+            <div class="ep_and_checkmark">
+              <p>{{ getCountWatchedEpisodes(season!) }} / {{ season!.episode_count }}</p>
+              <div class="markAsWatched" >
+                <button *ngIf="!isFullSseasonWatched()" (click)="markAllSeasonAsWatched($event)" class="markAsWatchedbutton">
+                  +
+                </button>
+                <button *ngIf="isFullSseasonWatched()" (click)="markAllSeasonAsUnWatched($event)" class="markAsWatchedbutton watched">
+                  ✓
+                </button>
+              </div>
             </div>
-            <p>{{ getCountWatchedEpisodes(season!) }} / {{ season!.episode_count }}</p>
         </div>
         <mat-progress-bar mode="determinate" [value]="getWatchedPercentage(season)"></mat-progress-bar>
     </div>

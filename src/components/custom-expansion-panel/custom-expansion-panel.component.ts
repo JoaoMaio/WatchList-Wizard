@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ApiService, ComplexTvshow, Episode, Season } from '../../services/api.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -28,6 +28,7 @@ export class CustomExpansionPanelComponent {
   @Input() season: Season | undefined;
   @Input() tvshow: ComplexTvshow  | undefined;
   @Input() isOnWatchList: boolean = false;
+  @Output() addOrRemoveEpisode = new EventEmitter();
 
   expanded = false;
   isAccordionOpen = false;
@@ -58,18 +59,25 @@ export class CustomExpansionPanelComponent {
 
     episode.watched = true;
     this.api.saveEpisodeToFile(episode, this.tvshow!.id);
+
+    //emit event to parent component
+    this.addOrRemoveEpisode.emit();
   }
 
   markEpisodeAsUnWatched(episode: Episode) {
     episode.watched = false;
     this.api.removeEpisodeFromFile(episode, this.tvshow!.id);
+    this.addOrRemoveEpisode.emit();
   }
 
   isFullSseasonWatched() {
+    if(this.season?.episode_count == 0) 
+      return false;
     return this.season!.episodes.every(episode => episode.watched);
   }
 
- async markAllSeasonAsWatched() {
+ async markAllSeasonAsWatched(event: Event) {
+  event.stopPropagation();
     for (const episode of this.season!.episodes) 
       {
           episode.watched = true;
@@ -82,7 +90,8 @@ export class CustomExpansionPanelComponent {
       }
   }
 
-  async markAllSeasonAsUnWatched() {
+  async markAllSeasonAsUnWatched(event: Event) {
+    event.stopPropagation();
     for (const episode of this.season!.episodes) 
       {
           episode.watched = false;
@@ -144,6 +153,7 @@ export class CustomExpansionPanelComponent {
 
   getWatchedPercentage(season: any): number {
     const watchedEpisodes = this.getCountWatchedEpisodes(season);
+    if (watchedEpisodes === 0) return 0;
     const totalEpisodes = season.episode_count;
     return (watchedEpisodes / totalEpisodes) * 100;
   }

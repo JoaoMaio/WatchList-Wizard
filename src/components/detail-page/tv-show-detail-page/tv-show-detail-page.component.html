@@ -9,6 +9,18 @@
           <div class="countSeasons_RunTime">
             <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
             <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
+            <div class="rating">
+              <div class="rating_inside">
+                <span class="badge"
+                  [ngClass]="{
+                    'badge-success': tvshow?.vote_average! >= 8,
+                    'badge-warning': tvshow?.vote_average! < 8 && tvshow?.vote_average! >= 5,
+                    'badge-danger': tvshow?.vote_average! < 5
+                  }">
+                  {{ generateWordCloud(tvshow?.vote_average!) }} - {{ tvshow?.vote_average?.toPrecision(3) }} / 10
+                </span>
+              </div>
+            </div>
           </div>
         </div>
           <div class="markAsWatchedTitle">
@@ -35,8 +47,15 @@
       
       <div class="divider"></div>
 
-      <div class="providers_section">
-        <p>Watch on:</p>
+      <p class="section_title">Genres:</p>
+      <div class="genres" *ngIf="tvshow?.genres">
+        <span *ngFor="let genre of tvshow?.genres">{{ genre.name }}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="providers_section" *ngIf="tvshow?.watch_providers!.length > 0">
+        <p class="section_title">Watch on:</p>
         <div class="providers">
           <span *ngFor="let provider of tvshow?.watch_providers">
             <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
@@ -47,11 +66,30 @@
 
       <div class="divider"></div>
 
-      <div class="rating">
-        <span>{{ tvshow?.vote_average?.toPrecision(3) }} / 10</span>
+      <p class="section_title">Continue to Watch:</p>
+
+      <div class="episode-details" *ngIf="nextEpisode" >
+        <div class="image_container">
+          <img *ngIf="api.doesBackDropExist(nextEpisode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ nextEpisode.still_path }}" alt="episode still" />
+          <img *ngIf="!api.doesBackDropExist(nextEpisode.still_path)" src="tba.png" alt="to be announced" />
+        </div>
+        <div class="text_container">
+          <p class="episode-title">Episode {{ nextEpisode.episode_number }} - {{ nextEpisode.name }}</p>
+        </div>
+        <div class="markAsWatched" *ngIf="api.doesBackDropExist(nextEpisode.still_path)">
+          <button *ngIf="!nextEpisode.watched" (click)="markEpisodeAsWatched(nextEpisode)" class="markAsWatchedbutton">
+            +
+          </button>
+          <button *ngIf="nextEpisode.watched" (click)="markEpisodeAsUnWatched(nextEpisode)" class="markAsWatchedbutton watched">
+            ✓
+          </button>
+        </div>
+        <div class="tba_days" *ngIf="!api.doesBackDropExist(nextEpisode.still_path)">
+            <p>{{getDaysUntiItsOut(nextEpisode)}} days </p>
+        </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider"></div>      
 
       <div class="seasons">
         <div *ngFor="let season of seasons">
@@ -60,6 +98,7 @@
             [season]="season"
             [tvshow]="tvshow"
             [isOnWatchList]="isOnWatchList"
+            (addOrRemoveEpisode)="addOrRemoveEpisode()"
           >
           </app-custom-expansion-panel>
         </div>

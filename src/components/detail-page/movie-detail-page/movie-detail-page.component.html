@@ -7,6 +7,18 @@
           <h1 class="title">{{ movie?.title }}</h1>
           <div class="countSeasons_RunTime">
             <span>{{ movie?.runtime }} min</span>
+            <div class="rating">
+              <div class="rating_inside">
+                <span class="badge"
+                  [ngClass]="{
+                    'badge-success': movie?.vote_average! >= 8,
+                    'badge-warning': movie?.vote_average! < 8 && movie?.vote_average! >= 5,
+                    'badge-danger': movie?.vote_average! < 5
+                  }">
+                  {{ generateWordCloud(movie?.vote_average!) }} - {{ movie?.vote_average?.toPrecision(3) }} / 10
+                </span>
+              </div>
+            </div>
           </div>
         </div>
           <div class="markAsWatchedTitle"> 
@@ -26,23 +38,27 @@
 
       <p class="overview">{{ movie?.overview }}</p>
 
-      <div class="rating">
-        <span>{{ movie?.vote_average?.toPrecision(3) }} / 10</span>
-      </div>
+      <div class="divider"></div>
 
-      <div class="genres">
+      <div class="genres" *ngIf="movie?.genres">
         <span *ngFor="let genre of movie?.genres">{{ genre.name }}</span>
       </div>
+
+      <div class="divider"></div>
 
       <div class="release_date">
         <span>{{ movie?.release_date }}</span>
       </div>
 
+      <div class="divider"></div>
+
       <div class="budget">
         <span>{{ movie?.budget | currency:'USD':'symbol':'1.0-0' }}</span>
       </div>
 
-      <div class="providers_section">
+      <div class="divider"></div>
+
+      <div class="providers_section" *ngIf="movie?.watch_providers!.length > 0">
         <p>Watch on:</p>
         <div class="providers">
           <span *ngFor="let provider of movie?.watch_providers">

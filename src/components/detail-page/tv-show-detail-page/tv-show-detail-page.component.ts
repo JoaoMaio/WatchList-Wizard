@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ApiService, ComplexTvshow, EInfo, Season } from '../../../services/api.service';
+import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CustomExpansionPanelComponent } from "../../custom-expansion-panel/custom-expansion-panel.component";
@@ -19,11 +19,12 @@ export class TvShowDetailPageComponent {
   isOnWatchList: boolean = false;
   isOverviewExpanded = false;
 
+  nextEpisode: Episode | undefined;
   seasons: Season[] = [];
 
   constructor(public api: ApiService,
               private route: ActivatedRoute,
-) { }
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -85,16 +86,9 @@ export class TvShowDetailPageComponent {
             });
           });
           this.isLoading = false;
+          this.nextEpisode = this.getNextEpisodeToWatch();
         }
       });
-  }
-
-  getCountWatchedEpisodes(season: Season) {
-    let count = 0;
-    season.episodes.forEach(episode => {
-        if (episode.watched) count++;
-      });
-    return count;
   }
 
   addShowToWatchList() {
@@ -117,5 +111,52 @@ export class TvShowDetailPageComponent {
 
   }
 
+  generateWordCloud(rating: number): string {
+    if(rating >= 8)  
+      return 'Probably a good show'
+    if(rating >= 5)  
+      return 'Be carefull!'
+    if (rating >= 0)
+      return 'Probably not a good show';
+
+    return 'No rating available';
+  }
+
+  getNextEpisodeToWatch(): Episode | undefined {
+    for (const season of this.seasons) {
+      for (const episode of season.episodes) {
+        if (!episode.watched) 
+          return episode;
+      }
+    }
+    return undefined;
+  }
+
+  markEpisodeAsWatched(episode: Episode) {
+    if(!this.isOnWatchList)
+      this.addShowToWatchList();
+
+    episode.watched = true;
+    this.api.saveEpisodeToFile(episode, this.tvshow!.id);
+
+    this.nextEpisode = this.getNextEpisodeToWatch();
+  }
+
+  markEpisodeAsUnWatched(episode: Episode) {
+    episode.watched = false;
+    this.api.removeEpisodeFromFile(episode, this.tvshow!.id);
+  }
+
+  getDaysUntiItsOut(episode: Episode) {
+    const today = new Date();
+    const releaseDate = new Date(episode.air_date);
+    const timeDiff = releaseDate.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysDiff;
+  }
+
+  addOrRemoveEpisode(){
+    this.nextEpisode = this.getNextEpisodeToWatch();
+  }
 
 }

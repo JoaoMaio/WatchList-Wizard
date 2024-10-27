@@ -27,6 +27,7 @@ export class MovieDetailPageComponent implements OnInit {
       this.api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
+          console.log('Movie:', this.movie);
           this.api.movieExistsById(this.movie.id).then(exists => {
             this.watched = exists;
           });
@@ -48,6 +49,17 @@ export class MovieDetailPageComponent implements OnInit {
   removeMovieFromWatchList() {
     this.watched = false;
     this.api.removeShowOrMovieFromFile(this.movie!.id, 'movie');
+  }
+
+  generateWordCloud(rating: number): string {
+    if(rating >= 8)  
+      return 'Probably a good movie'
+    if(rating >= 5)  
+      return 'Be carefull!'
+    if (rating >= 0)
+      return 'Probably not a good movie';
+
+    return 'No rating available';
   }
 
 }

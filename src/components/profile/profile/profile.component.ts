@@ -32,11 +32,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   totalShowRuntime: number = 0;
   totalMovieRuntime: number = 0;
+  totalEpisodesWatched: number = 0;
+  totalMoviesWatched: number = 0;
 
 
   ngOnInit() {
     this.isLoading = true;
-    
 
     this.api.getAllShowsOrMovies(10, 'tv').then((response) => {
       this.someShows.push(...response)
@@ -49,7 +50,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.someMovies.reverse()
       this.isLoading = false;
     })
-
 
     const showTimePromise = this.api.getAllShowsOrMovies(0, 'tv').then(async shows => {
       for (const show of shows) {
@@ -65,10 +65,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.timeList.push(this.transformMinutesToBetterFormat(this.totalMovieRuntime, 'Movie'));
     });
 
+    const showCountPromise = this.api.countAllWatchedEpisodes().then((response) => {
+      this.totalEpisodesWatched = response;
+    });
+
+    const movieCountPromise = this.api.getAllMoviesFromFile().then((response) => {
+      this.totalMoviesWatched = response.length;
+    });
+
+
     // Wait for both shows and movies to load
-    Promise.all([showTimePromise, movieTimePromise]).then(() => {
+    Promise.all([showTimePromise, movieTimePromise, showCountPromise, movieCountPromise]).then(() => {
       this.isLoading = false;
-      this.timeList.push(this.transformMinutesToBetterFormat(this.totalRuntime, 'Total'));
 
       var orderedTimeList : Time[] = []
 
@@ -86,25 +94,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
       }
 
-      //find the total time
-      for (var i = 0; i < this.timeList.length; i++) {
-        if (this.timeList[i].title == "Total") {
-          orderedTimeList.push(this.timeList[i]);
-        }
-      }
-
       this.timeList = orderedTimeList;
-
     });
 
   }
 
   showInfo(object: SimpleObject) {
     this.router.navigate([`/info/${object.type}`, object.id]);
-  }
-
-  get totalRuntime() {
-    return this.totalMovieRuntime + this.totalShowRuntime;
   }
 
   transformMinutesToBetterFormat(time: number, time_title: string): Time {
@@ -153,6 +149,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.timeList = [];
     this.totalShowRuntime = 0;
     this.totalMovieRuntime = 0;
+    this.totalEpisodesWatched = 0;
+    this.totalMoviesWatched = 0;
   }
+
+  openModalEditBanner()
+  {
+    console.log("Edit Banner");
+  }
+  
 
 }
