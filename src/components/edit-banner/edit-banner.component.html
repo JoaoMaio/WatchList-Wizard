@@ -1,0 +1,35 @@
+<div class="page">
+    <div class="page-content">
+        <div class="page-header">
+            <h2>Edit Banner</h2>
+            <span class="close" (click)="closeModal()">&times;</span>
+        </div>
+        <div class="page-body">
+            <!-- Ask the person to search in his movies or shows  -->
+            <div class="search">
+                <input type="text" placeholder="Search for movies or shows" [(ngModel)]="searchQuery" (keyup)="search()">
+                <button class="btn btn-primary" (click)="search()">Search</button>
+            </div>
+            <!-- Display the search results -->
+            <div class="search-results">
+                <div class="search-item" *ngFor="let media of searchResults" (click)="seeMedia(media)">
+                    <img class="item-image" [src]="imgPath + media.poster_path" alt="poster">
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+
+<div class="media-modal" *ngIf="showMediamodal">
+    <div class="media-modal-content">
+        <div class="media-modal-header">
+            <h2>Select One</h2>
+            <span class="close" (click)="closeMediaModal()">&times;</span>
+        </div>
+        <div class="media-modal-body" *ngFor="let media of selectedMediaImages" (click)="saveImageAsBanner(media)">
+            <img class="item-image" [src]="imgPath + media" alt="poster">
+        </div>
+    </div>
+
+</div>

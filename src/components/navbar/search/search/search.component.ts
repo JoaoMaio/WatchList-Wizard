@@ -3,6 +3,7 @@ import { ApiService, SimpleObject } from '../../../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environment';
 
 @Component({
   selector: 'app-search',
@@ -16,6 +17,7 @@ export class SearchComponent {
   searchType: string = "tv"
   searchTerm: string = ""
   response: SimpleObject[] | SimpleObject [] = []
+  imgPath = environment.imgPath;
 
   constructor( public api: ApiService,
                 private router: Router

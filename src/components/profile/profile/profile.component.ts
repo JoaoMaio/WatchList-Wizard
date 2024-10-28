@@ -3,7 +3,8 @@ import { ApiService, SimpleObject } from '../../../services/api.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
-
+import { environment } from '../../../environment';
+import { Preferences } from '@capacitor/preferences';
 
 type Time = {
   title: string,
@@ -34,23 +35,41 @@ export class ProfileComponent implements OnInit, OnDestroy {
   totalMovieRuntime: number = 0;
   totalEpisodesWatched: number = 0;
   totalMoviesWatched: number = 0;
+  bannerImage = ''; 
 
+  private BANNER_IMAGE = 'bannerImage';
 
-  ngOnInit() {
+  // await Preferences.set({
+  //   key: this.LAST_CACHE_RESET_KEY,
+  //   value: today,
+  // });
+  // const { value } = await Preferences.get({ key: this.LAST_CACHE_RESET_KEY });
+
+  async ngOnInit() {
     this.isLoading = true;
+    const { value } =  await Preferences.get({ key: this.BANNER_IMAGE });
 
+    if (value) {
+      this.bannerImage = value;
+    } else {
+      this.bannerImage = environment.bannerDefault;
+    }
+
+    // Get the last 10 shows added to watchlist
     this.api.getAllShowsOrMovies(10, 'tv').then((response) => {
       this.someShows.push(...response)
       this.someShows.reverse()
       this.isLoading = false;
     })
 
+    // Get the last 10 movies added to watchlist
     this.api.getAllShowsOrMovies(10, 'movie').then((response) => {
       this.someMovies.push(...response)
       this.someMovies.reverse()
       this.isLoading = false;
     })
 
+    // Get the total time spent watching shows
     const showTimePromise = this.api.getAllShowsOrMovies(0, 'tv').then(async shows => {
       for (const show of shows) {
         this.totalShowRuntime += await this.api.calculateShowRuntime(show.id);
@@ -58,6 +77,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.timeList.push(this.transformMinutesToBetterFormat(this.totalShowRuntime, 'Show'));
     });
 
+    // Get the total time spent watching movies
     const movieTimePromise = this.api.getAllShowsOrMovies(0, 'movie').then(movies => {
       for (const movie of movies) {
         this.totalMovieRuntime += movie.runtime ? movie.runtime : 0;
@@ -65,14 +85,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.timeList.push(this.transformMinutesToBetterFormat(this.totalMovieRuntime, 'Movie'));
     });
 
+    // Get the total number of episodes watched
     const showCountPromise = this.api.countAllWatchedEpisodes().then((response) => {
       this.totalEpisodesWatched = response;
     });
 
+    // Get the total number of movies
     const movieCountPromise = this.api.getAllMoviesFromFile().then((response) => {
       this.totalMoviesWatched = response.length;
     });
-
 
     // Wait for both shows and movies to load
     Promise.all([showTimePromise, movieTimePromise, showCountPromise, movieCountPromise]).then(() => {
@@ -96,7 +117,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       this.timeList = orderedTimeList;
     });
-
   }
 
   showInfo(object: SimpleObject) {
@@ -155,7 +175,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   openModalEditBanner()
   {
-    console.log("Edit Banner");
+    this.router.navigate(['/edit-banner']);
   }
   
 

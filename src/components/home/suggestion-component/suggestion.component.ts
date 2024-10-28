@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { ApiService, SimpleObject } from '../../../services/api.service';
+import { SimpleObject } from '../../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { environment } from '../../../environment';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class SuggestionComponent implements OnInit, OnChanges {
 
   visibleSuggestions: SimpleObject[] | SimpleObject[] = [];
   currentIndex: number = 0;
+  imgPath: string = environment.imgPath;
 
   constructor(private router: Router) {}
 

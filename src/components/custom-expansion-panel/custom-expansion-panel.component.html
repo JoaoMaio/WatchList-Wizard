@@ -20,9 +20,9 @@
         <mat-progress-bar mode="determinate" [value]="getWatchedPercentage(season)"></mat-progress-bar>
     </div>
     <div class="expansion-panel-content" [@expandCollapse]="expanded ? '' : 'void'" *ngIf="expanded">
-        <div *ngFor="let episode of season!.episodes" class="episode-details" [ngClass]="">
+        <div *ngFor="let episode of season!.episodes" class="episode-details">
             <div class="image_container">
-              <img *ngIf="api.doesBackDropExist(episode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ episode.still_path }}" alt="episode still" />
+              <img *ngIf="api.doesBackDropExist(episode.still_path)" src="{{imgPath + episode.still_path }}" alt="episode still" />
               <img *ngIf="!api.doesBackDropExist(episode.still_path)" src="tba.png" alt="to be announced" />
 
             </div>

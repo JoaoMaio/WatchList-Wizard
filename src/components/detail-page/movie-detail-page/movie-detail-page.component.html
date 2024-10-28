@@ -1,7 +1,8 @@
 <div *ngIf="!isLoading" class="page">
   <div class="card">
     <div class="backdrop">
-      <img src="{{movie?.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="api.doesBackDropExist(movie?.backdrop_path)" src="{{ backdropPath + movie?.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="!api.doesBackDropExist(movie?.backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
           <h1 class="title">{{ movie?.title }}</h1>
@@ -62,7 +63,7 @@
         <p>Watch on:</p>
         <div class="providers">
           <span *ngFor="let provider of movie?.watch_providers">
-            <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
+            <img src="{{imgPath + provider.logo_path }}" alt="{{ provider.provider_name }}" />
             <p>{{ provider.provider_name }}</p>
           </span>
         </div>

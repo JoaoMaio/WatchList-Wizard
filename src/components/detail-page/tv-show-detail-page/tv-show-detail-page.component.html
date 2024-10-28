@@ -1,7 +1,7 @@
 <div *ngIf="!isLoading" class="page">
   <div class="card">
     <div class="backdrop">
-      <img *ngIf="api.doesBackDropExist(tvshow?.backdrop_path)" src="{{tvshow?.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="api.doesBackDropExist(tvshow?.backdrop_path)" src="{{backdropPath + tvshow?.backdrop_path}}" alt="backdrop" />
       <img *ngIf="!api.doesBackDropExist(tvshow?.backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
@@ -58,7 +58,7 @@
         <p class="section_title">Watch on:</p>
         <div class="providers">
           <span *ngFor="let provider of tvshow?.watch_providers">
-            <img src="https://image.tmdb.org/t/p/w500/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" />
+            <img src="{{ imgPath + provider.logo_path }}" alt="{{ provider.provider_name }}" />
             <p>{{ provider.provider_name }}</p>
           </span>
         </div>
@@ -70,7 +70,7 @@
 
       <div class="episode-details" *ngIf="nextEpisode" >
         <div class="image_container">
-          <img *ngIf="api.doesBackDropExist(nextEpisode.still_path)" src="https://image.tmdb.org/t/p/w500/{{ nextEpisode.still_path }}" alt="episode still" />
+          <img *ngIf="api.doesBackDropExist(nextEpisode.still_path)" src="{{ imgPath + nextEpisode.still_path }}" alt="episode still" />
           <img *ngIf="!api.doesBackDropExist(nextEpisode.still_path)" src="tba.png" alt="to be announced" />
         </div>
         <div class="text_container">

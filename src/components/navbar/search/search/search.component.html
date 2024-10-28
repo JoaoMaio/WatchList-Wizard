@@ -7,7 +7,7 @@
     <!-- Search Results Grid -->
     <div class="search-results">
       <div *ngFor="let item of response" class="search-item">
-        <img *ngIf="api.doesBackDropExist(item.poster_path)" [src]="item.poster_path" alt="{{item.title}}" class="item-image" (click)="showInfo(item)" />
+        <img *ngIf="api.doesBackDropExist(item.poster_path)" [src]="imgPath + item.poster_path" alt="{{item.title}}" class="item-image" (click)="showInfo(item)" />
         <div *ngIf="!api.doesBackDropExist(item.poster_path)" class="fallback-wrapper">
           <img src="amongus.png" alt="{{item.title}}" class="item-image error" (click)="showInfo(item)" />
           <p class="item-title">{{item.title}}</p>

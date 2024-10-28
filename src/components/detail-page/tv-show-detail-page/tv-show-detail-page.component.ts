@@ -3,6 +3,7 @@ import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../serv
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CustomExpansionPanelComponent } from "../../custom-expansion-panel/custom-expansion-panel.component";
+import { environment } from '../../../environment';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class TvShowDetailPageComponent {
 
   nextEpisode: Episode | undefined;
   seasons: Season[] = [];
+  imgPath = environment.imgPath;
+  backdropPath = environment.backdropPath;
 
   constructor(public api: ApiService,
               private route: ActivatedRoute,

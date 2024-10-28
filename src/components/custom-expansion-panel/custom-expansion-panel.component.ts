@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { ConfirmModalComponent } from "../confirm-modal/confirm-modal.component";
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../environment';
+
 
 @Component({
   selector: 'app-custom-expansion-panel',
@@ -34,6 +36,8 @@ export class CustomExpansionPanelComponent {
   isAccordionOpen = false;
   showConfirmModal = false;
   selectedEpisode: Episode | undefined;
+  imgPath = environment.imgPath;
+
 
   constructor(public api: ApiService) { }
 

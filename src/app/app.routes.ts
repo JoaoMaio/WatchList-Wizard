@@ -4,6 +4,7 @@ import { MovieDetailPageComponent } from '../components/detail-page/movie-detail
 import { TvShowDetailPageComponent } from '../components/detail-page/tv-show-detail-page/tv-show-detail-page.component';
 import { SearchComponent } from '../components/navbar/search/search/search.component';
 import { ProfileComponent } from '../components/profile/profile/profile.component';
+import { EditBannerComponent } from '../components/edit-banner/edit-banner.component';
 
 export const routes: Routes = [
 
@@ -12,5 +13,6 @@ export const routes: Routes = [
     { path: 'info/tvshow/:id', component: TvShowDetailPageComponent },
     { path: 'search', component: SearchComponent },
     { path: 'profile', component: ProfileComponent },
+    { path: 'edit-banner', component: EditBannerComponent },
 ];
 

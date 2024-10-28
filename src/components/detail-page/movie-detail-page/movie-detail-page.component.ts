@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService, ComplexMovie } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-movie-detail-page',
@@ -15,8 +16,10 @@ export class MovieDetailPageComponent implements OnInit {
   movie: ComplexMovie | undefined;
   isLoading: boolean = true;
   watched: boolean = false;
+  imgPath = environment.imgPath;
+  backdropPath = environment.backdropPath;
 
-  constructor(private api: ApiService,
+  constructor(public api: ApiService,
               private route: ActivatedRoute,
   ) { }
   
@@ -27,7 +30,6 @@ export class MovieDetailPageComponent implements OnInit {
       this.api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
-          console.log('Movie:', this.movie);
           this.api.movieExistsById(this.movie.id).then(exists => {
             this.watched = exists;
           });

@@ -21,9 +21,9 @@ export class ShowListComponent implements OnInit {
 
   ngOnInit() {
 
-    this.api.getAllShows().then((response) => {
-      this.allObjects.push(...response)
-    })
+    // this.api.getAllShows().then((response) => {
+    //   this.allObjects.push(...response)
+    // })
 
   }
 

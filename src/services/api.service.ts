@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import {environment} from '../environment';
 
 export interface SimpleObject {
   id: number;
@@ -176,19 +177,14 @@ export type EInfo = {
 @Injectable({
   providedIn: 'root'
 })
+
 export class ApiService {
-  private API_KEY: string = '75ed341317b0320f7fe3d41f435318b6';
-  private BASE_API_URL: string = 'https://api.themoviedb.org/3/';
-  private IMAGE_PATH: string = 'https://image.tmdb.org/t/p/w500';
-  private BACKDROP_IMAGE_PATH: string = 'https://image.tmdb.org/t/p/w780';
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Authorization': "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3NWVkMzQxMzE3YjAzMjBmN2ZlM2Q0MWY0MzUzMThiNiIsIm5iZiI6MTcyODY4MjkxMy4xOTYwMDIsInN1YiI6IjY3MDk5YWQ0NTQxNjgwMjI4MWE1ZTFhMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5zc5-y6w12GWPHK0KH0iqmW10fgMpsZWbLj9RcNv3Eg"
-  });
+  private API_KEY: string = environment.API_KEY;
+  private BASE_API_URL: string = environment.BASE_API_URL;
+  private headers = new HttpHeaders(environment.headers);
 
   buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
   flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
-
 
   constructor(private http: HttpClient) { }
 
@@ -246,7 +242,7 @@ export class ApiService {
     return string.endsWith('null') ? false : true;
   }
 
-  search(query: string, type: string, page: number = 1): Observable<SimpleObject[] | SimpleObject[]> {
+  search(query: string, type: string, page: number = 1): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
       map((response: MovieResponse | TvShowResponse) => {
         if (type === 'movie') {
@@ -255,7 +251,7 @@ export class ApiService {
               id: movie.id,
               original_title: movie.original_title,
               title: movie.title,
-              poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
+              poster_path: movie.poster_path,
               type: "movie",
               popularity: movie.popularity
             };
@@ -268,7 +264,7 @@ export class ApiService {
               id: tvshow.id,
               original_title: tvshow.original_name,
               title: tvshow.name,
-              poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
+              poster_path: tvshow.poster_path,
               type: "tvshow",
               popularity: tvshow.popularity
             };
@@ -379,6 +375,16 @@ export class ApiService {
     }
   }
 
+  getImages(id: number, type: string): Observable<string[]> {
+    return this.http.get(`${this.BASE_API_URL}${type}/${id}/images`, { headers: this.headers }).pipe(
+      map((response: any) => {
+        return response.backdrops.map((image: any) => {
+          const img : string = image.file_path ;
+          return img;
+        });
+      })
+    )
+  }
 
   //--------------------------------------------------------------------------------//
   //----------------------------   MOVIES   ----------------------------------------//
@@ -394,7 +400,7 @@ export class ApiService {
             id: movie.id,
             original_title: movie.original_title,
             title: movie.title,
-            poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
+            poster_path: movie.poster_path,
             type: "movie",
             popularity: movie.popularity
           };
@@ -412,7 +418,7 @@ export class ApiService {
             id: movie.id,
             original_title: movie.original_title,
             title: movie.title,
-            poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
+            poster_path: movie.poster_path,
             type: "movie",
             popularity: movie.popularity
           };
@@ -429,9 +435,9 @@ export class ApiService {
 
         return {
           ...movie,
-          poster_path: `${this.IMAGE_PATH}${movie.poster_path}`,
-          backdrop_path: `${this.BACKDROP_IMAGE_PATH}${movie.backdrop_path}`,
-          watch_providers: watchProvidersR // Save the selected watch provider          
+          poster_path: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          watch_providers: watchProvidersR       
         };
       })
     )
@@ -572,7 +578,7 @@ export class ApiService {
               id: tvshow.id,
               original_title: tvshow.original_title,
               title: tvshow.title,
-              poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
+              poster_path: tvshow.poster_path,
               type: "tvshow",
               popularity: tvshow.popularity
             };
@@ -591,7 +597,7 @@ export class ApiService {
               id: tvshow.id,
               original_title: tvshow.original_title,
               title: tvshow.title,
-              poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
+              poster_path: tvshow.poster_path,
               type: "tvshow",
               popularity: tvshow.popularity
 
@@ -610,9 +616,9 @@ export class ApiService {
 
         return {
           ...tvshow,
-          poster_path: `${this.IMAGE_PATH}${tvshow.poster_path}`,
-          backdrop_path: `${this.BACKDROP_IMAGE_PATH}${tvshow.backdrop_path}`,
-          watch_providers: watchProvidersR // Save the selected watch provider
+          poster_path: tvshow.poster_path,
+          backdrop_path: tvshow.backdrop_path,
+          watch_providers: watchProvidersR 
         };
       })
     );
@@ -623,11 +629,11 @@ export class ApiService {
       map((response: any) => {
         return {
           ...response,
-          poster_path: `${this.IMAGE_PATH}${response.poster_path}`,
+          poster_path: response.poster_path,
           episodes: response.episodes.map((episode: any) => {
             return {
               ...episode,
-              still_path: `${this.IMAGE_PATH}${episode.still_path}`
+              still_path: episode.still_path
             }
           }),
         };
