@@ -1,0 +1,21 @@
+.custom-snack { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 10px; 
+
+  z-index: 9999;   
+  position: fixed; 
+  top: 0;          
+  left: 50%;       
+  transform: translateX(-50%); 
+  width: 100%;
+}
+    
+.text { 
+  color: var(--font-color); 
+  font-size: 17px; 
+  font-style: normal; 
+  font-weight: 400; 
+  line-height: normal; 
+}

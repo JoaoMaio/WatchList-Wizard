@@ -1,10 +1,8 @@
-@import '../../../colors.scss';
-
 .show-container {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    background-color: $secondaryColor;
+    background-color: var(--secondaryColor);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -22,7 +20,7 @@
 
 .show-header p:last-child {
     font-size: 1rem;
-    color: $textColor;
+    color: var(--textColor);
     margin: 10px 0;
     cursor: pointer;
     align-self: flex-end;
@@ -54,10 +52,10 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
-    border: thin solid $borderColor;
+    border: thin solid var(--borderColor);
     background-color: #000000;
     border-radius: 5px;
-    color: $borderColor;
+    color: var(--borderColor);
 }
 
 .tv-time-col {
@@ -70,7 +68,7 @@
 .horizontal_divider{
     width: 100%;
     height: 1px;
-    background-color: $borderColor;
+    background-color: var(--borderColor);
 }
 
 .tv-time-row1 {
@@ -83,7 +81,7 @@
 .tv-time-title {
     font-size: 14px;
     font-weight: bold;
-    color: $textColor;
+    color: var(--textColor);
     margin: 0;
     padding: 0;
 }
@@ -107,7 +105,7 @@
 }
 
 .banner {
-    height: 200px;
+    height: 160px;
     margin-bottom: 10px;
 
     img{
@@ -121,7 +119,7 @@
     font-size: 1.2rem;
     font-weight: bold;
     margin: 0px;
-    color: $textColor;
+    color: var(--textColor);
 }
 
 .edit-banner-button {

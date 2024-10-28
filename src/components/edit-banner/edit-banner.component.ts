@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ApiService, SimpleObject } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../environment';
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
+import { CustomToastrComponent } from '../custom-toastr/custom-toastr.component';
 
 @Component({
   selector: 'app-edit-banner',
@@ -14,7 +15,7 @@ import { Preferences } from '@capacitor/preferences';
   templateUrl: './edit-banner.component.html',
   styleUrl: './edit-banner.component.scss'
 })
-export class EditBannerComponent implements OnInit, OnDestroy {
+export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   allShows: SimpleObject[] = []
   allMovies: SimpleObject[] = []
@@ -29,10 +30,18 @@ export class EditBannerComponent implements OnInit, OnDestroy {
 
   private BANNER_IMAGE = 'bannerImage';
 
+  @ViewChild('toastrContainer', { read: ViewContainerRef }) toastrContainer!: ViewContainerRef;
+
+  toastrRef!: ComponentRef<CustomToastrComponent>;
+
 
   constructor(private api: ApiService,
               private router: Router
   ) { }
+
+  ngAfterViewInit(): void {
+    
+  }
 
   ngOnInit() {
     this.isLoading = true;
@@ -47,14 +56,17 @@ export class EditBannerComponent implements OnInit, OnDestroy {
 
     Promise.all([shows, movies]).then(() => {
       this.searchResults = [... this.allShows, ... this.allMovies]
-
-      //order by name
-      this.searchResults.sort((a, b) => {
-        return a.title.localeCompare(b.title)
-      })
-
+      this.order()
     })
 
+  }
+
+  order()
+  {
+    //order by name
+    this.searchResults.sort((a, b) => {
+      return a.title.localeCompare(b.title)
+    })
   }
 
   search()
@@ -62,6 +74,8 @@ export class EditBannerComponent implements OnInit, OnDestroy {
     this.searchResults = [...this.allShows, ...this.allMovies].filter((item) => {
       return item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
     })
+
+    this.order()
   }
 
   closeModal() {
@@ -94,6 +108,7 @@ export class EditBannerComponent implements OnInit, OnDestroy {
       value: url,
     });
     this.closeMediaModal();
+    this.showToastr('Banner updated successfully', 'green');
   }
   
   ngOnDestroy(): void {
@@ -101,5 +116,24 @@ export class EditBannerComponent implements OnInit, OnDestroy {
     this.selectedMediaImages = [];
   }
 
+  // Dynamically create the CustomToastrComponent
+  showToastr(message: string, bgColor: string) {
+    if (this.toastrRef) {
+      this.toastrRef.destroy(); 
+    }
+
+    this.toastrRef = this.toastrContainer.createComponent(CustomToastrComponent);
+    this.toastrRef.instance.message = message;
+    this.toastrRef.instance.bgColor = "var(--quinaryColor)";
+
+    // Set the toastr to disappear after 4 seconds, but with animation
+    setTimeout(() => {
+      this.toastrRef.instance.hideToastr();
+    }, 4000); 
+
+    this.toastrRef.instance.animationStateChange.subscribe(() => {
+        this.toastrRef.destroy();
+    });
+  }
 
 }

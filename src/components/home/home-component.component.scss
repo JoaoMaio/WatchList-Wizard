@@ -1,8 +1,6 @@
-@import '../../colors';
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
 p {
-    color: $textColor;
+    color: var(--textColor);
+    font-family: var(--fontFamily);
     font-size: 14px;
     text-align: left;
     margin-top: 10px;

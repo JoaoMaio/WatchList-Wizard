@@ -386,6 +386,24 @@ export class ApiService {
     )
   }
 
+  async createCacheFile()
+  {
+    const filename = 'cache.json';
+    const fileExists = await this.checkIfFileExists(filename);
+
+    if (!fileExists) 
+    {
+      console.log('Cache file does not exist. Creating it now.');
+      await Filesystem.writeFile({
+        path: filename,
+        data: '[]',
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+    }
+    
+  }
+
   //--------------------------------------------------------------------------------//
   //----------------------------   MOVIES   ----------------------------------------//
   //--------------------------------------------------------------------------------//

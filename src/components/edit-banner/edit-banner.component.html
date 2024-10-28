@@ -1,3 +1,5 @@
+<ng-container #toastrContainer></ng-container>
+
 <div class="page">
     <div class="page-content">
         <div class="page-header">
@@ -8,7 +10,6 @@
             <!-- Ask the person to search in his movies or shows  -->
             <div class="search">
                 <input type="text" placeholder="Search for movies or shows" [(ngModel)]="searchQuery" (keyup)="search()">
-                <button class="btn btn-primary" (click)="search()">Search</button>
             </div>
             <!-- Display the search results -->
             <div class="search-results">
@@ -20,7 +21,6 @@
     </div>
 </div>
 
-
 <div class="media-modal" *ngIf="showMediamodal">
     <div class="media-modal-content">
         <div class="media-modal-header">
@@ -31,5 +31,4 @@
             <img class="item-image" [src]="imgPath + media" alt="poster">
         </div>
     </div>
-
 </div>

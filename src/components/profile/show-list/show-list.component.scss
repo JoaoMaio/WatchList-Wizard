@@ -1,5 +1,3 @@
-@import "../../../colors.scss";
-
 .page{
     display: flex;
     margin: 0 auto;
@@ -50,13 +48,13 @@
             bottom: 0; /* Position the title at the bottom */
             left: 0;
             width: 100%;
-            color: $textColor;
+            color: var(--textColor);
             text-align: center;
             font-size: 14px;
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
             z-index: 2; 
-            font-family: $fontFamily;
+            font-family: var(--fontFamily);
           }
           
         }

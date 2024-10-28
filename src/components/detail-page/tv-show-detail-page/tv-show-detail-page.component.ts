@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { environment } from '../../../environment';
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
-export class TvShowDetailPageComponent {
+export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   tvshow: ComplexTvshow | undefined;
   isLoading: boolean = true;
@@ -50,33 +50,34 @@ export class TvShowDetailPageComponent {
   }
 
   async getSeasons() {
-    const seasonPromises = [];
-
-    for (let i = 0; i < this.tvshow!.number_of_seasons; i++) {
-        const seasonPromise = new Promise<void>((resolve, reject) => {
-            this.api.getTvShowSeasons(this.tvshow?.id!, i + 1).subscribe({
-                next: (response) => {
-                    response.episode_count = response.episodes.length;
-                    this.seasons.push(response);
-                    resolve();
-                },
-                error: (error) => {
-                    console.error('Error fetching seasons:', error);
-                    reject(error);
-                }
+    for (let i = 0; i < this.tvshow!.number_of_seasons; i++) 
+    {
+        try {
+            const response = await new Promise<any>((resolve, reject) => {
+                this.api.getTvShowSeasons(this.tvshow?.id!, i + 1).subscribe({
+                    next: (response) => {
+                        response.episode_count = response.episodes.length;
+                        resolve(response);
+                    },
+                    error: (error) => {
+                        console.error('Error fetching seasons:', error);
+                        reject(error);
+                    }
+                });
             });
-        });
-        seasonPromises.push(seasonPromise);
+            this.seasons.push(response);
+        } catch (error) {
+            console.error('Error in loading season:', error);
+        }
     }
 
     try {
-        await Promise.all(seasonPromises);
         this.getEpisodes();
         this.seasons.sort((a, b) => a.season_number - b.season_number);
     } catch (error) {
-        console.error('Error fetching seasons:', error);
+        console.error('Error processing seasons:', error);
     }
-  }
+}
 
   getEpisodes() {
     this.api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
@@ -88,8 +89,8 @@ export class TvShowDetailPageComponent {
               if (watched) episode.watched = true;
             });
           });
-          this.isLoading = false;
           this.nextEpisode = this.getNextEpisodeToWatch();
+          this.isLoading = false;
         }
       });
   }
@@ -160,6 +161,13 @@ export class TvShowDetailPageComponent {
 
   addOrRemoveEpisode(){
     this.nextEpisode = this.getNextEpisodeToWatch();
+  }
+
+
+  ngOnDestroy()
+  {
+    this.seasons = [];
+    this.nextEpisode = undefined;
   }
 
 }

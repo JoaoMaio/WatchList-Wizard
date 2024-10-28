@@ -22,16 +22,19 @@ export class HomeComponentComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    Promise.all([
-      this.getTrendingMovies(),
-      this.getTrendingTvShows(),
-    ]).then(() => {
-      this.isLoading = false;
-    }).catch((error) => {
-      console.error('Error fetching data:', error);
-      this.isLoading = false;
-    });
-  }
+
+    Promise.all([this.api.createCacheFile()]).then(() => {
+      Promise.all([
+        this.getTrendingMovies(),
+        this.getTrendingTvShows(),
+      ]).then(() => {
+        this.isLoading = false;
+      }).catch((error) => {
+        console.error('Error fetching data:', error);
+        this.isLoading = false;
+      });
+  });
+}
 
   getTrendingMovies()
   {

@@ -1,38 +1,33 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
-
-const cacheKey = 'httpCache';
-
-const loadCache = (): Map<string, any> => {
-  const cachedData = localStorage.getItem(cacheKey);
-  return cachedData ? new Map(JSON.parse(cachedData)) : new Map();
-};
-
-const saveCache = (cache: Map<string, any>) => {
-  localStorage.setItem(cacheKey, JSON.stringify(Array.from(cache.entries())));
-};
-
-
-const cache: Map<string, any> = loadCache(); // Changed to store data instead of HttpResponse
+import { IndexedDBService } from './indexedDb.service';
 
 export const cachingInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   if (req.method !== 'GET') {
     return next(req);
   }
 
-  const cachedResponse = cache.get(req.urlWithParams);
+  const indexedDBService = new IndexedDBService();
 
-  if (cachedResponse) {
-    return of(new HttpResponse({ status: 200, body: cachedResponse })); // Wrap in HttpResponse
-  }
-
-  return next(req).pipe(
-    tap(event => {
-      if (event instanceof HttpResponse) {
-        cache.set(req.urlWithParams, event.body); // Cache the response body
-        saveCache(cache); // Save the updated cache to localStorage
+  return new Observable(observer => {
+    (async () => {
+      // Check if the response is cached
+      const cachedItem = await indexedDBService.get(req.urlWithParams);
+      if (cachedItem) {
+        observer.next(new HttpResponse({ status: 200, body: cachedItem.response }));
+        observer.complete();
+        return;
       }
-    })
-  );
+
+      // If not found in cache, make the request
+      next(req).pipe(
+        tap(async event => {
+          if (event instanceof HttpResponse) {
+            await indexedDBService.put(req.urlWithParams, event.body);
+          }
+        })
+      ).subscribe(observer); 
+    })().catch(err => observer.error(err));
+  });
 };

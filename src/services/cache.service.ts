@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { IndexedDBService } from './indexedDb.service';
 
 
 @Injectable({
@@ -20,7 +21,10 @@ export class CacheDateService {
     }
 
     // If it's a new day, clear the cache
-    localStorage.clear();
+    const indexedDBService = new IndexedDBService();
+    console.log('Clearing cache...');
+    await indexedDBService.clear();
+
     
     // Save today's date as the new last cache reset date
     await Preferences.set({

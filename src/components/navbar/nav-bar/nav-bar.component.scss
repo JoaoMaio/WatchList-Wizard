@@ -1,14 +1,10 @@
-@import '../../../colors';
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 50px;
-  background-color: $primaryColor;
+  background-color: var(--primaryColor);
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-around;
@@ -19,30 +15,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: $textColor;
+    color: var(--textColor);
     text-decoration: none;
     font-size: 12px;
     transition: color 0.3s;
 
     .material-icons {
       font-size: 24px;
-      color: $textColor;
+      color: var(--textColor);
       transition: color 0.3s;
     }
 
     &:hover {
-      color: $quinaryColor;
+      color: var(--quinaryColor);
 
       .material-icons {
-        color: $quinaryColor;
+        color: var(--quinaryColor);
       }
     }
 
     &.active {
-      color: $quinaryColor;
+      color: var(--quinaryColor);
 
       .material-icons {
-        color: $quinaryColor;
+        color: var(--quinaryColor);
       }
     }
 

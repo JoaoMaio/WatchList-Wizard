@@ -1,0 +1,6 @@
+<div [@fadeInOut] = "animationState" 
+     class="custom-snack" 
+     [ngStyle]=" { 'background-color': bgColor }"
+     (@fadeInOut.done)="onAnimationEnd()">
+    <span class="text"> {{message}}</span>
+</div>
