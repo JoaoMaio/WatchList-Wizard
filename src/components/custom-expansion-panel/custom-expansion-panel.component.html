@@ -8,11 +8,12 @@
             <div class="ep_and_checkmark">
               <p>{{ getCountWatchedEpisodes(season!) }} / {{ season!.episode_count }}</p>
               <div class="markAsWatched" >
-                <button *ngIf="!isFullSseasonWatched()" (click)="markAllSeasonAsWatched($event)" class="markAsWatchedbutton">
+                <button *ngIf="!isFullSseasonWatched()" (click)="markSeasonAsWatched($event)" class="markAsWatchedbutton">
                   +
                 </button>
-                <button *ngIf="isFullSseasonWatched()" (click)="markAllSeasonAsUnWatched($event)" class="markAsWatchedbutton watched">
-                  ✓
+                <button *ngIf="isFullSseasonWatched()" (click)="onMarkAllSeasonAsUnWatched($event)" class="markAsWatchedbutton watched">
+                  <span *ngIf="season!.timesWatched == 1">✓</span>
+                <span class="biggerthanone"  *ngIf="season!.timesWatched! > 1">{{season!.timesWatched}} X</span>
                 </button>
               </div>
             </div>
@@ -34,7 +35,8 @@
                 +
               </button>
               <button *ngIf="episode.watched" (click)="markEpisodeAsUnWatched(episode)" class="markAsWatchedbutton watched">
-                ✓
+                <span *ngIf="episode.timesWatched! == 1">✓</span>
+                <span class="biggerthanone"  *ngIf="episode.timesWatched! > 1">{{episode.timesWatched}} X</span>
               </button>
             </div>
             <div class="tba_days" *ngIf="!api.doesBackDropExist(episode.still_path)">
@@ -43,13 +45,32 @@
         </div>
     </div>
 </div>
-  
 
 
 <app-confirm-modal
   *ngIf="showConfirmModal"
-  [title]="'You have missing episodes'" 
+  [title]="'You have missing episodes'"
   [message]="'Do you want to mark all episodes before this one?'"
   (confirm)="onConfirm()"
-  (cancel)="onCancel()"
-></app-confirm-modal>
+  (cancel)="onCancel()">
+</app-confirm-modal>
+
+<app-confirm-modal
+  *ngIf="showUnWatchedEpisodeConfirmModal"
+  [title]="'Remove or Watch Again?'"
+  [message]="'Do you want to remove the episode or mark as watched again?'"
+  [confirmText]="'Watched Again'"
+  [cancelText]="'Remove'"
+  (confirm)="onMarkEpisodeAsWatchedAgain()"
+  (cancel)="onUnWatchedEpisodeConfirm()">
+</app-confirm-modal>
+
+<app-confirm-modal
+  *ngIf="showUnWatchedSeasonConfirmModal"
+  [title]="'Remove or Watch Again?'"
+  [message]="'Do you want to remove the season or mark as watched again?'"
+  [confirmText]="'Watched Again'"
+  [cancelText]="'Remove'"
+  (confirm)="markSeasonAsWatched()"
+  (cancel)="markAllSeasonAsUnWatched()">
+</app-confirm-modal>

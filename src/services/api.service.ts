@@ -13,7 +13,7 @@ export interface SimpleObject {
   type: string;
   popularity: number;
   runtime?: number; //only for saved movies
-  // timesWatched?: number; //only for movies
+  timesWatched?: number; //only for movies
   // saveType?: string; // toWatch, watched, watching, stoppedWatching
 }
 
@@ -147,6 +147,7 @@ export interface Season {
   poster_path: string
   season_number: number
   vote_average: number
+  timesWatched: number;
 }
 
 export type Episode = {
@@ -160,6 +161,7 @@ export type Episode = {
   vote_average: number
   season_number: number
   watched: boolean
+  timesWatched: number;
 }
 
 export type SavedEpisodeInfo = {
@@ -171,7 +173,7 @@ export type EInfo = {
   seasonNumber: number
   episodeNumber: number
   runtime?: number
-  // timesWatched?: number;
+  timesWatched: number;
 }
 
 @Injectable({
@@ -188,7 +190,11 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  //get all watch providers from all countries and remove duplicates
+  //--------------------------------------------------------------------------------//
+  //----------------------------   COMMON   ----------------------------------------//
+  //--------------------------------------------------------------------------------//
+
+
   getWatchProviders(object: any): Provider[] {
     try {
 
@@ -385,24 +391,7 @@ export class ApiService {
       })
     )
   }
-
-  async createCacheFile()
-  {
-    const filename = 'cache.json';
-    const fileExists = await this.checkIfFileExists(filename);
-
-    if (!fileExists) 
-    {
-      console.log('Cache file does not exist. Creating it now.');
-      await Filesystem.writeFile({
-        path: filename,
-        data: '[]',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
     
-  }
 
   //--------------------------------------------------------------------------------//
   //----------------------------   MOVIES   ----------------------------------------//
@@ -648,12 +637,7 @@ export class ApiService {
         return {
           ...response,
           poster_path: response.poster_path,
-          episodes: response.episodes.map((episode: any) => {
-            return {
-              ...episode,
-              still_path: episode.still_path
-            }
-          }),
+          episodes: response.episodes
         };
       }
       ))
@@ -727,7 +711,8 @@ export class ApiService {
           einfo: [{
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
-            runtime: newEpisode.runtime ? newEpisode.runtime : 0
+            runtime: newEpisode.runtime ? newEpisode.runtime : 0,
+            timesWatched: newEpisode.timesWatched
           }]
         };
         currentContentList.push(show);
@@ -737,12 +722,19 @@ export class ApiService {
         let episode = show.einfo.find(e => e.seasonNumber === newEpisode.season_number && e.episodeNumber === newEpisode.episode_number);
 
         //if the episode is not in the show, add it
-        if (!episode) {
+        if (!episode) 
+        {
           show.einfo.push({
             seasonNumber: newEpisode.season_number,
             episodeNumber: newEpisode.episode_number,
-            runtime: newEpisode.runtime ? newEpisode.runtime : 0
+            runtime: newEpisode.runtime ? newEpisode.runtime : 0,
+            timesWatched: newEpisode.timesWatched
           });
+        }
+        else
+        {
+          console.log('Episode found -->', episode);
+          episode.timesWatched = episode.timesWatched ? episode.timesWatched + 1 : 1;
         }
       }
 
@@ -948,7 +940,12 @@ export class ApiService {
       let total = 0;
       let episodes = await this.getAllEpisodesFromFile(showId);
       episodes.forEach(e => {
-        total += e.runtime ? e.runtime : 0;
+
+        if(e.timesWatched)
+          total += e.runtime ? e.runtime * e.timesWatched : 0;
+        else
+          total += e.runtime ? e.runtime : 0;
+
       });
       resolve(total);
     });
@@ -982,7 +979,11 @@ export class ApiService {
         let total = 0;
         episodeList.forEach(show => {
           show.einfo.forEach(e => {
-            total++;
+            if (e.timesWatched)
+              total = total + e.timesWatched;
+            else
+              total++;
+
           });
         });
 
@@ -996,17 +997,6 @@ export class ApiService {
     }
   }
   
-
-
-  // getSimilarMovies(id: string, count = 20) {
-  //   return this.http
-  //     .get<MovieResponse>(
-  //       `${this.BASE_API_URL}/movie/${id}/similar?api_key=${this.apiKey}`
-  //     )
-  //     .pipe(map((data) => data.results.slice(0, count)))
-  // }
-
-
   // getMovieVideos(id: string) {
   //   return this.http
   //     .get<VideosDto>(
@@ -1030,23 +1020,4 @@ export class ApiService {
   //     )
   //     .pipe(map((data) => data.cast))
   // }
-
-
-
-  // getMovieGenres() {
-  //   return this.http
-  //     .get<GenresDot>(`${this.BASE_API_URL}/genre/movie/list?api_key=${this.apiKey}`)
-  //     .pipe(map((data) => data.genres))
-  // }
-
-  // getMoviesByGenre(genreId?: string, pageNumber = 1) {
-  //   return genreId
-  //     ? this.http.get<MovieResponse>(
-  //         `${this.BASE_API_URL}/discover/movie?with_genres=${genreId}&page=${pageNumber}&api_key=${this.apiKey}`
-  //       )
-  //     : this.http.get<MovieResponse>(
-  //         `${this.BASE_API_URL}/movie/popular?api_key=${this.apiKey}`
-  //       )
-  // }
-
 }

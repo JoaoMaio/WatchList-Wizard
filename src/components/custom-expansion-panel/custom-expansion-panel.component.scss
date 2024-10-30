@@ -1,10 +1,11 @@
 .markAsWatched {
     .markAsWatchedbutton {
       display: flex;
+      flex-direction: row;
       justify-content: center;
       align-items: center;
-      width: 23px;
-      height: 23px;
+      width: 33px;
+      height: 33px;
       border-radius: 50%;
       color: var(--textColor);
       background-color: rgba(131, 125, 125, 0.5); 
@@ -17,6 +18,11 @@
         background-color: rgb(13, 174, 13); 
         color: var(--textColor) 
       }
+
+      .biggerthanone{
+        font-size: 10px;
+      }
+      
     }
 }
 

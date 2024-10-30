@@ -13,8 +13,8 @@
     <div class="tv-time-container" *ngFor="let time of timeList">
         <div class="tv-time-box">
             <div class="tv-time-col">
-                <div class="tv-time-title" *ngIf="time.title === 'Show'"> Wasted Time in {{ totalEpisodesWatched }} {{ time.title }}s</div>
-                <div class="tv-time-title" *ngIf="time.title === 'Movie'"> Wasted Time in {{ totalMoviesWatched }} {{ time.title }}s</div>
+                <div class="tv-time-title" *ngIf="time.title === 'Show'"> Wasted Time in {{ totalEpisodesWatched }} Episodes</div>
+                <div class="tv-time-title" *ngIf="time.title === 'Movie'"> Wasted Time in {{ totalMoviesWatched }} Movies</div>
                 <div class="horizontal_divider"></div>
                 <div class="tv-time-row1">
                     <div class="tv-time-row">
@@ -55,4 +55,3 @@
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
 </div>
-  

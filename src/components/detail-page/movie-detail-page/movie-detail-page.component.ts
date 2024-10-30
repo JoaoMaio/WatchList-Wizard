@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, ComplexMovie } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
@@ -22,9 +22,9 @@ export class MovieDetailPageComponent implements OnInit {
   constructor(public api: ApiService,
               private route: ActivatedRoute,
   ) { }
-  
+
   ngOnInit(): void {
-    
+
     this.route.params.subscribe(params => {
       this.isLoading  = true;
       this.api.getMovieById(params['id']).subscribe({
@@ -40,7 +40,7 @@ export class MovieDetailPageComponent implements OnInit {
         error: (error) => {
           console.error('Error fetching movies:', error);
       }});
-    });    
+    });
   }
 
   addMovieToWatchList() {
@@ -54,9 +54,9 @@ export class MovieDetailPageComponent implements OnInit {
   }
 
   generateWordCloud(rating: number): string {
-    if(rating >= 8)  
+    if(rating >= 8)
       return 'Probably a good movie'
-    if(rating >= 5)  
+    if(rating >= 5)
       return 'Be carefull!'
     if (rating >= 0)
       return 'Probably not a good movie';

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, SimpleObject } from '../../../services/api.service';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-show-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage],
   templateUrl: './show-list.component.html',
   styleUrl: './show-list.component.scss'
 })

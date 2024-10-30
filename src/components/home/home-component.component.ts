@@ -23,7 +23,6 @@ export class HomeComponentComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = true;
 
-    Promise.all([this.api.createCacheFile()]).then(() => {
       Promise.all([
         this.getTrendingMovies(),
         this.getTrendingTvShows(),
@@ -33,7 +32,6 @@ export class HomeComponentComponent implements OnInit {
         console.error('Error fetching data:', error);
         this.isLoading = false;
       });
-  });
 }
 
   getTrendingMovies()

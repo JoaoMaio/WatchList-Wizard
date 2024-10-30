@@ -79,11 +79,13 @@
 }
 
 .tv-time-title {
+    width: 240px;
     font-size: 14px;
     font-weight: bold;
     color: var(--textColor);
     margin: 0;
     padding: 0;
+    text-align: center;
 }
 
 .tv-time-row {

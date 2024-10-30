@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ApiService, SimpleObject } from '../../services/api.service';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../environment';
@@ -11,7 +11,7 @@ import { CustomToastrComponent } from '../custom-toastr/custom-toastr.component'
 @Component({
   selector: 'app-edit-banner',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, NgOptimizedImage, NgOptimizedImage],
   templateUrl: './edit-banner.component.html',
   styleUrl: './edit-banner.component.scss'
 })
@@ -40,7 +40,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   ) { }
 
   ngAfterViewInit(): void {
-    
+
   }
 
   ngOnInit() {
@@ -110,7 +110,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.closeMediaModal();
     this.showToastr('Banner updated successfully', 'green');
   }
-  
+
   ngOnDestroy(): void {
     this.selectedMedia = undefined;
     this.selectedMediaImages = [];
@@ -119,7 +119,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   // Dynamically create the CustomToastrComponent
   showToastr(message: string, bgColor: string) {
     if (this.toastrRef) {
-      this.toastrRef.destroy(); 
+      this.toastrRef.destroy();
     }
 
     this.toastrRef = this.toastrContainer.createComponent(CustomToastrComponent);
@@ -129,7 +129,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
     // Set the toastr to disappear after 4 seconds, but with animation
     setTimeout(() => {
       this.toastrRef.instance.hideToastr();
-    }, 4000); 
+    }, 4000);
 
     this.toastrRef.instance.animationStateChange.subscribe(() => {
         this.toastrRef.destroy();

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SimpleObject } from '../../../services/api.service';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../environment';
 
@@ -8,7 +8,7 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-suggestion-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage],
   templateUrl: './suggestion.component.html',
   styleUrls: ['./suggestion.component.scss']
 })
@@ -25,9 +25,9 @@ export class SuggestionComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-  ngOnChanges(changes: SimpleChanges): void 
+  ngOnChanges(changes: SimpleChanges): void
   {
-    if (changes['suggestions']) 
+    if (changes['suggestions'])
     {
       this.visibleSuggestions = this.suggestions;
     }
