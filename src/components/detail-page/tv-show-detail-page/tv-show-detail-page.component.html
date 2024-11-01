@@ -1,7 +1,7 @@
 <div *ngIf="!isLoading" class="page">
   <div class="card">
     <div class="backdrop">
-      <img *ngIf="api.doesBackDropExist(tvshow .backdrop_path)" src="{{backdropPath + tvshow .backdrop_path}}" alt="backdrop" />
+      <img *ngIf="api.doesBackDropExist(tvshow .backdrop_path)"  src="{{backdropPath + tvshow .backdrop_path}}" alt="backdrop" />
       <img *ngIf="!api.doesBackDropExist(tvshow .backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
@@ -109,12 +109,7 @@
 </div>
 
 
-<!-- Optionally handle loading state -->
-<div class="loading-container" *ngIf="isLoading">
-  <div class="cube-loader">
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-  </div>
-</div>
+<app-loading-container
+  [isLoading]="isLoading"
+  *ngIf="isLoading">
+</app-loading-container>

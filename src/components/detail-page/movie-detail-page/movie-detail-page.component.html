@@ -74,15 +74,10 @@
   </div>
 </div>
 
-<div class="loading-container" *ngIf="isLoading">
-  <div class="cube-loader">
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-  </div>
-</div>
-
+<app-loading-container
+  [isLoading]="isLoading"
+  *ngIf="isLoading">
+</app-loading-container>
 
 <app-confirm-modal
   *ngIf="showRewatchedOrRemoveMovieModal"

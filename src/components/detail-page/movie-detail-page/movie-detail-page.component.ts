@@ -5,11 +5,12 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { environment } from '../../../environment';
 import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.service';
 import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
+import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, ConfirmModalComponent],
+  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, ConfirmModalComponent, LoadingContainerComponent],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })

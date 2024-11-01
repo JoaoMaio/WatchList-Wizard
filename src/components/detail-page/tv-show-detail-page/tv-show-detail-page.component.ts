@@ -5,16 +5,17 @@ import {
   EmptyTvShow
 } from '../../../services/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom-expansion-panel.component";
 import {environment} from '../../../environment';
 import {ApiShowsService, ComplexTvshow, EInfo, Episode, Season} from '../../../services/api-shows.service';
+import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
@@ -107,9 +108,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  addShowToWatchList() {
+  async addShowToWatchList() {
     this.isOnWatchList = true;
-    this.shows_api.saveShowsToFile(this.tvshow!);
+    await this.shows_api.saveShowsToFile(this.tvshow!);
   }
 
   async removeShowsFromWatchList() {
@@ -149,17 +150,20 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async markEpisodeAsWatched(episode: Episode) {
     if(!this.isOnWatchList)
-      this.addShowToWatchList();
+      await this.addShowToWatchList();
 
     episode.watched = true;
+    episode.timesWatched += 1;
     await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
 
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   markEpisodeAsUnWatched(episode: Episode) {
-    episode.watched = false;
-    this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id);
+    this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id).then(() => {
+      episode.watched = false;
+      this.nextEpisode = this.getNextEpisodeToWatch();
+    });
   }
 
   onAddOrRemoveEpisode(){
