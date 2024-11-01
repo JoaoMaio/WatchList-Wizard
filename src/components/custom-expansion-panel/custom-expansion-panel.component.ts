@@ -152,6 +152,7 @@ export class CustomExpansionPanelComponent implements OnInit {
         !episode.watched)
       {
         episode.watched = true;
+        episode.timesWatched += 1;
 
         try {
           await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
