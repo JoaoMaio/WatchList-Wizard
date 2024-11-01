@@ -80,10 +80,12 @@ export class ApiMoviesService {
   //----------------------------   MOVIES  GETS  ----------------------------------------//
   //-------------------------------------------------------------------------------------//
 
-  getMoviesByType(type: string, count = 20): Observable<SimpleObject[]> {
-    return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/${type}`, { headers: this.headers }).pipe(
+  getMoviesByType(type: string, page = 1): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse>(`${this.BASE_API_URL}movie/${type}?language=en-US&page=${page}`, { headers: this.headers }).pipe(
       map((response: MovieResponse) => {
-        return response.results.map((movie: any) => {
+        return response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
           const SimpleObject: SimpleObject = {
             id: movie.id,
             original_title: movie.original_title,
@@ -101,7 +103,9 @@ export class ApiMoviesService {
   getTrendingMovies(): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse>(`${this.BASE_API_URL}/trending/movie/week?language=en-US`, { headers: this.headers }).pipe(
       map((response: MovieResponse) => {
-        return response.results.map((movie: any) => {
+        return response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
           const SimpleObject: SimpleObject = {
             id: movie.id,
             original_title: movie.original_title,
@@ -120,7 +124,6 @@ export class ApiMoviesService {
     return this.http.get<ComplexMovie>(`${this.BASE_API_URL}/movie/${id}?append_to_response=watch/providers`, { headers: this.headers }).pipe(
       map((movie: any) => {
         let watchProvidersR = this.generalApi.getWatchProviders(movie)
-
         return {
           ...movie,
           watch_providers: watchProvidersR

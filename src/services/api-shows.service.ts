@@ -106,11 +106,13 @@ export class ApiShowsService {
   //----------------------------   SHOWS  GETS  ----------------------------------------//
   //------------------------------------------------------------------------------------//
 
-  getTvShowsByType(type: string, count = 20): Observable<SimpleObject[]> {
+  getTvShowsByType(type: string, page = 1): Observable<SimpleObject[]> {
     return this.http
-      .get<TvShowResponse>(`${this.BASE_API_URL}/tv/${type}?&language=en-US`, {headers: this.headers}).pipe(
+      .get<TvShowResponse>(`${this.BASE_API_URL}/tv/${type}?&language=en-US&page=${page}`, {headers: this.headers}).pipe(
         map((response: TvShowResponse) => {
-          return response.results.map((tvshow: any) => {
+          return response.results
+            .filter((tvshow: any) => tvshow.poster_path !== null)
+            .map((tvshow: any) => {
             const SimpleObject: SimpleObject = {
               id: tvshow.id,
               original_title: tvshow.original_title,
@@ -129,7 +131,9 @@ export class ApiShowsService {
     return this.http
       .get<TvShowResponse>(`${this.BASE_API_URL}/trending/tv/week?language=en-US`, {headers: this.headers}).pipe(
         map((response: TvShowResponse) => {
-          return response.results.map((tvshow: any) => {
+          return response.results
+            .filter((tvshow: any) => tvshow.poster_path !== null)
+            .map((tvshow: any) => {
             const SimpleObject: SimpleObject = {
               id: tvshow.id,
               original_title: tvshow.original_title,
@@ -148,9 +152,7 @@ export class ApiShowsService {
   getTvShowById(id: string): Observable<ComplexTvshow> {
     return this.http.get<ComplexTvshow>(`${this.BASE_API_URL}/tv/${id}?append_to_response=watch/providers`, {headers: this.headers}).pipe(
       map((tvshow: any) => {
-
         let watchProvidersR = this.generalApi.getWatchProviders(tvshow)
-
         return {
           ...tvshow,
           poster_path: tvshow.poster_path,

@@ -336,7 +336,6 @@ export class ApiService {
   }
 
   async writeToFIle(filename: string, updatedContent: string) {
-    // Write the updated content back to the file
     await Filesystem.writeFile({
       path: filename,
       data: updatedContent,
@@ -355,9 +354,7 @@ export class ApiService {
 
   async createAllFiles() {
 
-    if(!await this.checkIfFileExists('movies.json'))
-    {
-      console.log('Creating movies.json');
+    if(!await this.checkIfFileExists('movies.json')) {
       await Filesystem.writeFile({
         path: 'movies.json',
         data: '',
@@ -367,7 +364,6 @@ export class ApiService {
     }
 
     if(!await this.checkIfFileExists('shows.json')) {
-      console.log('Creating shows.json');
       await Filesystem.writeFile({
         path: 'shows.json',
         data: '',
@@ -377,7 +373,6 @@ export class ApiService {
     }
 
     if(!await this.checkIfFileExists('episodes.json')) {
-      console.log('Creating episodes.json');
       await Filesystem.writeFile({
         path: 'episodes.json',
         data: '',

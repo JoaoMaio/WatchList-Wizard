@@ -17,6 +17,8 @@ export class HomeComponentComponent implements OnInit {
   isLoading: boolean = true;
   suggestedMovies: SimpleObject[] = [];
   suggestedShows: SimpleObject[] = [];
+  maxSuggestions: number = 20;
+
 
   constructor(private movies_api: ApiMoviesService,
               private shows_api: ApiShowsService,
@@ -26,8 +28,8 @@ export class HomeComponentComponent implements OnInit {
     this.isLoading = true;
 
       Promise.all([
-        this.getTrendingMovies(),
-        this.getTrendingTvShows(),
+        this.getPopularMovies(),
+        this.getPopularShows(),
       ]).then(() => {
         this.isLoading = false;
       }).catch((error) => {
@@ -36,50 +38,62 @@ export class HomeComponentComponent implements OnInit {
       });
 }
 
-  getTrendingMovies()
-  {
+  getTrendingMovies() {
     this.movies_api.getTrendingMovies().subscribe({
       next: (response: SimpleObject[]) => {
-        this.suggestedMovies = response;
+
+        // this is only called when the popular movies less than 20
+        // i want to fill the rest of the suggestions with trending movies
+        this.suggestedMovies = this.suggestedMovies.concat(response);
+        this.suggestedMovies = this.suggestedMovies.slice(0, this.maxSuggestions);
       },
       error: (error) => {
         console.error('Error fetching movies:', error);
     }});
   }
 
-
-  getTrendingTvShows()
-  {
+  getTrendingTvShows() {
     this.shows_api.getTrendingTvShows().subscribe({
       next: (response: SimpleObject[]) => {
-        this.suggestedShows = response;
+
+        // this is only called when the popular shows less than 20
+        // i want to fill the rest of the suggestions with trending shows
+        this.suggestedShows = this.suggestedShows.concat(response);
+        this.suggestedShows = this.suggestedShows.slice(0, this.maxSuggestions);
+
       },
       error: (error) => {
         console.error('Error fetching tvshows:', error);
     }});
   }
 
-  // getPopularMovies()
-  // {
-  //   this.movies_api.getMoviesByType('popular').subscribe({
-  //     next: (response: SimpleObject[]) => {
-  //       this.suggestedMovies = response;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching movies:', error);
-  //   }});
-  // }
+  getPopularMovies() {
+    this.movies_api.getMoviesByType('popular').subscribe({
+      next: (response: SimpleObject[]) => {
+        this.suggestedMovies = response;
 
+        if (this.suggestedMovies.length === 0 || this.suggestedMovies.length  < this.maxSuggestions ) {
+          this.getTrendingMovies();
+        }
 
+      },
+      error: (error) => {
+        console.error('Error fetching movies:', error);
+    }});
+  }
 
-  // getPopularShows()
-  // {
-  //   this.shows_api.getTvShowsByType('popular').subscribe({
-  //     next: (response: SimpleObject[]) => {
-  //       this.suggestedShows = response;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching tvshows:', error);
-  //   }});
-  // }
+  getPopularShows() {
+    this.shows_api.getTvShowsByType('popular').subscribe({
+      next: (response: SimpleObject[]) => {
+        this.suggestedShows = response;
+
+        if (this.suggestedShows.length === 0 || this.suggestedShows.length  < this.maxSuggestions ) {
+          this.getTrendingTvShows();
+        }
+
+      },
+      error: (error) => {
+        console.error('Error fetching tvshows:', error);
+    }});
+  }
 }
