@@ -39,7 +39,6 @@ export class MovieDetailPageComponent implements OnInit {
           this.movies_api.movieExistsById(this.movie.id).then(object => {
             if (object.id > 0)
             {
-              console.log('Movie exists in file:', object);
               this.watched = true;
               this.timesWatched = object.timesWatched || 0;
             }

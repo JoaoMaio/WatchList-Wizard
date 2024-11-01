@@ -64,11 +64,11 @@
         </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider" *ngIf="nextEpisode.id > 0"></div>
 
-      <p class="section_title">Continue to Watch:</p>
+      <p class="section_title" *ngIf="nextEpisode.id > 0">Continue to Watch:</p>
 
-      <div class="episode-details" *ngIf="nextEpisode" >
+      <div class="episode-details" *ngIf="nextEpisode.id > 0" >
         <div class="image_container">
           <img *ngIf="api.doesBackDropExist(nextEpisode.still_path)" src="{{ imgPath + nextEpisode.still_path }}" alt="episode still" />
           <img *ngIf="!api.doesBackDropExist(nextEpisode.still_path)" src="tba.png" alt="to be announced" />
@@ -99,8 +99,7 @@
             [tvshow]="tvshow"
             [isOnWatchList]="isOnWatchList"
             (addOrRemoveEpisode)="onAddOrRemoveEpisode()"
-            (addedShow)="onAddedShow()"
-          >
+            (addedShow)="onAddedShow()">
           </app-custom-expansion-panel>
         </div>
       </div>

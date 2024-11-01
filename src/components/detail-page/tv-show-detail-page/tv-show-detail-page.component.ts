@@ -112,10 +112,10 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     this.shows_api.saveShowsToFile(this.tvshow!);
   }
 
-  removeShowsFromWatchList() {
+  async removeShowsFromWatchList() {
     this.isOnWatchList = false;
-    this.api.removeFromFile(this.tvshow!.id, 'tv');
-    this.shows_api.removeAllEpisodesFromFile(this.tvshow!.id);
+    await this.api.removeFromFile(this.tvshow!.id, 'tv');
+    await this.shows_api.removeAllEpisodesFromFile(this.tvshow!.id);
     this.seasons.forEach(season => {
       season.episodes.forEach(episode => {
         if (episode.watched) {
@@ -147,12 +147,12 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     return EmptyEpisode;
   }
 
-  markEpisodeAsWatched(episode: Episode) {
+  async markEpisodeAsWatched(episode: Episode) {
     if(!this.isOnWatchList)
       this.addShowToWatchList();
 
     episode.watched = true;
-    this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+    await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
 
     this.nextEpisode = this.getNextEpisodeToWatch();
   }

@@ -237,7 +237,8 @@ export class ApiShowsService {
 
         let show = currentContentList.find(s => s.showId === showID);
 
-        if (!show) {
+        if (!show)
+        {
           show = {
             showId: showID,
             einfo: [{
@@ -248,25 +249,27 @@ export class ApiShowsService {
             }]
           };
           currentContentList.push(show);
-        } else {
+        }
+        else {
           let episode = show.einfo.find(e => e.seasonNumber === newEpisode.season_number && e.episodeNumber === newEpisode.episode_number);
 
-          if (!episode) {
+          if (!episode)
+          {
             show.einfo.push({
               seasonNumber: newEpisode.season_number,
               episodeNumber: newEpisode.episode_number,
               runtime: newEpisode.runtime ? newEpisode.runtime : 0,
               timesWatched: newEpisode.timesWatched
             });
-          } else {
+          }
+          else
+          {
             episode.timesWatched = episode.timesWatched ? episode.timesWatched + 1 : 1;
           }
         }
 
         const updatedContent = JSON.stringify(currentContentList, null, 2);
-
         await this.generalApi.writeToFIle(this.episodes_filename, updatedContent);
-
       });
 
     } catch (e) {

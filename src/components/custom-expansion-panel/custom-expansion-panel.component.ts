@@ -176,6 +176,34 @@ export class CustomExpansionPanelComponent implements OnInit {
     return this.season!.episodes.every(episode => episode.watched);
   }
 
+  async MarkAllSeasonAsWatched(event?: Event) {
+    if(event)
+      event.stopPropagation();
+    
+    if(!this.isSeasonWatchedExcludingAiring())
+    {
+      if(!this.isOnWatchList)
+        await this.addShowToWatchList();
+
+      this.season!.timesWatched += 1;
+
+      for (const episode of this.season!.episodes) {
+        if(episode.runtime != null )
+        {
+          episode.watched = true;
+          episode.timesWatched += 1;
+          try {
+            await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+          } catch (error) {
+            console.error('Error saving episode:', episode, error);
+          }
+        }
+      }
+
+      this.addOrRemoveEpisode.emit();
+    }
+  }
+
   async RewatchedOrRemoveSeasonModalConfirm(event?: Event) {
   if(event)
     event.stopPropagation();
@@ -192,32 +220,33 @@ export class CustomExpansionPanelComponent implements OnInit {
       }
     });
 
-    for (const episode of this.season!.episodes)
-      {
-          episode.watched = true;
-
-          if(episode.timesWatched <= leastTimesWatched)
+    for (const episode of this.season!.episodes) {
+          if(episode.runtime != null )
           {
-            episode.timesWatched = leastTimesWatched + 1;
+            episode.watched = true;
 
-            this.season!.timesWatched = episode.timesWatched;
-            try {
-              await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
-            } catch (error) {
-              console.error('Error saving episode:', episode, error);
+            if(episode.timesWatched <= leastTimesWatched) {
+              episode.timesWatched = leastTimesWatched + 1;
+
+              this.season!.timesWatched = episode.timesWatched;
+              try {
+                await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+              } catch (error) {
+                console.error('Error saving episode:', episode, error);
+              }
             }
           }
       }
 
-      this.showRewatchedOrRemoveSeasonModal = false;
+    this.showRewatchedOrRemoveSeasonModal = false;
+    this.addOrRemoveEpisode.emit();
   }
 
   async RewatchedOrRemoveSeasonModalCancel(event?: Event) {
     if(event)
       event.stopPropagation();
 
-    for (const episode of this.season!.episodes)
-      {
+    for (const episode of this.season!.episodes) {
           episode.watched = false;
           episode.timesWatched = 0;
           this.season!.timesWatched = 0;
@@ -226,10 +255,10 @@ export class CustomExpansionPanelComponent implements OnInit {
           } catch (error) {
             console.error('Error deleting episode:', episode, error);
           }
+    }
 
-      }
-
-      this.showRewatchedOrRemoveSeasonModal = false;
+    this.showRewatchedOrRemoveSeasonModal = false;
+    this.addOrRemoveEpisode.emit();
   }
 
   onMarkAllSeasonAsUnWatched(event: Event) {
@@ -237,6 +266,14 @@ export class CustomExpansionPanelComponent implements OnInit {
     this.showRewatchedOrRemoveSeasonModal = true;
   }
 
+  isSeasonWatchedExcludingAiring() {
+    let episodes = this.season!.episodes.slice();
+    episodes = episodes.filter(episode => episode.runtime != null);
 
+    if (episodes.length == 0)
+      return true;
+
+    return episodes.every(episode => episode.watched);
+  }
 
 }

@@ -8,7 +8,7 @@
             <div class="ep_and_checkmark">
               <p>{{ getSeasonCountWatchedEpisodes(season!) }} / {{ season!.episode_count }}</p>
               <div class="markAsWatched" >
-                <button *ngIf="!isFullSseasonWatched()" (click)="RewatchedOrRemoveSeasonModalConfirm($event)" class="markAsWatchedbutton">
+                <button *ngIf="!isFullSseasonWatched()" (click)="MarkAllSeasonAsWatched($event)" class="markAsWatchedbutton">
                   +
                 </button>
                 <button *ngIf="isFullSseasonWatched()" (click)="onMarkAllSeasonAsUnWatched($event)" class="markAsWatchedbutton watched">
