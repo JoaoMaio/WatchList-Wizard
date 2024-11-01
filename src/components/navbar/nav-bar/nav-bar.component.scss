@@ -20,26 +20,9 @@
     font-size: 12px;
     transition: color 0.3s;
 
-    .material-icons {
-      font-size: 24px;
-      color: var(--textColor);
-      transition: color 0.3s;
-    }
-
     &:hover {
       color: var(--quinaryColor);
 
-      .material-icons {
-        color: var(--quinaryColor);
-      }
-    }
-
-    &.active {
-      color: var(--quinaryColor);
-
-      .material-icons {
-        color: var(--quinaryColor);
-      }
     }
 
     span {
@@ -49,4 +32,3 @@
     }
   }
 }
-  

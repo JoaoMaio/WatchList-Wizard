@@ -1,23 +1,23 @@
 <div *ngIf="!isLoading" class="page">
   <div class="card">
     <div class="backdrop">
-      <img *ngIf="api.doesBackDropExist(tvshow?.backdrop_path)" src="{{backdropPath + tvshow?.backdrop_path}}" alt="backdrop" />
-      <img *ngIf="!api.doesBackDropExist(tvshow?.backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
+      <img *ngIf="api.doesBackDropExist(tvshow .backdrop_path)" src="{{backdropPath + tvshow .backdrop_path}}" alt="backdrop" />
+      <img *ngIf="!api.doesBackDropExist(tvshow .backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
-          <h1 class="title">{{ tvshow?.name }}</h1>
+          <h1 class="title">{{ tvshow .name }}</h1>
           <div class="countSeasons_RunTime">
-            <span *ngIf="tvshow?.number_of_seasons === 1">{{ tvshow?.number_of_seasons }} Season</span>
-            <span *ngIf="tvshow?.number_of_seasons! > 1">{{ tvshow?.number_of_seasons }} Seasons</span>
+            <span *ngIf="tvshow .number_of_seasons === 1">{{ tvshow .number_of_seasons }} Season</span>
+            <span *ngIf="tvshow .number_of_seasons! > 1">{{ tvshow .number_of_seasons }} Seasons</span>
             <div class="rating">
               <div class="rating_inside">
                 <span class="badge"
                   [ngClass]="{
-                    'badge-success': tvshow?.vote_average! >= 8,
-                    'badge-warning': tvshow?.vote_average! < 8 && tvshow?.vote_average! >= 5,
-                    'badge-danger': tvshow?.vote_average! < 5
+                    'badge-success': tvshow .vote_average! >= 8,
+                    'badge-warning': tvshow .vote_average! < 8 && tvshow .vote_average! >= 5,
+                    'badge-danger': tvshow .vote_average! < 5
                   }">
-                  {{ generateWordCloud(tvshow?.vote_average!) }} - {{ tvshow?.vote_average?.toPrecision(3) }} / 10
+                  {{ generateOpinion(tvshow .vote_average!) }} - {{ tvshow .vote_average .toPrecision(3) }} / 10
                 </span>
               </div>
             </div>
@@ -39,25 +39,25 @@
   <div class="content">
     <div class="tvshow_info">
       <div class="overview-container">
-        <p class="overview" [ngClass]="{ 'expanded': isOverviewExpanded }">{{ tvshow?.overview }}</p>
+        <p class="overview" [ngClass]="{ 'expanded': isOverviewExpanded }">{{ tvshow.overview }}</p>
         <button class="toggle-button" (click)="isOverviewExpanded = !isOverviewExpanded">
-          {{ isOverviewExpanded ? 'Show Less' : 'Show More' }}
+          {{ isOverviewExpanded  ? 'Show Less' : 'Show More' }}
         </button>
       </div>
-      
+
       <div class="divider"></div>
 
       <p class="section_title">Genres:</p>
-      <div class="genres" *ngIf="tvshow?.genres">
-        <span *ngFor="let genre of tvshow?.genres">{{ genre.name }}</span>
+      <div class="genres" *ngIf="tvshow .genres">
+        <span *ngFor="let genre of tvshow .genres">{{ genre.name }}</span>
       </div>
 
       <div class="divider"></div>
 
-      <div class="providers_section" *ngIf="tvshow?.watch_providers!.length > 0">
+      <div class="providers_section" *ngIf="tvshow .watch_providers!.length > 0">
         <p class="section_title">Watch on:</p>
         <div class="providers">
-          <span *ngFor="let provider of tvshow?.watch_providers">
+          <span *ngFor="let provider of tvshow .watch_providers">
             <img src="{{ imgPath + provider.logo_path }}" alt="{{ provider.provider_name }}" />
             <p>{{ provider.provider_name }}</p>
           </span>
@@ -85,11 +85,11 @@
           </button>
         </div>
         <div class="tba_days" *ngIf="!api.doesBackDropExist(nextEpisode.still_path)">
-            <p>{{getDaysUntiItsOut(nextEpisode)}} days </p>
+            <p>{{shows_api.getDaysUntiItsOut(nextEpisode)}} days </p>
         </div>
       </div>
 
-      <div class="divider"></div>      
+      <div class="divider"></div>
 
       <div class="seasons">
         <div *ngFor="let season of seasons">
@@ -98,7 +98,8 @@
             [season]="season"
             [tvshow]="tvshow"
             [isOnWatchList]="isOnWatchList"
-            (addOrRemoveEpisode)="addOrRemoveEpisode()"
+            (addOrRemoveEpisode)="onAddOrRemoveEpisode()"
+            (addedShow)="onAddedShow()"
           >
           </app-custom-expansion-panel>
         </div>

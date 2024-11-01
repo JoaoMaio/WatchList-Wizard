@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NavBarComponent } from "../components/navbar/nav-bar/nav-bar.component";
 import { App } from '@capacitor/app';
 import { CacheDateService } from '../services/cache.service';
+import {ApiService} from '../services/api.service';
 
 
 @Component({
@@ -17,25 +18,27 @@ import { CacheDateService } from '../services/cache.service';
 export class AppComponent implements OnInit {
   title = 'TMDBApp';
 
-  constructor(private cacheDateService: CacheDateService) {}
+  constructor(private cacheDateService: CacheDateService,
+              private generalApi: ApiService) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.setupBackButtonListener();
-    this.cacheDateService.checkAndClearCache();
+    await this.cacheDateService.checkAndClearCache();
+    await this.generalApi.createAllFiles();
   }
 
   setupBackButtonListener() {
     App.addListener('backButton', ({ canGoBack }) => {
-      if (canGoBack) 
+      if (canGoBack)
         window.history.back();
-      else 
+      else
         this.showExitConfirmation();
     });
   }
 
   showExitConfirmation() {
     if (confirm('Do you want to exit the app?')) {
-      App.exitApp(); 
+      App.exitApp();
     }
   }
 

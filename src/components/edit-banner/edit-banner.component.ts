@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { ApiService, SimpleObject } from '../../services/api.service';
+import {ApiService, EmptySimpleObject, SimpleObject} from '../../services/api.service';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +21,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   allMovies: SimpleObject[] = []
   searchResults: SimpleObject[] = []
   imgPath = environment.imgPath;
-  selectedMedia: SimpleObject | undefined;
+  selectedMedia: SimpleObject = EmptySimpleObject;
   selectedMediaImages: string[] = [];
 
   isLoading: boolean = false;
@@ -46,11 +46,11 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.isLoading = true;
 
-    const shows = this.api.getAllShowsOrMovies(0, 'tv').then((response) => {
+    const shows = this.api.getFromFile(0, 'tv').then((response) => {
       this.allShows.push(...response)
     })
 
-    const movies = this.api.getAllShowsOrMovies(0, 'movie').then((response) => {
+    const movies = this.api.getFromFile(0, 'movie').then((response) => {
       this.allMovies.push(...response)
     })
 
@@ -98,7 +98,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeMediaModal() {
     this.showMediamodal = false;
-    this.selectedMedia = undefined;
+    this.selectedMedia = EmptySimpleObject;
     this.selectedMediaImages = [];
   }
 
@@ -112,7 +112,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.selectedMedia = undefined;
+    this.selectedMedia = EmptySimpleObject;
     this.selectedMediaImages = [];
   }
 

@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, ComplexTvshow, EInfo, Episode, Season } from '../../../services/api.service';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  ApiService,
+  EmptyEpisode,
+  EmptyTvShow
+} from '../../../services/api.service';
+import {ActivatedRoute} from '@angular/router';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { CustomExpansionPanelComponent } from "../../custom-expansion-panel/custom-expansion-panel.component";
-import { environment } from '../../../environment';
+import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom-expansion-panel.component";
+import {environment} from '../../../environment';
+import {ApiShowsService, ComplexTvshow, EInfo, Episode, Season} from '../../../services/api-shows.service';
 
 
 @Component({
@@ -15,28 +20,30 @@ import { environment } from '../../../environment';
 })
 export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
-  tvshow: ComplexTvshow | undefined;
+  tvshow: ComplexTvshow = EmptyTvShow;
+  nextEpisode: Episode = EmptyEpisode;
+  seasons: Season[] = [];
+
   isLoading: boolean = true;
   isOnWatchList: boolean = false;
   isOverviewExpanded = false;
 
-  nextEpisode: Episode | undefined;
-  seasons: Season[] = [];
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
   constructor(public api: ApiService,
+              public shows_api: ApiShowsService,
               private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.isLoading  = true;
-      this.api.getTvShowById(params['id']).subscribe({
+      this.shows_api.getTvShowById(params['id']).subscribe({
         next: (response: ComplexTvshow) => {
           this.tvshow = response;
           this.getSeasons();
-          this.checkIfShowIsOnWatchList();
+          this.getIfShowIsOnWatchList();
         },
         complete: () => {
         },
@@ -46,14 +53,10 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkIfShowIsOnWatchList() {
-    this.api.showExistsById(this.tvshow!.id).then(exists => {
+  getIfShowIsOnWatchList() {
+    this.shows_api.showExistsById(this.tvshow!.id).then(exists => {
       this.isOnWatchList = exists;
     });
-  }
-
-  addedShow() {
-    this.isOnWatchList = true;
   }
 
   async getSeasons() {
@@ -61,7 +64,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     {
         try {
             const response = await new Promise<any>((resolve, reject) => {
-                this.api.getTvShowSeasons(this.tvshow?.id!, i + 1).subscribe({
+                this.shows_api.getTvShowSeasons(this.tvshow?.id!, i + 1).subscribe({
                     next: (response) => {
                         response.episode_count = response.episodes.length;
                         resolve(response);
@@ -87,7 +90,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 }
 
   getEpisodes() {
-    this.api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
+    this.shows_api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
         if (response)
         {
           this.seasons.forEach(season => {
@@ -106,14 +109,13 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   addShowToWatchList() {
     this.isOnWatchList = true;
-    this.api.saveShowsToFile(this.tvshow!);
+    this.shows_api.saveShowsToFile(this.tvshow!);
   }
 
-  removeShowsFromWatchList()
-  {
+  removeShowsFromWatchList() {
     this.isOnWatchList = false;
-    this.api.removeShowOrMovieFromFile(this.tvshow!.id, 'tv');
-    this.api.removeAllEpisodesFromFile(this.tvshow!.id);
+    this.api.removeFromFile(this.tvshow!.id, 'tv');
+    this.shows_api.removeAllEpisodesFromFile(this.tvshow!.id);
     this.seasons.forEach(season => {
       season.episodes.forEach(episode => {
         if (episode.watched) {
@@ -124,7 +126,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   }
 
-  generateWordCloud(rating: number): string {
+  generateOpinion(rating: number): string {
     if(rating >= 8)
       return 'Probably a good show'
     if(rating >= 5)
@@ -135,14 +137,14 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     return 'No rating available';
   }
 
-  getNextEpisodeToWatch(): Episode | undefined {
+  getNextEpisodeToWatch(): Episode {
     for (const season of this.seasons) {
       for (const episode of season.episodes) {
         if (!episode.watched)
           return episode;
       }
     }
-    return undefined;
+    return EmptyEpisode;
   }
 
   markEpisodeAsWatched(episode: Episode) {
@@ -150,33 +152,27 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       this.addShowToWatchList();
 
     episode.watched = true;
-    this.api.saveEpisodeToFile(episode, this.tvshow!.id);
+    this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
 
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   markEpisodeAsUnWatched(episode: Episode) {
     episode.watched = false;
-    this.api.removeEpisodeFromFile(episode, this.tvshow!.id);
+    this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id);
   }
 
-  getDaysUntiItsOut(episode: Episode) {
-    const today = new Date();
-    const releaseDate = new Date(episode.air_date);
-    const timeDiff = releaseDate.getTime() - today.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return daysDiff;
-  }
-
-  addOrRemoveEpisode(){
+  onAddOrRemoveEpisode(){
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
+  onAddedShow(){
+    this.isOnWatchList = true;
+  }
 
-  ngOnDestroy()
-  {
+  ngOnDestroy() {
     this.seasons = [];
-    this.nextEpisode = undefined;
+    this.nextEpisode = EmptyEpisode;
   }
 
 }

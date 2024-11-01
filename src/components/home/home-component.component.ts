@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService, SimpleObject } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { SuggestionComponent } from "./suggestion-component/suggestion.component";
+import {ApiMoviesService} from '../../services/api-movies.service';
+import {ApiShowsService} from '../../services/api-shows.service';
 
 @Component({
   selector: 'app-home-component',
@@ -12,13 +14,13 @@ import { SuggestionComponent } from "./suggestion-component/suggestion.component
 })
 export class HomeComponentComponent implements OnInit {
 
-  isLoading: boolean = true;  
-  imageUrl: string = '';  
+  isLoading: boolean = true;
   suggestedMovies: SimpleObject[] = [];
   suggestedShows: SimpleObject[] = [];
-  UpcomingMovies: SimpleObject[] = [];
 
-  constructor(private api: ApiService) { }
+  constructor(private movies_api: ApiMoviesService,
+              private shows_api: ApiShowsService,
+              ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
@@ -36,7 +38,7 @@ export class HomeComponentComponent implements OnInit {
 
   getTrendingMovies()
   {
-    this.api.getTrendingMovies().subscribe({
+    this.movies_api.getTrendingMovies().subscribe({
       next: (response: SimpleObject[]) => {
         this.suggestedMovies = response;
       },
@@ -48,7 +50,7 @@ export class HomeComponentComponent implements OnInit {
 
   getTrendingTvShows()
   {
-    this.api.getTrendingTvShows().subscribe({
+    this.shows_api.getTrendingTvShows().subscribe({
       next: (response: SimpleObject[]) => {
         this.suggestedShows = response;
       },
@@ -59,7 +61,7 @@ export class HomeComponentComponent implements OnInit {
 
   // getPopularMovies()
   // {
-  //   this.api.getMoviesByType('popular').subscribe({
+  //   this.movies_api.getMoviesByType('popular').subscribe({
   //     next: (response: SimpleObject[]) => {
   //       this.suggestedMovies = response;
   //     },
@@ -68,11 +70,11 @@ export class HomeComponentComponent implements OnInit {
   //   }});
   // }
 
-  
+
 
   // getPopularShows()
   // {
-  //   this.api.getTvShowsByType('popular').subscribe({
+  //   this.shows_api.getTvShowsByType('popular').subscribe({
   //     next: (response: SimpleObject[]) => {
   //       this.suggestedShows = response;
   //     },
@@ -80,7 +82,4 @@ export class HomeComponentComponent implements OnInit {
   //       console.error('Error fetching tvshows:', error);
   //   }});
   // }
-
-
-
 }

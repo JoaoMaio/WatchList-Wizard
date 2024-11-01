@@ -35,11 +35,11 @@ export class SearchComponent {
   }
 
   search() {
-    this.api.search(this.searchTerm, 'tv').subscribe({
+    this.api.searchInDatabase(this.searchTerm, 'tv').subscribe({
       next: (response) => {
         this.response = response
 
-        this.api.search(this.searchTerm, 'movie').subscribe({
+        this.api.searchInDatabase(this.searchTerm, 'movie').subscribe({
           next: (response) => {
             this.response.push(...response)
 

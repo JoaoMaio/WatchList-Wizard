@@ -1,11 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ApiService, ComplexTvshow, Episode, Season } from '../../services/api.service';
-import { MatIconModule } from '@angular/material/icon';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ApiService,
+  EmptyEpisode,
+  EmptySeason,
+  EmptyTvShow
+} from '../../services/api.service';
+import {MatIconModule} from '@angular/material/icon';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { ConfirmModalComponent } from "../confirm-modal/confirm-modal.component";
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { environment } from '../../environment';
+import {ConfirmModalComponent} from "../confirm-modal/confirm-modal.component";
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {environment} from '../../environment';
+import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../services/api-shows.service';
 
 
 @Component({
@@ -27,22 +33,22 @@ import { environment } from '../../environment';
 export class CustomExpansionPanelComponent implements OnInit {
 
   @Input() title: string = '';
-  @Input() season: Season | undefined;
-  @Input() tvshow: ComplexTvshow  | undefined;
+  @Input() season: Season = EmptySeason ;
+  @Input() tvshow: ComplexTvshow  = EmptyTvShow;
   @Input() isOnWatchList: boolean = false;
   @Output() addOrRemoveEpisode = new EventEmitter();
   @Output() addedShow = new EventEmitter();
 
   expanded = false;
-  isAccordionOpen = false;
   showConfirmModal = false;
-  showUnWatchedEpisodeConfirmModal = false;
-  showUnWatchedSeasonConfirmModal = false;
-  selectedEpisode: Episode | undefined;
+  showRewatchedOrRemoveEpisodeModal = false;
+  showRewatchedOrRemoveSeasonModal= false;
+  selectedEpisode: Episode = EmptyEpisode;
   imgPath = environment.imgPath;
 
 
-  constructor(public api: ApiService) { }
+  constructor(public shows_api: ApiShowsService,
+              public api: ApiService) { }
 
   ngOnInit(): void {
       if(this.season!.episodes.length > 0)
@@ -68,9 +74,26 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    this.api.saveShowsToFile(this.tvshow!);
+    await this.shows_api.saveShowsToFile(this.tvshow!);
     this.addedShow.emit();
   }
+
+  getSeasonCountWatchedEpisodes(season: Season) {
+    let count = 0;
+    season.episodes.forEach(episode => {
+      if (episode.watched) count++;
+    });
+    return count;
+  }
+
+  getSeasonWatchedPercentage(season: any): number {
+    const watchedEpisodes = this.getSeasonCountWatchedEpisodes(season);
+    if (watchedEpisodes === 0) return 0;
+    const totalEpisodes = season.episode_count;
+    return (watchedEpisodes / totalEpisodes) * 100;
+  }
+
+  //--------------------- EPISODE RELATED --------------------------------//
 
   async markEpisodeAsWatched(episode: Episode) {
     if(!this.isOnWatchList)
@@ -82,14 +105,14 @@ export class CustomExpansionPanelComponent implements OnInit {
       const previousEpisode = this.season!.episodes.find(e => e.episode_number === episode.episode_number - 1);
       if(previousEpisode && !previousEpisode.watched)
       {
-        this.openModal(episode)
+        this.openRewatchModal(episode)
         return;
       }
     }
 
     episode.watched = true;
     episode.timesWatched = episode.timesWatched + 1;
-    this.api.saveEpisodeToFile(episode, this.tvshow!.id);
+    await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
 
     //emit event to parent component
     this.addOrRemoveEpisode.emit();
@@ -97,22 +120,54 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   markEpisodeAsUnWatched(episode: Episode) {
     this.selectedEpisode = episode
-    this.showUnWatchedEpisodeConfirmModal = true;
+    this.showRewatchedOrRemoveEpisodeModal = true;
   }
 
-  onUnWatchedEpisodeConfirm() {
+  async RewatchedOrRemoveEpisodeModalCancel() {
     this.selectedEpisode!.watched = false;
     this.selectedEpisode!.timesWatched =  0;
-    this.api.removeEpisodeFromFile(this.selectedEpisode!, this.tvshow!.id);
+    await this.shows_api.removeEpisodeFromFile(this.selectedEpisode!, this.tvshow!.id);
     this.addOrRemoveEpisode.emit();
-    this.showUnWatchedEpisodeConfirmModal = false;
+    this.showRewatchedOrRemoveEpisodeModal = false;
   }
 
-  onMarkEpisodeAsWatchedAgain() {
+  async RewatchedOrRemoveEpisodeModalConfirm() {
     this.selectedEpisode!.timesWatched += 1;
-    this.api.saveEpisodeToFile(this.selectedEpisode!, this.tvshow!.id);
-    this.showUnWatchedEpisodeConfirmModal = false;
+    await this.shows_api.saveEpisodeToFile(this.selectedEpisode!, this.tvshow!.id);
+    this.showRewatchedOrRemoveEpisodeModal = false;
   }
+
+  openRewatchModal(episode: Episode) {
+    this.showConfirmModal = true;
+    this.selectedEpisode = episode
+  }
+
+  async onMarkAllEpisodesBehindAsWatchedConfirm() {
+    this.showConfirmModal = false;
+
+    for (const episode of this.season!.episodes)
+    {
+      if (episode.season_number === this.selectedEpisode?.season_number &&
+        episode.episode_number <= this.selectedEpisode?.episode_number &&
+        !episode.watched)
+      {
+        episode.watched = true;
+
+        try {
+          await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+        } catch (error) {
+          console.error('Error saving episode:', episode, error);
+        }
+      }
+    }
+
+  }
+
+  onMarkAllEpisodesBehindAsWatchedCancel() {
+    this.showConfirmModal = false;
+  }
+
+  //--------------------- SEASON RELATED --------------------------------//
 
   isFullSseasonWatched() {
     if(this.season?.episode_count == 0)
@@ -120,7 +175,7 @@ export class CustomExpansionPanelComponent implements OnInit {
     return this.season!.episodes.every(episode => episode.watched);
   }
 
- async markSeasonAsWatched(event?: Event) {
+  async RewatchedOrRemoveSeasonModalConfirm(event?: Event) {
   if(event)
     event.stopPropagation();
 
@@ -146,17 +201,17 @@ export class CustomExpansionPanelComponent implements OnInit {
 
             this.season!.timesWatched = episode.timesWatched;
             try {
-              await this.api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+              await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
             } catch (error) {
               console.error('Error saving episode:', episode, error);
             }
           }
       }
 
-      this.showUnWatchedSeasonConfirmModal = false;
+      this.showRewatchedOrRemoveSeasonModal = false;
   }
 
-  async markAllSeasonAsUnWatched(event?: Event) {
+  async RewatchedOrRemoveSeasonModalCancel(event?: Event) {
     if(event)
       event.stopPropagation();
 
@@ -166,73 +221,21 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.timesWatched = 0;
           this.season!.timesWatched = 0;
           try {
-            await this.api.removeEpisodeFromFile(episode, this.tvshow!.id);
+            await this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id);
           } catch (error) {
             console.error('Error deleting episode:', episode, error);
           }
 
       }
 
-      this.showUnWatchedSeasonConfirmModal = false;
+      this.showRewatchedOrRemoveSeasonModal = false;
   }
 
-  onMarkAllSeasonAsUnWatched(event: Event)
-  {
+  onMarkAllSeasonAsUnWatched(event: Event) {
     event.stopPropagation();
-    this.showUnWatchedSeasonConfirmModal = true;
+    this.showRewatchedOrRemoveSeasonModal = true;
   }
 
-  openModal(episode: Episode) {
-    this.showConfirmModal = true;
-    this.selectedEpisode = episode
-  }
 
-  async onConfirm() {
-    this.showConfirmModal = false;
-
-      for (const episode of this.season!.episodes)
-      {
-        if (episode.season_number === this.selectedEpisode?.season_number &&
-            episode.episode_number <= this.selectedEpisode?.episode_number &&
-            !episode.watched)
-          {
-            episode.watched = true;
-
-            try {
-              await this.api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
-            } catch (error) {
-              console.error('Error saving episode:', episode, error);
-            }
-        }
-      }
-
-  }
-
-  getDaysUntiItsOut(episode: Episode) {
-    const today = new Date();
-    const releaseDate = new Date(episode.air_date);
-    const timeDiff = releaseDate.getTime() - today.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return daysDiff;
-  }
-
-  onCancel() {
-    this.showConfirmModal = false;
-  }
-
-  getCountWatchedEpisodes(season: Season) {
-    let count = 0;
-    season.episodes.forEach(episode => {
-        if (episode.watched) count++;
-      });
-    return count;
-  }
-
-  getWatchedPercentage(season: any): number {
-    const watchedEpisodes = this.getCountWatchedEpisodes(season);
-    if (watchedEpisodes === 0) return 0;
-    const totalEpisodes = season.episode_count;
-    return (watchedEpisodes / totalEpisodes) * 100;
-  }
 
 }

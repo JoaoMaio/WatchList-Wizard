@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { IndexedDBService } from './indexedDb.service';
 
 export const cachingInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
@@ -27,7 +27,7 @@ export const cachingInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, nex
             await indexedDBService.put(req.urlWithParams, event.body);
           }
         })
-      ).subscribe(observer); 
+      ).subscribe(observer);
     })().catch(err => observer.error(err));
   });
 };

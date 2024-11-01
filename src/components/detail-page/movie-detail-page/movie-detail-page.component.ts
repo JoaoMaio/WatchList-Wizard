@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, ComplexMovie } from '../../../services/api.service';
+import {ApiService, EmptyMovie} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { environment } from '../../../environment';
+import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.service';
+import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, ConfirmModalComponent],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
 export class MovieDetailPageComponent implements OnInit {
 
-  movie: ComplexMovie | undefined;
+  movie: ComplexMovie = EmptyMovie;
   isLoading: boolean = true;
   watched: boolean = false;
+  timesWatched: number = 0;
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
-  constructor(public api: ApiService,
+  showRewatchedOrRemoveMovieModal: boolean = false;
+
+  constructor(private movies_api: ApiMoviesService,
+              public api: ApiService,
               private route: ActivatedRoute,
   ) { }
 
@@ -27,11 +33,16 @@ export class MovieDetailPageComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.isLoading  = true;
-      this.api.getMovieById(params['id']).subscribe({
+      this.movies_api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
-          this.api.movieExistsById(this.movie.id).then(exists => {
-            this.watched = exists;
+          this.movies_api.movieExistsById(this.movie.id).then(object => {
+            if (object.id > 0)
+            {
+              console.log('Movie exists in file:', object);
+              this.watched = true;
+              this.timesWatched = object.timesWatched || 0;
+            }
           });
         },
         complete: () => {
@@ -43,14 +54,26 @@ export class MovieDetailPageComponent implements OnInit {
     });
   }
 
-  addMovieToWatchList() {
+  async addMovieToWatchList() {
     this.watched = true;
-    this.api.saveMoviesToFile(this.movie!);
+    this.timesWatched++;
+    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
   }
 
   removeMovieFromWatchList() {
+    this.showRewatchedOrRemoveMovieModal = true;
+  }
+
+  async showRewatchedOrRemoveMovieModalConfirm() {
+    this.timesWatched++;
+    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
+    this.showRewatchedOrRemoveMovieModal = false;
+  }
+
+  async showRewatchedOrRemoveMovieModalCancel() {
     this.watched = false;
-    this.api.removeShowOrMovieFromFile(this.movie!.id, 'movie');
+    await this.api.removeFromFile(this.movie!.id, 'movie');
+    this.showRewatchedOrRemoveMovieModal = false;
   }
 
   generateWordCloud(rating: number): string {
