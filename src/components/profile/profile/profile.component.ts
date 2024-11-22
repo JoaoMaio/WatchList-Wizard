@@ -184,4 +184,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.router.navigate(['/edit-banner']);
   }
 
+  goToAllCollections(){
+    this.router.navigate(['/collections']);
+  }
+
 }

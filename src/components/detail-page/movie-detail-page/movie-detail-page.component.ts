@@ -116,4 +116,7 @@ export class MovieDetailPageComponent implements OnInit {
     });
   }
 
+  goBack(){
+    window.history.back();
+  }
 }

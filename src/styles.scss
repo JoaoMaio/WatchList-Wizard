@@ -1,4 +1,3 @@
-
 body {
     margin: 0;
     padding: 0;
@@ -79,5 +78,43 @@ html, body { height: 100%; }
   }
   75% {
     transform: rotateY(0deg) rotateX(180deg);
+  }
+}
+
+
+.back-button {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  padding: 8px !important;
+  margin: 0 !important;
+  min-width: 40px !important;
+  border-radius: 4px;
+  color: white;
+  background-color: rgba(34, 1, 53, 0.5) !important;
+  border: 1px solid rgba(58, 2, 91, 0.5) !important;
+  backdrop-filter: blur(2px);
+}
+
+.add-to-collection-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  padding: 8px !important;
+  margin: 0 !important;
+  min-width: 40px !important;
+  border-radius: 4px;
+  color: white;
+  background-color: rgba(34, 1, 53, 0.5) !important;
+  border: 1px solid rgba(58, 2, 91, 0.5) !important;
+  backdrop-filter: blur(2px);
+
+  .add-to-collection-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -142,6 +142,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  // Get watch providers
   getWatchProviders(object: any): Provider[] {
     try {
 
@@ -174,6 +175,7 @@ export class ApiService {
     }
   }
 
+  // Check if the file exists
   async checkIfFileExists(filename: string): Promise<boolean> {
     try {
       // Try to get the file's statistics
@@ -189,12 +191,14 @@ export class ApiService {
     }
   }
 
+  // Check if the backdrop exists
   doesBackDropExist(string: string | undefined): boolean {
     if (!string) return false;
 
     return !string.endsWith('null');
   }
 
+  // Search in their database
   searchInDatabase(query: string, type: string, page: number = 1): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
       map((response: MovieResponse | TvShowResponse) => {
@@ -339,6 +343,7 @@ export class ApiService {
     )
   }
 
+  // Write to file
   async writeToFile(filename: string, updatedContent: string) {
     await Filesystem.writeFile({
       path: filename,
@@ -348,6 +353,7 @@ export class ApiService {
     });
   }
 
+  // Read from file
   async readFromFile(filename: string): Promise<ReadFileResult> {
     return await Filesystem.readFile({
       path: filename,
@@ -356,8 +362,9 @@ export class ApiService {
     });
   }
 
-  async createAllFiles() {
-
+  // Create all files
+  async createAllFiles() 
+  {
     if(!await this.checkIfFileExists('movies.json')) {
       await Filesystem.writeFile({
         path: 'movies.json',
@@ -385,6 +392,14 @@ export class ApiService {
       });
     }
 
+    if(!await this.checkIfFileExists('collections.json')) {
+      await Filesystem.writeFile({
+        path: 'collections.json',
+        data: '',
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+    }
 
   }
 

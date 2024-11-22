@@ -1,0 +1,28 @@
+<button mat-button (click)="goBack()" class="back-button">
+    <mat-icon class="back-icon">arrow_back</mat-icon>
+</button>
+
+<div class="create-collection-button">
+    <button class="create-collection-button" (click)="openCreateCollectionDialog()">Create a new collection</button>
+</div>
+
+<div class="collection-card-container">
+    <div *ngFor="let collection of collections">
+        <div (click)="goToCollection(collection)" class="collection-card">
+            <div class="image-grid">
+                <!-- Replace single empty grid with 4 placeholder divs -->
+                <ng-container *ngIf="collection.items.length === 0">
+                    <div class="empty-image-grid" *ngFor="let i of [1,2,3,4]"></div>
+                </ng-container>
+
+                <img *ngFor="let item of collection.items.slice(0, 4)" 
+                        [src]="'https://image.tmdb.org/t/p/w500' + item.poster_path"
+                        [alt]="item.title"
+                        class="collection-item-image">
+            </div>
+            <div class="collection-name">
+                {{collection.name}}
+            </div>
+        </div>
+    </div>
+</div>

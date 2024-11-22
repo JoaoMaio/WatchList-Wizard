@@ -46,8 +46,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
               public shows_api: ApiShowsService,
               private route: ActivatedRoute,
               private collectionsService: CollectionsService,
-              private dialog: MatDialog
-  ) { }
+                private dialog: MatDialog,
+    ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -210,6 +210,11 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
         this.collectionsService.addToCollection(collectionId, collectionItem);
       }
     });
+  }
+
+  // go to the previous page
+  goBack(){
+    window.history.back();
   }
 
 }

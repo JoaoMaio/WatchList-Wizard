@@ -1,4 +1,13 @@
 <div *ngIf="!isLoading" class="page">
+
+  <button mat-button (click)="addToCollection()" class="add-to-collection-button">
+    <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
+  </button>
+
+  <button mat-button (click)="goBack()" class="back-button">
+    <mat-icon class="back-icon">arrow_back</mat-icon>
+  </button>
+
   <div class="card">
     <div class="backdrop">
       <img *ngIf="api.doesBackDropExist(tvshow .backdrop_path)"  src="{{backdropPath + tvshow .backdrop_path}}" alt="backdrop" />
@@ -45,10 +54,6 @@
         </button>
       </div>
 
-      <button mat-button (click)="addToCollection()">
-        <mat-icon>playlist_add</mat-icon>
-        Add to Collection
-      </button>
 
       <div class="divider"></div>
 
