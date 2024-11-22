@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Collection, CollectionItem } from '../app/models/collection.model';
+import { BehaviorSubject } from 'rxjs';
 import { ApiService } from './api.service';
+import { Collection, CollectionItem } from '../utils/collection.model';
 
 @Injectable({
   providedIn: 'root'

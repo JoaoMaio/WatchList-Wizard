@@ -42,6 +42,7 @@ export const EmptyEpisode: Episode = {
   watched: false,
   timesWatched: 0
 }
+
 export const EmptyTvShow: ComplexTvshow = {
   id: 0,
   backdrop_path: '',
@@ -70,6 +71,7 @@ export const EmptyTvShow: ComplexTvshow = {
   tagline: '',
   watch_providers: []
 }
+
 export const EmptyMovie: ComplexMovie = {
   adult: false,
   backdrop_path: '',
@@ -104,6 +106,7 @@ export const EmptyMovie: ComplexMovie = {
   vote_count: 0,
   watch_providers: []
 }
+
 export const EmptySimpleObject: SimpleObject = {
   id: 0,
   original_title: '',
@@ -112,6 +115,7 @@ export const EmptySimpleObject: SimpleObject = {
   type: '',
   popularity: 0
 }
+
 export const EmptySeason: Season = {
   id: 0,
   air_date: '',

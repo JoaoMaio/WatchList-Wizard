@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CollectionsService } from '../../../services/collections.service';
-import { Collection } from '../../models/collection.model';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateCollectionDialogComponent } from './create-collection-dialog/create-collection-dialog.component';
+import { Collection } from '../../utils/collection.model';
+import { CollectionsService } from '../../services/collections.service';
 
 @Component({
   selector: 'app-collections',

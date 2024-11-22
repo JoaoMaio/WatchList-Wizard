@@ -7,7 +7,8 @@ import { environment } from '../../../environment';
 import { Preferences } from '@capacitor/preferences';
 import {ApiMoviesService} from '../../../services/api-movies.service';
 import {ApiShowsService} from '../../../services/api-shows.service';
-import { CollectionsComponent } from '../../../app/components/collections/collections.component';
+import { CollectionsComponent } from '../../collections/collections.component';
+
 
 type Time = {
   title: string,
