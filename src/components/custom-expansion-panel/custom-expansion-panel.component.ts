@@ -5,8 +5,8 @@ import {
   EmptySeason,
   EmptyTvShow
 } from '../../services/api.service';
-import {MatIconModule} from '@angular/material/icon';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {MatIconModule} from '@angular/material/icon'
+import {CommonModule} from '@angular/common';
 import {ConfirmModalComponent} from "../confirm-modal/confirm-modal.component";
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {animate, state, style, transition, trigger} from '@angular/animations';
@@ -17,7 +17,7 @@ import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../services/ap
 @Component({
   selector: 'app-custom-expansion-panel',
   standalone: true,
-  imports: [MatIconModule, CommonModule, ConfirmModalComponent, MatProgressBarModule, NgOptimizedImage],
+  imports: [MatIconModule, CommonModule, ConfirmModalComponent, MatProgressBarModule],
   templateUrl: './custom-expansion-panel.component.html',
   styleUrl: './custom-expansion-panel.component.scss',
   animations: [

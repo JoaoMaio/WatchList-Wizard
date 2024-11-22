@@ -48,10 +48,19 @@
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
 </div>
 
-<div class="show-container last">
+<div class="show-container">
     <div class="show-header">
         <p class="section-title">Your Movies</p>
         <p>See More ></p>
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
+</div>
+
+
+<div class="show-container last">
+    <div class="show-header">
+        <p class="section-title">Your Collections</p>
+        <p>See More ></p>
+    </div>
+    <app-collections></app-collections>
 </div>

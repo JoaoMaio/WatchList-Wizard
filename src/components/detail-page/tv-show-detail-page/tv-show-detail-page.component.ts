@@ -10,12 +10,22 @@ import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom
 import {environment} from '../../../environment';
 import {ApiShowsService, ComplexTvshow, EInfo, Episode, Season} from '../../../services/api-shows.service';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
+import { CollectionsService } from '../../../services/collections.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { SelectCollectionDialogComponent } from '../../dialogs/select-collection-dialog/select-collection-dialog.component';
+import { CollectionItem } from '../../../app/models/collection.model';
+import {MatIconModule} from '@angular/material/icon'
 
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent,  MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
 })
@@ -35,6 +45,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   constructor(public api: ApiService,
               public shows_api: ApiShowsService,
               private route: ActivatedRoute,
+              private collectionsService: CollectionsService,
+              private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -177,6 +189,27 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.seasons = [];
     this.nextEpisode = EmptyEpisode;
+  }
+
+  addToCollection(): void {
+    const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
+      width: '400px',
+      data: { collections$: this.collectionsService.collections$ }
+    });
+
+    dialogRef.afterClosed().subscribe((collectionId: string) => {
+      if (collectionId) {
+        const collectionItem: CollectionItem = {
+          id: this.tvshow.id.toString(),
+          type: 'tv',
+          title: this.tvshow.name,
+          poster_path: this.tvshow.poster_path,
+          added_at: new Date().toISOString()
+        };
+        
+        this.collectionsService.addToCollection(collectionId, collectionItem);
+      }
+    });
   }
 
 }

@@ -1,16 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService, EmptyMovie} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import { environment } from '../../../environment';
 import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.service';
 import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
+import {MatIconModule} from '@angular/material/icon'
+import { CollectionItem } from '../../../app/models/collection.model';
+import { SelectCollectionDialogComponent } from '../../dialogs/select-collection-dialog/select-collection-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { CollectionsService } from '../../../services/collections.service';
+
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage, NgOptimizedImage, ConfirmModalComponent, LoadingContainerComponent],
+  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
@@ -28,6 +34,8 @@ export class MovieDetailPageComponent implements OnInit {
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
               private route: ActivatedRoute,
+              private collectionsService: CollectionsService,
+              private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -85,6 +93,27 @@ export class MovieDetailPageComponent implements OnInit {
       return 'Probably not a good movie';
 
     return 'No rating available';
+  }
+
+  addToCollection(): void {
+    const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
+      width: '400px',
+      data: { collections$: this.collectionsService.collections$ }
+    });
+
+    dialogRef.afterClosed().subscribe((collectionId: string) => {
+      if (collectionId) {
+        const collectionItem: CollectionItem = {
+          id: this.movie.id.toString(),
+          type: 'movie',
+          title: this.movie.title,
+          poster_path: this.movie.poster_path,
+          added_at: new Date().toISOString()
+        };
+        
+        this.collectionsService.addToCollection(collectionId, collectionItem);
+      }
+    });
   }
 
 }

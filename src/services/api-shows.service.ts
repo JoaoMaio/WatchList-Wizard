@@ -269,7 +269,7 @@ export class ApiShowsService {
         }
 
         const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFIle(this.episodes_filename, updatedContent);
+        await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
       });
 
     } catch (e) {
@@ -318,7 +318,7 @@ export class ApiShowsService {
 
       const updatedContent = JSON.stringify(currentContentList, null, 2);
 
-      await this.generalApi.writeToFIle(this.episodes_filename, updatedContent);
+      await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
     } catch (e) {
       console.error('Error checking if movie exists', e);
     }
@@ -389,7 +389,7 @@ export class ApiShowsService {
         currentContentList.push(SimpleObject);
         const updatedContent = JSON.stringify(currentContentList, null, 2);
 
-        await this.generalApi.writeToFIle(this.shows_filename, updatedContent);
+        await this.generalApi.writeToFile(this.shows_filename, updatedContent);
       });
 
     } catch (e) {
@@ -419,7 +419,7 @@ export class ApiShowsService {
         currentContentList.splice(showIndex, 1);
 
         const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFIle(this.episodes_filename, updatedContent);
+        await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
       });
 
     } catch (e) {

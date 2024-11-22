@@ -1,0 +1,23 @@
+
+<!--  If collections are empty, show option to create a collection-->
+<div *ngIf="(collections$ | async)?.length === 0">
+    <button class="create-collection-button" (click)="openCreateCollectionDialog()">Start by creating a collection</button>
+</div>
+
+<!--  If collections are not empty, show the collections-->
+<div class="carouselContainer">
+    <div class="suggestionsContainer">
+        <div *ngFor="let collection of collections$ | async" class="collection-card">
+            <div class="image-grid">
+                <img *ngFor="let item of collection.items.slice(0, 4)" 
+                     [src]="'https://image.tmdb.org/t/p/w500' + item.poster_path"
+                     [alt]="item.title"
+                     class="collection-item-image">
+            </div>
+            <div class="collection-name">
+                {{collection.name}}
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -40,6 +40,11 @@
 
       <p class="overview">{{ movie .overview }}</p>
 
+      <button mat-button (click)="addToCollection()">
+        <mat-icon>playlist_add</mat-icon>
+        Add to Collection
+      </button>
+
       <div class="divider"></div>
 
       <div class="genres" *ngIf="movie .genres">

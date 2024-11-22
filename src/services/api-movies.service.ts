@@ -162,7 +162,7 @@ export class ApiMoviesService {
         if (objectIndex > -1) {
           currentContentList[objectIndex].timesWatched = timesWatched;
           const updatedContent = JSON.stringify(currentContentList, null, 2);
-          await this.generalApi.writeToFIle(this.movies_filename, updatedContent);
+          await this.generalApi.writeToFile(this.movies_filename, updatedContent);
           return
         }
 
@@ -179,7 +179,7 @@ export class ApiMoviesService {
 
         currentContentList.push(SimpleObject);
         const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFIle(this.movies_filename, updatedContent);
+        await this.generalApi.writeToFile(this.movies_filename, updatedContent);
       });
 
     } catch (e) {

@@ -1,4 +1,4 @@
-$movies-to-show: 4.5;
+$quantity-to-show: 4.5;
 
 .carouselContainer {
   display: flex;
@@ -15,8 +15,8 @@ $movies-to-show: 4.5;
     width: 100%; 
     
     .movie {
-      flex: 1 1 calc(100% / $movies-to-show); 
-      max-width: calc(100% / $movies-to-show); 
+      flex: 1 1 calc(100% / $quantity-to-show); 
+      max-width: calc(100% / $quantity-to-show); 
       flex-shrink: 0; 
       box-sizing: border-box; 
       min-width: 70px;

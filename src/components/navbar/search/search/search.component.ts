@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { ApiService, SimpleObject } from '../../../../services/api.service';
 import { FormsModule } from '@angular/forms';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environment';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgOptimizedImage, NgOptimizedImage],
+  imports: [FormsModule, CommonModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })

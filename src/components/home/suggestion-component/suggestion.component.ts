@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SimpleObject } from '../../../services/api.service';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../environment';
 
@@ -8,7 +8,7 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-suggestion-component',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, NgOptimizedImage],
+  imports: [CommonModule],
   templateUrl: './suggestion.component.html',
   styleUrls: ['./suggestion.component.scss']
 })

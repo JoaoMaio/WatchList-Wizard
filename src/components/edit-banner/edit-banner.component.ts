@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import {ApiService, EmptySimpleObject, SimpleObject} from '../../services/api.service';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../environment';
@@ -11,7 +11,7 @@ import { CustomToastrComponent } from '../custom-toastr/custom-toastr.component'
 @Component({
   selector: 'app-edit-banner',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, NgOptimizedImage, NgOptimizedImage],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './edit-banner.component.html',
   styleUrl: './edit-banner.component.scss'
 })

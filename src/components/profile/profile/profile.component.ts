@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService, SimpleObject } from '../../../services/api.service';
 import { Router } from '@angular/router';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
 import { environment } from '../../../environment';
 import { Preferences } from '@capacitor/preferences';
 import {ApiMoviesService} from '../../../services/api-movies.service';
 import {ApiShowsService} from '../../../services/api-shows.service';
+import { CollectionsComponent } from '../../../app/components/collections/collections.component';
 
 type Time = {
   title: string,
@@ -19,7 +20,7 @@ type Time = {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, SuggestionComponent, NgOptimizedImage],
+  imports: [CommonModule, SuggestionComponent, CollectionsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -54,14 +55,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     // Get the last 10 shows added to watchlist
-    this.api.getFromFile(10, 'tv').then((response) => {
+    this.api.getFromFile(6, 'tv').then((response) => {
       this.someShows.push(...response)
       this.someShows.reverse()
       this.isLoading = false;
     })
 
     // Get the last 10 movies added to watchlist
-    this.api.getFromFile(10, 'movie').then((response) => {
+    this.api.getFromFile(6, 'movie').then((response) => {
       this.someMovies.push(...response)
       this.someMovies.reverse()
       this.isLoading = false;

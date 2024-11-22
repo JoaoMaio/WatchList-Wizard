@@ -335,7 +335,7 @@ export class ApiService {
     )
   }
 
-  async writeToFIle(filename: string, updatedContent: string) {
+  async writeToFile(filename: string, updatedContent: string) {
     await Filesystem.writeFile({
       path: filename,
       data: updatedContent,
