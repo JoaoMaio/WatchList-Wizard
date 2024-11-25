@@ -124,7 +124,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.toastrRef = this.toastrContainer.createComponent(CustomToastrComponent);
     this.toastrRef.instance.message = message;
-    this.toastrRef.instance.bgColor = "var(--quinaryColor)";
+    this.toastrRef.instance.bgColor = "var(--a_quinaryColor)";
 
     // Set the toastr to disappear after 4 seconds, but with animation
     setTimeout(() => {

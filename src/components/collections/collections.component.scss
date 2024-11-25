@@ -1,13 +1,13 @@
 .create-collection-button {
-    background-color: #000;
-    color: #fff;
+    background-color: var(--a_secondaryColor2);
+    color: var(--textColor);
     padding: 10px 20px;
     border-radius: 5px;
     margin: 0 auto;
     display: block;
 }
 
-$quantity-to-show: 4.5;
+$quantity-to-show: 4;
 
 .carouselContainer {
   display: flex;
@@ -20,7 +20,7 @@ $quantity-to-show: 4.5;
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
-    gap: 2px;
+    gap: 10px;
     width: 100%;
     
     .collection-card {
@@ -29,6 +29,9 @@ $quantity-to-show: 4.5;
       flex-shrink: 0;
       box-sizing: border-box;
       min-width: 70px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
 
       .image-grid {
         display: grid;
@@ -48,7 +51,8 @@ $quantity-to-show: 4.5;
 
       .collection-name {
         text-align: center;
-        margin-top: 8px;
+        margin-top: auto;
+        padding-top: 4px;
       }
     }
   }

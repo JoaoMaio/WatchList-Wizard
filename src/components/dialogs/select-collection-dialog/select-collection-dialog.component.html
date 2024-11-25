@@ -1,0 +1,19 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="dialog-title">Add to Collection</h2>
+  <mat-dialog-content class="dialog-content">
+    <mat-form-field appearance="outline" class="custom-form-field">
+      <mat-label class="select-label">Select Collection</mat-label>
+      <mat-select [(ngModel)]="selectedCollectionId" panelClass="custom-select-panel">
+        <mat-option *ngFor="let collection of collections$ | async" [value]="collection.id">
+          {{collection.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="cancel-btn" (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" class="confirm-btn" [disabled]="!selectedCollectionId" (click)="onConfirm()">
+      Add
+    </button>
+  </mat-dialog-actions>
+</div>

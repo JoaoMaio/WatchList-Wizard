@@ -8,7 +8,7 @@
 
 </div>
 
-<p class="section-title">Your Stats</p>
+<p class="section-title section-title-stats">Your Stats</p>
 <div class="timer-slider">
     <div class="tv-time-container" *ngFor="let time of timeList">
         <div class="tv-time-box">
@@ -40,7 +40,7 @@
 </div>
 
 
-<div class="show-container">
+<div class="profile-items-container">
     <div class="show-header">
         <p class="section-title">Your Shows</p>
         <p>See More ></p>
@@ -48,7 +48,7 @@
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
 </div>
 
-<div class="show-container">
+<div class="profile-items-container">
     <div class="show-header">
         <p class="section-title">Your Movies</p>
         <p>See More ></p>
@@ -57,7 +57,7 @@
 </div>
 
 
-<div class="show-container last">
+<div class="profile-items-container last">
     <div class="show-header">
         <p class="section-title">Your Collections</p>
         <p (click)="goToAllCollections()" >See More ></p>

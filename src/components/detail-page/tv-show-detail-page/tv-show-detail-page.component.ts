@@ -27,7 +27,7 @@ import {MatIconModule} from '@angular/material/icon'
   standalone: true,
   imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent,  MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule],
   templateUrl: './tv-show-detail-page.component.html',
-  styleUrl: '../movie-detail-page/movie-detail-page.component.scss'
+  styleUrl: './tv-show-detail-page.component.scss'
 })
 export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
@@ -193,8 +193,11 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   addToCollection(): void {
     const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
-      width: '400px',
-      data: { collections$: this.collectionsService.collections$ }
+      width: '400px',  
+      maxHeight: 'auto',
+      autoFocus: false,
+      backdropClass: 'select-collection-dialog-backdrop',
+      data: { collections$: this.collectionsService.collections$, id: this.tvshow.id.toString(), type: 'tv' }
     });
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {

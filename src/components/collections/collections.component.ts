@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateCollectionDialogComponent } from './create-collection-dialog/create-collection-dialog.component';
@@ -23,18 +23,17 @@ export class CollectionsComponent implements OnInit {
     public collectionsService: CollectionsService,
     private dialog: MatDialog,
   ) {
-    this.collections$ = this.collectionsService.collections$;
+    this.collections$ = this.collectionsService.collections$.pipe(
+      map(collections => collections.sort((a, b) => a.name.localeCompare(b.name)))
+    );
+
+    // filter empty collections
+    this.collections$ = this.collections$.pipe(
+      map(collections => collections.filter(collection => collection.items.length > 0))
+    );
   }
 
   ngOnInit(): void {
-    console.log('CollectionsComponent initialized');
-    this.collections$.subscribe(collections => {
-
-        for (const collection of collections) {
-            console.log(collection.name);
-            console.log(collection.items);
-        }
-    });
   }
 
   openCreateCollectionDialog(): void {

@@ -97,8 +97,11 @@ export class MovieDetailPageComponent implements OnInit {
 
   addToCollection(): void {
     const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
-      width: '400px',
-      data: { collections$: this.collectionsService.collections$ }
+      width: '400px',  
+      maxHeight: 'auto',
+      autoFocus: false,
+      backdropClass: 'select-collection-dialog-backdrop',
+      data: { collections$: this.collectionsService.collections$, id: this.movie.id.toString(), type: 'movie' }
     });
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {

@@ -8,26 +8,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-select-collection-dialog',
-  template: `
-    <h2 mat-dialog-title>Add to Collection</h2>
-    <mat-dialog-content>
-      <mat-form-field appearance="fill" style="width: 100%">
-        <mat-label>Select Collection</mat-label>
-        <mat-select [(ngModel)]="selectedCollectionId">
-          <mat-option *ngFor="let collection of collections$ | async" [value]="collection.id">
-            {{collection.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button color="primary" [disabled]="!selectedCollectionId" (click)="onConfirm()">Add</button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: './select-collection-dialog.component.html',
+  styleUrl: './select-collection-dialog.component.scss',
   standalone: true,
   imports: [
     CommonModule,
@@ -44,9 +30,14 @@ export class SelectCollectionDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<SelectCollectionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { collections$: Observable<Collection[]> }
+    @Inject(MAT_DIALOG_DATA) public data: { collections$: Observable<Collection[]>, id: string, type: string }
   ) {
-    this.collections$ = data.collections$;
+
+    // only show collections that don't already contain the item
+    this.collections$ = data.collections$.pipe(
+      map((collections: Collection[]) => collections.filter(collection => !collection.items.some(item => item.id === data.id && item.type === data.type)))
+    );
+
   }
 
   onCancel(): void {

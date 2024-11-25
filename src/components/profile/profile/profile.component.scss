@@ -1,8 +1,8 @@
-.show-container {
+.profile-items-container {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    background-color: var(--secondaryColor);
+    background-color: var(--primaryColor);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -52,8 +52,9 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
+    margin-left: 5px;
     border: thin solid var(--borderColor);
-    background-color: #000000;
+    background-color: var(--primaryColor);
     border-radius: 5px;
     color: var(--borderColor);
 }
@@ -98,12 +99,16 @@
 .tv-time-value {
     font-size: 18px;
     font-weight: bold;
+    color: var(--textColor2);
+
 }
 
 .tv-time-label {
     font-size: 10px;
     font-weight: bold;
     margin-top: 5px;
+    color: var(--textColor2);
+
 }
 
 .banner {
@@ -122,6 +127,10 @@
     font-weight: bold;
     margin: 0;
     color: var(--textColor);
+}
+
+.section-title-stats{
+    margin-left: 5px;
 }
 
 .edit-banner-button {
