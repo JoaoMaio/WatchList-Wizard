@@ -1,0 +1,19 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="dialog-title">Create New Collection</h2>
+  <mat-dialog-content class="dialog-content">
+    <mat-form-field appearance="outline" class="custom-form-field">
+      <mat-label class="select-label">Name</mat-label>
+      <input matInput [(ngModel)]="name" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="custom-form-field description">
+      <mat-label class="select-label">Description</mat-label>
+      <textarea matInput [(ngModel)]="description" rows="3"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="cancel-btn" (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" class="confirm-btn" (click)="create()" [disabled]="!name">
+      Create
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -17,7 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
-import { SelectCollectionDialogComponent } from '../../dialogs/select-collection-dialog/select-collection-dialog.component';
+import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { CollectionItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 

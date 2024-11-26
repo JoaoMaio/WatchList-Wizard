@@ -8,7 +8,7 @@ import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 import {MatIconModule} from '@angular/material/icon'
 import { CollectionItem } from '../../../utils/collection.model';
-import { SelectCollectionDialogComponent } from '../../dialogs/select-collection-dialog/select-collection-dialog.component';
+import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CollectionsService } from '../../../services/collections.service';
 
