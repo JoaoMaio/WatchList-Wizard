@@ -20,13 +20,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class CreateCollectionDialogComponent {
   name = '';
-  description = '';
 
   constructor(private dialogRef: MatDialogRef<CreateCollectionDialogComponent>) {}
 
   create(): void {
     if (this.name) {
-      this.dialogRef.close({ name: this.name, description: this.description });
+      this.dialogRef.close({ name: this.name });
     }
   }
 

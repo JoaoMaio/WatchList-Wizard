@@ -7,7 +7,7 @@
 <!--  If collections are not empty, show the collections-->
 <div class="carouselContainer">
     <div class="suggestionsContainer">
-        <div *ngFor="let collection of collections$ | async" class="collection-card">
+        <div *ngFor="let collection of collections$ | async" class="collection-card" (click)="goToCollection(collection)">
             <div class="image-grid">
                 <img *ngFor="let item of collection.items.slice(0, 4)" 
                      [src]="'https://image.tmdb.org/t/p/w500' + item.poster_path"

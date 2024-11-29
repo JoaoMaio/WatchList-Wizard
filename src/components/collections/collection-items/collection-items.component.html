@@ -1,0 +1,13 @@
+<div class="page">
+    <button mat-button (click)="goBack()" class="back-button">
+        <mat-icon class="back-icon">arrow_back</mat-icon>
+    </button>
+
+    <div class="Title">
+        <p class="name">{{ collection.name }}</p>
+    </div>
+</div>
+
+<div class="grid">
+    <app-show-items-in-grid [items]="collection.items" [howManyColumns]="4"></app-show-items-in-grid>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ApiService } from './api.service';
-import { Collection, CollectionItem } from '../utils/collection.model';
+import { Collection, GeneralItem } from '../utils/collection.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,12 +46,11 @@ export class CollectionsService {
     }
   }
 
-  async createCollection(name: string, description: string): Promise<void> {
+  async createCollection(name: string): Promise<void> {
     const collections = this.collectionsSubject.value;
     const newCollection: Collection = {
       id: Date.now().toString(),
       name,
-      description,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       items: []
@@ -61,7 +60,7 @@ export class CollectionsService {
     await this.saveCollections(collections);
   }
 
-  async addToCollection(collectionId: string, item: CollectionItem): Promise<void> {
+  async addToCollection(collectionId: string, item: GeneralItem): Promise<void> {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
     

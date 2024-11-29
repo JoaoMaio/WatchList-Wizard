@@ -24,6 +24,7 @@ export class ShowAllCollectionsComponent {
             ) {
     this.collectionsService.collections$.subscribe((collections) => {
       this.collections = collections;
+      this.collections.sort((a, b) => a.name.localeCompare(b.name));
     });
   }
 
@@ -37,12 +38,11 @@ export class ShowAllCollectionsComponent {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.collectionsService.createCollection(result.name, result.description);
+        this.collectionsService.createCollection(result.name);
       }
     });
   }
 
-  // go to the previous page
   goBack(){
     window.history.back();
   }

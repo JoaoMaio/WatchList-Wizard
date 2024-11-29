@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
-import { CollectionItem } from '../../../utils/collection.model';
+import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 
 
@@ -202,15 +202,15 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {
       if (collectionId) {
-        const collectionItem: CollectionItem = {
+        const GeneralItem: GeneralItem = {
           id: this.tvshow.id.toString(),
-          type: 'tv',
+          type: 'tvshow',
           title: this.tvshow.name,
           poster_path: this.tvshow.poster_path,
           added_at: new Date().toISOString()
         };
         
-        this.collectionsService.addToCollection(collectionId, collectionItem);
+        this.collectionsService.addToCollection(collectionId, GeneralItem);
       }
     });
   }

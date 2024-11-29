@@ -3,9 +3,10 @@ import { HomeComponentComponent } from '../components/home/home-component.compon
 import { MovieDetailPageComponent } from '../components/detail-page/movie-detail-page/movie-detail-page.component';
 import { TvShowDetailPageComponent } from '../components/detail-page/tv-show-detail-page/tv-show-detail-page.component';
 import { SearchComponent } from '../components/navbar/search/search/search.component';
-import { ProfileComponent } from '../components/profile/profile/profile.component';
+import { ProfileComponent } from '../components/profile/profile.component';
 import { EditBannerComponent } from '../components/edit-banner/edit-banner.component';
 import { ShowAllCollectionsComponent } from '../components/collections/show-all-collections/show-all-collections.component';
+import { CollectionItemsComponent } from '../components/collections/collection-items/collection-items.component';
 
 export const routes: Routes = [
 
@@ -16,5 +17,7 @@ export const routes: Routes = [
     { path: 'profile', component: ProfileComponent },
     { path: 'edit-banner', component: EditBannerComponent },
     { path: 'collections', component: ShowAllCollectionsComponent },
+    { path: 'collection/:id', component: CollectionItemsComponent },
+
 ];
 

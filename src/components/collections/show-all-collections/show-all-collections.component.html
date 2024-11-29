@@ -9,16 +9,14 @@
 <div class="collection-card-container">
     <div *ngFor="let collection of collections">
         <div (click)="goToCollection(collection)" class="collection-card">
-            <div class="image-grid">
-                <!-- Replace single empty grid with 4 placeholder divs -->
-                <ng-container *ngIf="collection.items.length === 0">
-                    <div class="empty-image-grid" *ngFor="let i of [1,2,3,4]"></div>
-                </ng-container>
-
+            <div class="image-grid" *ngIf="collection.items.length > 0">
                 <img *ngFor="let item of collection.items.slice(0, 4)" 
                         [src]="'https://image.tmdb.org/t/p/w500' + item.poster_path"
                         [alt]="item.title"
                         class="collection-item-image">
+            </div>
+            <div *ngIf="collection.items.length === 0" class="no-image-grid">
+                <img class="empty-collection-img" src="empty.png">
             </div>
             <div class="collection-name">
                 {{collection.name}}

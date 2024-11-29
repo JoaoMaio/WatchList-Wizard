@@ -7,7 +7,7 @@ import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.servi
 import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 import {MatIconModule} from '@angular/material/icon'
-import { CollectionItem } from '../../../utils/collection.model';
+import { GeneralItem } from '../../../utils/collection.model';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CollectionsService } from '../../../services/collections.service';
@@ -106,7 +106,7 @@ export class MovieDetailPageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {
       if (collectionId) {
-        const collectionItem: CollectionItem = {
+        const GeneralItem: GeneralItem = {
           id: this.movie.id.toString(),
           type: 'movie',
           title: this.movie.title,
@@ -114,7 +114,7 @@ export class MovieDetailPageComponent implements OnInit {
           added_at: new Date().toISOString()
         };
         
-        this.collectionsService.addToCollection(collectionId, collectionItem);
+        this.collectionsService.addToCollection(collectionId, GeneralItem);
       }
     });
   }

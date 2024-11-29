@@ -1,6 +1,6 @@
-export interface CollectionItem {
+export interface GeneralItem {
   id: string;
-  type: 'movie' | 'tv';
+  type: 'movie' | 'tvshow';
   title: string;
   poster_path: string;
   added_at: string;
@@ -9,8 +9,7 @@ export interface CollectionItem {
 export interface Collection {
   id: string;
   name: string;
-  description: string;
   created_at: string;
   updated_at: string;
-  items: CollectionItem[];
+  items: GeneralItem[];
 }

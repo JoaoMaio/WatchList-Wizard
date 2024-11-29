@@ -43,6 +43,21 @@
     text-align: center;
 }
 
+.no-image-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.empty-collection-img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+}
+
+
 .image-grid{
     display: grid;
     grid-template-columns: repeat(4, 1fr);

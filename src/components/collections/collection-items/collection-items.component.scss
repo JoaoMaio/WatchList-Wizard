@@ -1,0 +1,52 @@
+.page{
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.Title{
+    display: flex;
+    flex-direction: column;
+
+    .name{
+        font-size: 24px;
+        font-weight: 500;
+        padding: 0;
+        margin: 0;
+        margin-top: 10px;
+    }
+}
+
+.grid{
+    margin-top: 20px;
+}
+
+.back-button {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 1;
+    padding: 8px !important;
+    margin: 0 !important;
+    min-width: 40px !important;
+    border-radius: 4px;
+    color: white;
+    background-color: rgba(34, 1, 53, 0.5) !important;
+    border: 1px solid rgba(58, 2, 91, 0.5) !important;
+    backdrop-filter: blur(2px);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 0 !important;
+    height: 40px !important;
+    width: 40px !important;
+
+    mat-icon {
+      margin: 0 !important;
+      height: 24px !important;
+      width: 24px !important;
+      line-height: 24px !important;
+    }
+  }

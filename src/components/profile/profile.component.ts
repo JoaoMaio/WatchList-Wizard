@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, SimpleObject } from '../../../services/api.service';
+import { ApiService, SimpleObject } from '../../services/api.service';
 import { Router } from '@angular/router';
 import {CommonModule} from '@angular/common';
-import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
-import { environment } from '../../../environment';
+import { SuggestionComponent } from "../home/suggestion-component/suggestion.component";
+import { environment } from '../../environment';
 import { Preferences } from '@capacitor/preferences';
-import {ApiMoviesService} from '../../../services/api-movies.service';
-import {ApiShowsService} from '../../../services/api-shows.service';
-import { CollectionsComponent } from '../../collections/collections.component';
+import {ApiMoviesService} from '../../services/api-movies.service';
+import {ApiShowsService} from '../../services/api-shows.service';
+import { CollectionsComponent } from '../collections/collections.component';
 
 
 type Time = {

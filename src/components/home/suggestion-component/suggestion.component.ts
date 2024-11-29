@@ -14,9 +14,9 @@ import { environment } from '../../../environment';
 })
 export class SuggestionComponent implements OnInit, OnChanges {
 
-  @Input() suggestions: SimpleObject[] | SimpleObject[] = [];
+  @Input() suggestions: SimpleObject[] = [];
 
-  visibleSuggestions: SimpleObject[] | SimpleObject[] = [];
+  visibleSuggestions: SimpleObject[] = [];
   currentIndex: number = 0;
   imgPath: string = environment.imgPath;
 
@@ -33,17 +33,8 @@ export class SuggestionComponent implements OnInit, OnChanges {
     }
   }
 
-  movieInfo(movie: SimpleObject) {
-    this.router.navigate(['/info/movie', movie.id]);
+  showInfo(object: SimpleObject) {
+    this.router.navigate([`/info/${object.type}`, object.id]);
   }
-
-  showInfo(show: SimpleObject) {
-    this.router.navigate(['/info/tvshow', show.id]);
-  }
-
-  isShowingSuggestions() {
-    return this.visibleSuggestions[0].type === 'movie';
-  }
-
 
 }

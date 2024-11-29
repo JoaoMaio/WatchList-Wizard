@@ -5,6 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateCollectionDialogComponent } from './create-collection-dialog/create-collection-dialog.component';
 import { Collection } from '../../utils/collection.model';
 import { CollectionsService } from '../../services/collections.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-collections',
@@ -16,12 +17,13 @@ import { CollectionsService } from '../../services/collections.service';
     MatDialogModule,
   ]
 })
-export class CollectionsComponent implements OnInit {
+export class CollectionsComponent {
   collections$: Observable<Collection[]>;
 
   constructor(
     public collectionsService: CollectionsService,
     private dialog: MatDialog,
+    private router: Router
   ) {
     this.collections$ = this.collectionsService.collections$.pipe(
       map(collections => collections.sort((a, b) => a.name.localeCompare(b.name)))
@@ -33,7 +35,8 @@ export class CollectionsComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
+  goToCollection(collection: Collection){
+    this.router.navigate(['/collection', collection.id]);
   }
 
   openCreateCollectionDialog(): void {
@@ -41,7 +44,7 @@ export class CollectionsComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.collectionsService.createCollection(result.name, result.description);
+        this.collectionsService.createCollection(result.name);
       }
     });
   }
