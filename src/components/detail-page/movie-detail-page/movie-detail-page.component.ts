@@ -101,7 +101,7 @@ export class MovieDetailPageComponent implements OnInit {
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.movie.id.toString(), type: 'movie' }
+      data: { collections$: this.collectionsService.collections$, id: this.movie.id, type: 'movie' }
     });
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {

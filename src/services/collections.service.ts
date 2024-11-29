@@ -64,7 +64,7 @@ export class CollectionsService {
   async addToCollection(collectionId: string, item: GeneralItem): Promise<void> {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
-    
+
     if (collection) {
       collection.items.push(item);
       collection.updated_at = new Date().toISOString();

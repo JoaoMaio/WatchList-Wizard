@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { Collection } from '../../../utils/collection.model';
@@ -35,7 +35,9 @@ export class SelectCollectionDialogComponent {
 
     // only show collections that don't already contain the item
     this.collections$ = data.collections$.pipe(
-      map((collections: Collection[]) => collections.filter(collection => !collection.items.some(item => item.id === data.id && item.type === data.type)))
+      map((collections: Collection[]) => collections.filter(collection => 
+        !collection.items.some(item => item.id === data.id && item.type === data.type)
+      ))
     );
 
   }

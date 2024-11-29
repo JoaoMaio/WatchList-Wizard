@@ -197,7 +197,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.tvshow.id.toString(), type: 'tv' }
+      data: { collections$: this.collectionsService.collections$, id: this.tvshow.id, type: 'tvshow' }
     });
 
     dialogRef.afterClosed().subscribe((collectionId: string) => {
