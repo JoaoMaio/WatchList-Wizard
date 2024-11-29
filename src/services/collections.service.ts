@@ -57,6 +57,7 @@ export class CollectionsService {
     };
     
     collections.push(newCollection);
+    console.log('collections', collections);
     await this.saveCollections(collections);
   }
 
@@ -65,16 +66,13 @@ export class CollectionsService {
     const collection = collections.find(c => c.id === collectionId);
     
     if (collection) {
-      collection.items.push({
-        ...item,
-        added_at: new Date().toISOString()
-      });
+      collection.items.push(item);
       collection.updated_at = new Date().toISOString();
       await this.saveCollections(collections);
     }
   }
 
-  async removeFromCollection(collectionId: string, itemId: string): Promise<void> {
+  async removeFromCollection(collectionId: string, itemId: number): Promise<void> {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
     

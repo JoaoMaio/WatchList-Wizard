@@ -8,12 +8,17 @@
 <div class="carouselContainer">
     <div class="suggestionsContainer">
         <div *ngFor="let collection of collections$ | async" class="collection-card" (click)="goToCollection(collection)">
-            <div class="image-grid">
+            <div class="image-grid" *ngIf="collection.items.length > 0">
                 <img *ngFor="let item of collection.items.slice(0, 4)" 
                      [src]="'https://image.tmdb.org/t/p/w500' + item.poster_path"
                      [alt]="item.title"
-                     class="collection-item-image">
+                     class="collection-item-image">                
             </div>
+
+            <div class="image-grid" *ngIf="collection.items.length === 0">
+                <img src="amongus.png" alt="amongus" class="empty-collection-item-image">
+            </div>
+
             <div class="collection-name">
                 {{collection.name}}
             </div>

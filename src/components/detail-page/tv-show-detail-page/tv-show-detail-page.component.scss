@@ -1,404 +1,62 @@
-.page {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  
-    .back-button {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 1;
-      padding: 8px !important;
-      margin: 0 !important;
-      min-width: 40px !important;
-      border-radius: 4px;
-      color: white;
-      background-color: rgba(34, 1, 53, 0.5) !important;
-      border: 1px solid rgba(58, 2, 91, 0.5) !important;
-      backdrop-filter: blur(2px);
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      line-height: 0 !important;
-      height: 40px !important;
-      width: 40px !important;
-  
-      mat-icon {
-        margin: 0 !important;
-        height: 24px !important;
-        width: 24px !important;
-        line-height: 24px !important;
-      }
-    }
-    
-    .add-to-collection-button {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      z-index: 1;
-      padding: 8px !important;
-      margin: 0 !important;
-      min-width: 40px !important;
-      border-radius: 4px;
-      color: white;
-      background-color: rgba(34, 1, 53, 0.5) !important;
-      border: 1px solid rgba(58, 2, 91, 0.5) !important;
-      backdrop-filter: blur(2px);
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      line-height: 0 !important;
-      height: 40px !important;
-      width: 40px !important;
-  
-      mat-icon {
-        margin: 0 !important;
-        height: 24px !important;
-        width: 24px !important;
-        line-height: 24px !important;
-      }
-    }
-  
-    .card {
-      position: relative;
-      width: 100%;
-      height: 200px;
+@use '../../../utils/comon';
+
+.seasons{
+  margin-bottom: 50px;
+}
+
+.biggerthanone{
+  font-size: 10px;
+}
+
+.section_title{
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--textColor);
+  padding: 0;
+  margin: 0 0 0 3px;
+}
+
+.episode-details {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  border: 1px solid var(--a_tertiaryColor);
+  align-items: center;
+
+  .image_container {
+      width: 30%;
+      height: 80px;
       overflow: hidden;
-  
-      .backdrop {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-  
-        img {
+      border-radius: 8px;
+      margin-right: 10px;
+      position: relative;
+
+      img {
           position: absolute;
-          top: 50%; // Center the image vertically
+          top: 50%;
           left: 50%;
           width: 100%;
           height: 100%;
           object-fit: cover;
           transform: translate(-50%, -50%);
-        }
-  
-        .error_image{
-          filter: blur(5px);
-          opacity: 0.5;
-        }
-  
-        .title_checkmark {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          position: absolute;
-          bottom: 0;
-          z-index: 1;
-          background-color: rgba(0, 0, 0, 0.2);
-          width: 100%;
-  
-            /* Background blur */
-          &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
-            backdrop-filter: blur(1px);
-          }
-  
-          .info{
-            display: flex;
-            flex-direction: column;
-            margin: 0;
-            padding-left: 5px;
-            padding-right: 5px;
-            align-items: flex-start;
-  
-            .countSeasons_RunTime{
-              display: flex;
-              flex-direction: row;
-              gap : 10px;
-              align-items: center;
-              margin: 0;
-              padding: 0;
-              margin-bottom: 5px;
-  
-              span{
-                font-size: 10px;
-                font-weight: bold;
-                color: var(--textColor);
-                margin: 0;
-                padding: 0;
-              }
-            }
-          }
-        }
-      }
-    }
-  
-    .content {
-      position: relative;
-      margin: 5px;
-      z-index: 1;
-      color: var(--textColor);
-  
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      overflow: hidden;
-  
-      .movie_info, .tvshow_info{
-        display: flex;
-        flex-direction: column;
-        row-gap: 10px;
-      }
-  
-    }
-  }
-  
-  .title {
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-    margin: 0;
-    padding: 0;
-  
-  }
-  
-  .markAsWatchedbutton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    color: var(--textColor);
-    background-color: rgba(131, 125, 125, 0.2);
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-size: 17px;
-
-    &.watched {
-      background-color: var(--a_senaryColor);
-      color: white
-    }
-  }
-
-
-  .markAsWatchedTitle {
-    margin-right: 5px;
-  }
-  
-  .markAsWatched {
-    .markAsWatchedbutton {
-      width: 23px;
-      height: 23px;
-    }
-  }
-  
-  .genres {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 5px;
-  
-      span {
-        display: inline-block;
-        padding: 5px 15px;
-        background-color: var(--a_tertiaryColor);
-        border-radius: 20px;
-        border: 1px solid var(--a_secondaryColor);
-        color: var(--textColor);
-        font-size: 0.8rem;
-        white-space: nowrap;
-        text-align: center;
       }
   }
-  
-  .rating {
-    display: flex;
-    flex-direction: row;
-    font-size: 0.8rem;
-    align-items: center;
-    gap: 10px;
-  
-    .rating_inside {
-      .badge {
-        padding: 2px 5px !important;
-        border-radius: 10px;
-  
-        &.badge-success {
-          background-color: #28a745;
-          color: white !important;
 
-        }
-  
-        &.badge-warning {
-          background-color: #9c7f29;
-          color: white !important;
-        }
-  
-        &.badge-danger {
-          background-color: #dc3545;
-          color: white !important;
-        }
-      }
-  
-    }
-  
-  }
-  
-  .overview-container {
-    position: relative;
-    max-width: 100%; /* You can adjust the width as needed */
-  }
-  
-  .overview {
-    font-size: 12px;
-    display: -webkit-box; /* Required for webkit-based browsers */
-    -webkit-box-orient: vertical; /* Required for webkit-based browsers */
+  .text_container {
+    width: 60%;
     overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    line-height: 13px;
-    margin-bottom: 2px;
-  }
-  
-  .overview.expanded {
-    -webkit-line-clamp: unset; /* Remove the line clamp */
-    line-clamp: unset;
-    max-height: none; /* Allow full height */
-  }
-  
-  .toggle-button {
-    font-family: var(--fontFamily);
-    background: none;
-    border: none;
-    color: var(--a_quinaryColor);
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-  }
-  
-  .divider {
-    border-top: 1px solid var(--a_tertiaryColor);
-    margin: 5px 0;
-  }
-  
-  .release_date {
-    font-size: 0.8rem;
-  }
-  
-  .budget {
-    font-size: 0.8rem;
-  }
-  
-  .providers_section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  
-    .providers {
-      display: flex;
-      flex-direction: row;
-      gap: 5px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: thin;
-      scrollbar-color: transparent transparent;
-  
-        span {
-          display:flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 5px;
-          padding: 5px 10px;
-          background-color: var(--a_tertiaryColor);
-          border-radius: 20px;
-          border: 1px solid var(--a_secondaryColor);
-          color: var(--textColor);
-  
-          img{
-            width: 20px;
-            height: 20px;
-          }
-  
-          p{
-            margin: 2px;
-            padding: 2px;
-            font-size: 0.8rem;
-          }
-        }
-    }
-  }
-  
-  .seasons{
-    margin-bottom: 50px;
-  }
-  
-  .biggerthanone{
-    font-size: 10px;
-  }
-  
-  .section_title{
-    font-size: 15px;
-    font-weight: bold;
-    color: var(--textColor);
-    padding: 0;
-    margin: 0 0 0 3px;
-  }
-  
-  .episode-details {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    border: 1px solid var(--a_tertiaryColor);
-    align-items: center;
-  
-    .image_container {
-        width: 30%;
-        height: 80px;
+
+    .episode-title {
+        font-size: 14px;
+        margin: 0;
+        line-height: 1.2;
         overflow: hidden;
-        border-radius: 8px;
-        margin-right: 10px;
-        position: relative;
-  
-        img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-        }
-    }
-  
-    .text_container {
-      width: 60%;
-      overflow: hidden;
-  
-      .episode-title {
-          font-size: 14px;
-          margin: 0;
-          line-height: 1.2;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: normal;
-      }
-    }
-  
-    .markAsWatched{
-      width: 10%;
+        text-overflow: ellipsis;
+        white-space: normal;
     }
   }
-  
-  
-  
+
+  .markAsWatched{
+    width: 10%;
+  }
+}

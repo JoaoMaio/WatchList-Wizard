@@ -1,11 +1,9 @@
 export interface GeneralItem {
-  id: string;
-  type: 'movie' | 'tvshow';
-  title: string;
+  id: number;
   poster_path: string;
-  added_at: string;
+  title: string;
+  type: string;
 }
-
 export interface Collection {
   id: string;
   name: string;

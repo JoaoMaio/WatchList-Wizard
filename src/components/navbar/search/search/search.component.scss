@@ -39,51 +39,5 @@
     width: 100%;
     max-width: 1200px;
     margin-top: 20px;
-
-    .search-item {
-      position: relative;
-      width: 100%;
-      padding-top: 150%; /* Aspect ratio 1:1.5 for poster style */
-      overflow: hidden;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.3s;
-
-      .item-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 8px;
-        z-index: 1;
-      }
-
-      .error{
-        filter: blur(5px);
-        opacity: 0.5;
-      }
-
-      .fallback-wrapper {
-        width: 100%;
-        height: 100%;
-      }
-
-      .item-title {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        color: var(--textColor);
-        text-align: center;
-        font-size: 14px;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        z-index: 2;
-        font-family: var(--fontFamily);
-      }
-
-    }
   }
 }

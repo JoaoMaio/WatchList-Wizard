@@ -30,7 +30,7 @@ export class SelectCollectionDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<SelectCollectionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { collections$: Observable<Collection[]>, id: string, type: string }
+    @Inject(MAT_DIALOG_DATA) public data: { collections$: Observable<Collection[]>, id: number, type: string }
   ) {
 
     // only show collections that don't already contain the item

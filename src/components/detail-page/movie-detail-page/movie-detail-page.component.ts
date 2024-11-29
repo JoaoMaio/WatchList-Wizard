@@ -107,11 +107,10 @@ export class MovieDetailPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe((collectionId: string) => {
       if (collectionId) {
         const GeneralItem: GeneralItem = {
-          id: this.movie.id.toString(),
+          id: this.movie.id,
           type: 'movie',
           title: this.movie.title,
           poster_path: this.movie.poster_path,
-          added_at: new Date().toISOString()
         };
         
         this.collectionsService.addToCollection(collectionId, GeneralItem);

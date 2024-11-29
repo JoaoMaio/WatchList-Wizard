@@ -29,10 +29,10 @@ export class CollectionsComponent {
       map(collections => collections.sort((a, b) => a.name.localeCompare(b.name)))
     );
 
-    // filter empty collections
-    this.collections$ = this.collections$.pipe(
-      map(collections => collections.filter(collection => collection.items.length > 0))
-    );
+    // // filter empty collections
+    // this.collections$ = this.collections$.pipe(
+    //   map(collections => collections.filter(collection => collection.items.length > 0))
+    // );
   }
 
   goToCollection(collection: Collection){
@@ -47,6 +47,8 @@ export class CollectionsComponent {
         this.collectionsService.createCollection(result.name);
       }
     });
+
+
   }
 
 } 

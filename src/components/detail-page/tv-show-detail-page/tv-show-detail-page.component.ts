@@ -203,11 +203,10 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((collectionId: string) => {
       if (collectionId) {
         const GeneralItem: GeneralItem = {
-          id: this.tvshow.id.toString(),
+          id: this.tvshow.id,
           type: 'tvshow',
           title: this.tvshow.name,
           poster_path: this.tvshow.poster_path,
-          added_at: new Date().toISOString()
         };
         
         this.collectionsService.addToCollection(collectionId, GeneralItem);

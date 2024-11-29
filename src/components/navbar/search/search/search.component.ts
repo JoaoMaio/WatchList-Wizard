@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environment';
+import { ShowItemsInGridComponent } from "../../../show-items-in-grid/show-items-in-grid.component";
+import { GeneralItem } from '../../../../utils/collection.model';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, ShowItemsInGridComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -16,7 +18,8 @@ export class SearchComponent {
 
   searchType: string = "tv"
   searchTerm: string = ""
-  response: SimpleObject[] | SimpleObject [] = []
+  response: SimpleObject[] = []
+  responseGeneralItems: GeneralItem[] = []
   imgPath = environment.imgPath;
 
   constructor( public api: ApiService,
