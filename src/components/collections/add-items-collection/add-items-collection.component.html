@@ -1,0 +1,17 @@
+<div class="collection-container">
+    <div class="button-group">
+        <select (change)="toggleView()" class="view-dropdown">
+            <option value="shows" [selected]="selectedView === 'shows'">Shows</option>
+            <option value="movies" [selected]="selectedView === 'movies'">Movies</option>
+        </select>
+    </div>
+    <ul class="item-list">
+        <li *ngFor="let item of items" class="item">
+            <span class="item-title">{{ item.item.title }}</span>
+            <label class="custom-checkbox">
+                <input type="checkbox" (change)="addToCollection(item.item)" [checked]="item.added" />
+                <span class="checkmark"></span>
+            </label>
+        </li>
+    </ul>
+</div>

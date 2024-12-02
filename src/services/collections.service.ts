@@ -57,7 +57,6 @@ export class CollectionsService {
     };
     
     collections.push(newCollection);
-    console.log('collections', collections);
     await this.saveCollections(collections);
   }
 
@@ -65,7 +64,13 @@ export class CollectionsService {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
 
-    if (collection) {
+    if (collection) 
+    {
+      if (collection.items.find(i => i.id === item.id)) 
+      {
+        return;
+      }
+
       collection.items.push(item);
       collection.updated_at = new Date().toISOString();
       await this.saveCollections(collections);
@@ -76,7 +81,14 @@ export class CollectionsService {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
     
-    if (collection) {
+    if (collection) 
+    {
+      if (!collection.items.find(i => i.id === itemId)) 
+      {
+        return;
+      }
+
+
       collection.items = collection.items.filter(item => item.id !== itemId);
       collection.updated_at = new Date().toISOString();
       await this.saveCollections(collections);

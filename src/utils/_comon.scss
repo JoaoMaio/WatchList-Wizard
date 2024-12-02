@@ -1,7 +1,6 @@
-.back-button {
+.above-button {
   position: absolute;
   top: 16px;
-  left: 16px;
   z-index: 1;
   padding: 8px !important;
   margin: 0 !important;
@@ -24,6 +23,14 @@
     width: 24px !important;
     line-height: 24px !important;
   }
+}
+
+.left-button{
+  left: 16px;
+}
+
+.right-button{
+  right: 16px;
 }
 
 .add-to-collection-button {

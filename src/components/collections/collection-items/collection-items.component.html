@@ -1,6 +1,14 @@
 <div class="collection-page">
-    <button mat-button (click)="goBack()" class="back-button">
+    <button mat-button (click)="goBack()" class="above-button left-button">
         <mat-icon class="back-icon">arrow_back</mat-icon>
+    </button>
+
+    <button mat-button (click)="toggleAddItems()" *ngIf="!showAddItems" class="above-button right-button">
+        <mat-icon class="back-icon">library_add</mat-icon>
+    </button>
+
+    <button mat-button (click)="toggleAddItems()" *ngIf="showAddItems" class="above-button right-button">
+        <mat-icon class="back-icon">close</mat-icon>
     </button>
 
     <div class="Title">
@@ -8,6 +16,9 @@
     </div>
 </div>
 
-<div class="grid">
+<div class="grid" *ngIf="!showAddItems">
     <app-show-items-in-grid [items]="collection.items" [howManyColumns]="4"></app-show-items-in-grid>
 </div>
+
+<app-add-items-collection *ngIf="showAddItems" [collectionId]="collection.id"></app-add-items-collection>
+
