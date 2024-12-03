@@ -18,48 +18,82 @@ export class SearchComponent {
 
   searchType: string = "tv"
   searchTerm: string = ""
+  isLoading: boolean = false
   response: SimpleObject[] = []
   responseGeneralItems: GeneralItem[] = []
   imgPath = environment.imgPath;
+  page = 1;
+  totalPages = 0;
 
   constructor( public api: ApiService,
                 private router: Router
   ) { }
 
   ngOnInit() {
+    this.resetSearch()  
+    this.searchTerm = localStorage.getItem('searchTerm') || ''
+    if (this.searchTerm !== '')
+      this.search()
   }
 
   changeSearchType(type: string) {
     this.searchType = type
   }
 
-  setTerm(term: string) {
-    this.searchTerm = term
+  resetSearch() {
+    this.searchTerm = ''
+    this.response = []
+    this.page = 1
   }
 
   search() {
-    this.api.searchInDatabase(this.searchTerm, 'tv').subscribe({
-      next: (response) => {
-        this.response = response
+    this.isLoading = true;
+    this.response = []
+    this.page = 1
 
-        this.api.searchInDatabase(this.searchTerm, 'movie').subscribe({
-          next: (response) => {
-            this.response.push(...response)
+    localStorage.setItem('searchTerm', this.searchTerm);    // save search term to local storage
 
-            this.response.sort((a: SimpleObject, b: SimpleObject) => {
-              return b.popularity - a.popularity
-            })
-          },
-          error: (error) => {
-            console.error('Error fetching search movie results:', error);
-          }
-        })
-      },
-      error: (error) => {
-        console.error('Error fetching search tv results:', error);
+    const fetchPage = (page: number) => {
+      return new Promise<void>((resolve, reject) => {
+      this.api.searchInDatabaseMulti(this.searchTerm, page).subscribe({
+        next: (response) => {
+        this.response = this.response.concat(response[0]);
+        this.totalPages = response[1];
+        this.response.sort((a: SimpleObject, b: SimpleObject) => {
+          return b.popularity - a.popularity;
+        });
+        resolve();
+        },
+        error: (error) => {
+        console.error('Error fetching results:', error);
+        reject(error);
+        }
+      });
+      });
+    };
+
+    const fetchAllPages = async () => {
+      try {
+      await fetchPage(this.page);
+      await fetchPage(this.page + 1);
+      await fetchPage(this.page + 2);
+      this.page += 2;
+      } catch (error) {
+      console.error('Error fetching all pages:', error);
       }
-    })
+    };
 
+    fetchAllPages();
+  }
+
+  incrementPage() {
+    this.page++;
+    this.api.searchInDatabaseMulti(this.searchTerm, this.page).subscribe({
+      next: (response) => {
+        this.response = this.response.concat(response[0]);
+        this.totalPages = response[1];
+      }
+    });
   }
 
   showInfo(object: SimpleObject) {

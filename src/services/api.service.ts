@@ -15,7 +15,7 @@ export interface SimpleObject {
   type: string;
   popularity: number;
   runtime?: number;
-  timesWatched?: number;
+  timesWatched: number;
 }
 
 export interface Spoken_Languages {
@@ -113,7 +113,8 @@ export const EmptySimpleObject: SimpleObject = {
   poster_path: '',
   title: '',
   type: '',
-  popularity: 0
+  popularity: 0,
+  timesWatched: 0
 }
 
 export const EmptySeason: Season = {
@@ -210,7 +211,8 @@ export class ApiService {
               title: movie.title,
               poster_path: movie.poster_path,
               type: "movie",
-              popularity: movie.popularity
+              popularity: movie.popularity,
+              timesWatched: 0
             };
             return SimpleObject;
           });
@@ -223,13 +225,48 @@ export class ApiService {
               title: tvshow.name,
               poster_path: tvshow.poster_path,
               type: "tvshow",
-              popularity: tvshow.popularity
+              popularity: tvshow.popularity,
+              timesWatched: 0
             };
             return SimpleObject;
           });
         }
       })
     )
+  }
+
+
+  searchInDatabaseMulti(query: string, page: number = 1): Observable<[SimpleObject[], number]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/multi?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        const items = response.results.map((result: any) => {
+          if (result.media_type === 'movie') {
+            const SimpleObject: SimpleObject = {
+              id: result.id,
+              original_title: result.original_title,
+              title: result.title,
+              poster_path: result.poster_path,
+              type: "movie",
+              popularity: result.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          } else {
+            const SimpleObject: SimpleObject = {
+              id: result.id,
+              original_title: result.original_name,
+              title: result.name,
+              poster_path: result.poster_path,
+              type: "tvshow",
+              popularity: result.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          }
+        });
+        return [items, response.total_pages];
+      })
+    );
   }
 
   // Remove object (show or movie) from file

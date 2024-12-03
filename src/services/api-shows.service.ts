@@ -119,7 +119,8 @@ export class ApiShowsService {
               title: tvshow.title,
               poster_path: tvshow.poster_path,
               type: "tvshow",
-              popularity: tvshow.popularity
+              popularity: tvshow.popularity,
+              timesWatched: 0
             };
             return SimpleObject;
           });
@@ -140,8 +141,8 @@ export class ApiShowsService {
               title: tvshow.title,
               poster_path: tvshow.poster_path,
               type: "tvshow",
-              popularity: tvshow.popularity
-
+              popularity: tvshow.popularity,
+              timesWatched: 0
             };
             return SimpleObject;
           });

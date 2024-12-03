@@ -50,7 +50,7 @@
             <mat-icon>computer</mat-icon>
             <p class="section-title">Your Shows</p>
         </div>
-        <p>See More ></p>
+        <p (click)="goToAllShows()">See More ></p>
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
 </div>
@@ -61,7 +61,7 @@
             <mat-icon>local_movies</mat-icon>
             <p class="section-title">Your Movies</p>
         </div>
-        <p>See More ></p>
+        <p (click)="goToAllMovies()">See More ></p>
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
 </div>

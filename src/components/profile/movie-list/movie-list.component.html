@@ -1,1 +1,14 @@
-<p>movie-list works!</p>
+<button mat-button (click)="goBack()" class="above-button left-button">
+    <mat-icon>arrow_back</mat-icon>
+</button>
+
+<div class="movie-list">
+    <p class="section-title"> Watched - {{WatchedMoviesGeneralItem.length}}</p>
+    <app-show-items-in-grid [items]="WatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
+</div>
+
+<div class="movie-list">
+    <p class="section-title"> Unwatched - {{UnwatchedMoviesGeneralItem.length}}</p>
+    <app-show-items-in-grid [items]="UnwatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
+</div>
+

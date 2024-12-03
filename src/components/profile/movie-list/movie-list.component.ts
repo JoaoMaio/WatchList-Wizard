@@ -1,12 +1,56 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ApiMoviesService } from '../../../services/api-movies.service';
+import { ApiService, SimpleObject } from '../../../services/api.service';
+import { environment } from '../../../environment';
+import { ShowItemsInGridComponent } from "../../show-items-in-grid/show-items-in-grid.component";
+import { GeneralItem } from '../../../utils/collection.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-movie-list',
   standalone: true,
-  imports: [],
+  imports: [ShowItemsInGridComponent, MatIconModule],
   templateUrl: './movie-list.component.html',
-  styleUrl: './movie-list.component.scss'
+  styleUrl: './movie-list.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
-export class MovieListComponent {
+export class MovieListComponent implements OnInit {
+
+  isLoading: boolean = false;
+  AllMovies: SimpleObject[] = [];
+  WatchedMovies: SimpleObject[] = [];
+  UnwatchedMovies: SimpleObject[] = [];
+  WatchedMoviesGeneralItem: GeneralItem[] = [];
+  UnwatchedMoviesGeneralItem: GeneralItem[] = [];
+
+  imgPath = environment.imgPath;
+
+  constructor(public movies_api: ApiMoviesService,
+              public api: ApiService,
+  ) { }
+
+  async ngOnInit() {
+    this.isLoading = true;
+
+    //Get all movies
+    this.api.getFromFile(0, 'movie').then((response) => {
+      this.AllMovies.push(...response)
+      this.separateMovies();
+    })
+  }
+
+
+  separateMovies() {
+    this.WatchedMovies = this.AllMovies.filter(movie => movie.timesWatched > 0);
+    this.UnwatchedMovies = this.AllMovies.filter(movie => movie.timesWatched == 0);
+    this.WatchedMoviesGeneralItem = this.WatchedMovies.map(movie => ({id: movie.id, poster_path: movie.poster_path, title: movie.title, type: 'movie'}));
+    this.UnwatchedMoviesGeneralItem = this.UnwatchedMovies.map(movie => ({id: movie.id, poster_path: movie.poster_path, title: movie.title, type: 'movie'}));
+    this.isLoading = false;
+  }
+
+  // go to the previous page
+  goBack(){
+    window.history.back();
+  }
 
 }

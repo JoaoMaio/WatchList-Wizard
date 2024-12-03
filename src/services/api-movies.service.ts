@@ -92,7 +92,8 @@ export class ApiMoviesService {
             title: movie.title,
             poster_path: movie.poster_path,
             type: "movie",
-            popularity: movie.popularity
+            popularity: movie.popularity,
+            timesWatched: 0
           };
           return SimpleObject;
         });
@@ -112,7 +113,8 @@ export class ApiMoviesService {
             title: movie.title,
             poster_path: movie.poster_path,
             type: "movie",
-            popularity: movie.popularity
+            popularity: movie.popularity,
+            timesWatched: 0
           };
           return SimpleObject;
         });

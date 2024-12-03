@@ -47,6 +47,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private BANNER_IMAGE = 'bannerImage';
 
   async ngOnInit() {
+    localStorage.removeItem('searchTerm');
+
     this.isLoading = true;
     const { value } =  await Preferences.get({ key: this.BANNER_IMAGE });
 
@@ -187,6 +189,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   goToAllCollections(){
     this.router.navigate(['/collections']);
+  }
+
+  goToAllShows(){
+    this.router.navigate(['/shows']);
+  }
+
+  goToAllMovies(){
+    this.router.navigate(['/movies']);
   }
 
 }

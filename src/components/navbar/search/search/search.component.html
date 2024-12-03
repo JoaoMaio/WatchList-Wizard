@@ -5,7 +5,12 @@
     </div>
   
     <!-- Search Results Grid -->
-    <div class="search-results">
+    <div [ngClass]="{'has-more-results': totalPages <= page}">
       <app-show-items-in-grid [items]="response" [howManyColumns]="3" ></app-show-items-in-grid>
+    </div>
+
+    <!-- Load More-->
+    <div class="load-more" *ngIf="response.length > 0 && totalPages > page">
+      <button (click)="incrementPage()">Load More</button>
     </div>
 </div>
