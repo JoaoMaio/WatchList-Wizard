@@ -31,13 +31,4 @@
       }
     }
   }
-
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-gap: 10px;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 20px;
-  }
 }

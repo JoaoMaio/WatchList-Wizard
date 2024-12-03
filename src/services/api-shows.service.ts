@@ -186,7 +186,7 @@ export class ApiShowsService {
   //----------------------------   SHOWS  FILE  ----------------------------------------//
   //------------------------------------------------------------------------------------//
 
-  async showExistsById(showID: number): Promise<boolean> {
+  async isShowMarked(showID: number): Promise<boolean> {
     try {
 
       if (!await this.generalApi.checkIfFileExists(this.shows_filename)) {
@@ -205,13 +205,18 @@ export class ApiShowsService {
             console.error('Error parsing JSON file:', error);
           }
 
-          return showList.some(show => show.id === showID);
+          const show = showList.find(s => s.id === showID);
+          if (show && show.timesWatched !== undefined && show.timesWatched > 0) {
+            return true;
+          }
+
+          return false;
         }
         return false;
       });
 
     } catch (e) {
-      console.error('Error checking if movie exists', e);
+      console.error('Error checking if show exists', e);
       return false;
     }
   }
@@ -357,7 +362,7 @@ export class ApiShowsService {
     }
   }
 
-  async saveShowsToFile(newShow: ComplexTvshow) {
+  async saveShowsToFile(newShow: ComplexTvshow, watched_times: number) {
     try {
 
       if (!await this.generalApi.checkIfFileExists(this.shows_filename)) {
@@ -383,13 +388,26 @@ export class ApiShowsService {
           title: newShow.name,
           poster_path: newShow.poster_path,
           type: "tvshow",
-          popularity: newShow.popularity
+          popularity: newShow.popularity,
+          timesWatched: watched_times
         };
 
-        currentContentList.push(SimpleObject);
-        const updatedContent = JSON.stringify(currentContentList, null, 2);
+        var updatedContent = '';
+
+        if (currentContentList.find(s => s.id === newShow.id)) {
+          let index = currentContentList.findIndex(s => s.id === newShow.id);
+          currentContentList[index] = SimpleObject;
+           updatedContent = JSON.stringify(currentContentList, null, 2);
+        } 
+        else
+        {
+          currentContentList.push(SimpleObject);
+           updatedContent = JSON.stringify(currentContentList, null, 2);
+        }
 
         await this.generalApi.writeToFile(this.shows_filename, updatedContent);
+
+
       });
 
     } catch (e) {

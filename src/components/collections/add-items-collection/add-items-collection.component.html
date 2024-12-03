@@ -1,17 +1,24 @@
 <div class="collection-container">
     <div class="button-group">
-        <select (change)="toggleView()" class="view-dropdown">
-            <option value="shows" [selected]="selectedView === 'shows'">Shows</option>
-            <option value="movies" [selected]="selectedView === 'movies'">Movies</option>
-        </select>
+        <button (click)="toggleView('tvshow')" class="button" [class.active]="selectedView === 'tvshow'">Shows</button>
+        <button (click)="toggleView('movie')" class="button" [class.active]="selectedView === 'movie'">Movies</button>
     </div>
-    <ul class="item-list">
-        <li *ngFor="let item of items" class="item">
-            <span class="item-title">{{ item.item.title }}</span>
-            <label class="custom-checkbox">
-                <input type="checkbox" (change)="addToCollection(item.item)" [checked]="item.added" />
-                <span class="checkmark"></span>
-            </label>
-        </li>
-    </ul>
+    <div class="grid" [style.grid-template-columns]="'repeat(' + 3 + ', minmax(0, 1fr))'">
+        <div *ngFor="let item of items" class="item">
+            <img *ngIf="api.doesBackDropExist(item.item.poster_path)" [src]="imgPath + item.item.poster_path" alt="{{item.item.title}}" class="item-image" (click)="showInfo(item.item)" />
+            <div *ngIf="!api.doesBackDropExist(item.item.poster_path)" class="fallback-wrapper">
+                <img src="amongus.png" alt="{{item.item.title}}" class="item-image error" (click)="showInfo(item.item)" />
+                <p class="item-title">{{item.item.title}}</p>
+            </div>
+            <!-- Delete icon -->
+            <button mat-button (click)="addOrRemoveFromCollection(item.item)" *ngIf="item.added" class="remove-button item-button">
+                <mat-icon>delete</mat-icon>
+            </button>
+
+            <button mat-button (click)="addOrRemoveFromCollection(item.item)" *ngIf="!item.added" class="add-button item-button">
+                <mat-icon>library_add</mat-icon>
+            </button>
+
+        </div>
+    </div>
 </div>

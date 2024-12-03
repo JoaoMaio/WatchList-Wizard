@@ -88,7 +88,6 @@ export class CollectionsService {
         return;
       }
 
-
       collection.items = collection.items.filter(item => item.id !== itemId);
       collection.updated_at = new Date().toISOString();
       await this.saveCollections(collections);

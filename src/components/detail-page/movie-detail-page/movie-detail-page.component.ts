@@ -48,7 +48,7 @@ export class MovieDetailPageComponent implements OnInit {
           this.movies_api.movieExistsById(this.movie.id).then(object => {
             if (object.id > 0)
             {
-              this.watched = true;
+              this.watched = object.timesWatched || 0 > 0 ? true : false;
               this.timesWatched = object.timesWatched || 0;
             }
           });
@@ -104,7 +104,7 @@ export class MovieDetailPageComponent implements OnInit {
       data: { collections$: this.collectionsService.collections$, id: this.movie.id, type: 'movie' }
     });
 
-    dialogRef.afterClosed().subscribe((collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
       if (collectionId) {
         const GeneralItem: GeneralItem = {
           id: this.movie.id,
@@ -114,6 +114,7 @@ export class MovieDetailPageComponent implements OnInit {
         };
         
         this.collectionsService.addToCollection(collectionId, GeneralItem);
+        await this.movies_api.saveMoviesToFile(this.movie!, 0);
       }
     });
   }

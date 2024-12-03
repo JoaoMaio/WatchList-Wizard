@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // Get the total time spent watching movies
     const movieTimePromise = this.api.getFromFile(0, 'movie').then(movies => {
       for (const movie of movies) {
-        const timeswatched = movie.timesWatched ? movie.timesWatched : 1;
+        const timeswatched = movie.timesWatched ? movie.timesWatched : 0;
 
         this.totalMovieRuntime += movie.runtime ? movie.runtime * timeswatched : 0;
       }
@@ -95,7 +95,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // Get the total number of movies
     const movieCountPromise = this.movies_api.getAllMoviesFromFile().then((response) => {
       for (const movie of response)
-        this.totalMoviesWatched += movie.timesWatched ? movie.timesWatched : 1;
+        this.totalMoviesWatched += movie.timesWatched ? movie.timesWatched : 0;
     });
 
     // Wait for both shows and movies to load

@@ -74,7 +74,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!);
+    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
     this.addedShow.emit();
   }
 

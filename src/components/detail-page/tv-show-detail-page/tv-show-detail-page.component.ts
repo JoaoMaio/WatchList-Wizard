@@ -67,7 +67,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   }
 
   getIfShowIsOnWatchList() {
-    this.shows_api.showExistsById(this.tvshow!.id).then(exists => {
+    this.shows_api.isShowMarked(this.tvshow!.id).then(exists => {
       this.isOnWatchList = exists;
     });
   }
@@ -122,7 +122,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!);
+    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
   }
 
   async removeShowsFromWatchList() {
@@ -200,7 +200,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       data: { collections$: this.collectionsService.collections$, id: this.tvshow.id, type: 'tvshow' }
     });
 
-    dialogRef.afterClosed().subscribe((collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
       if (collectionId) {
         const GeneralItem: GeneralItem = {
           id: this.tvshow.id,
@@ -210,6 +210,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
         };
         
         this.collectionsService.addToCollection(collectionId, GeneralItem);
+        await this.shows_api.saveShowsToFile(this.tvshow!, 0);
       }
     });
   }
