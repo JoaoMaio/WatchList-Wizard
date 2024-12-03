@@ -8,6 +8,7 @@ import { Preferences } from '@capacitor/preferences';
 import {ApiMoviesService} from '../../services/api-movies.service';
 import {ApiShowsService} from '../../services/api-shows.service';
 import { CollectionsComponent } from '../collections/collections.component';
+import { MatIconModule } from '@angular/material/icon';
 
 
 type Time = {
@@ -21,7 +22,7 @@ type Time = {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, SuggestionComponent, CollectionsComponent],
+  imports: [CommonModule, SuggestionComponent, CollectionsComponent, MatIconModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

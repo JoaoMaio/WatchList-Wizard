@@ -8,7 +8,11 @@
 
 </div>
 
-<p class="section-title section-title-stats">Your Stats</p>
+<div class="titleAndIcon">
+    <mat-icon>insert_chart</mat-icon>
+    <p class="section-title">Your Stats</p>
+</div>
+
 <div class="timer-slider">
     <div class="tv-time-container" *ngFor="let time of timeList">
         <div class="tv-time-box">
@@ -42,7 +46,10 @@
 
 <div class="profile-items-container">
     <div class="show-header">
-        <p class="section-title">Your Shows</p>
+        <div class="titleAndIcon">
+            <mat-icon>computer</mat-icon>
+            <p class="section-title">Your Shows</p>
+        </div>
         <p>See More ></p>
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someShows"></app-suggestion-component>
@@ -50,7 +57,10 @@
 
 <div class="profile-items-container">
     <div class="show-header">
-        <p class="section-title">Your Movies</p>
+        <div class="titleAndIcon">
+            <mat-icon>local_movies</mat-icon>
+            <p class="section-title">Your Movies</p>
+        </div>
         <p>See More ></p>
     </div>
     <app-suggestion-component *ngIf="!isLoading" [suggestions]="someMovies"></app-suggestion-component>
@@ -59,7 +69,11 @@
 
 <div class="profile-items-container last">
     <div class="show-header">
-        <p class="section-title">Your Collections</p>
+        
+        <div class="titleAndIcon">
+            <mat-icon>collections_bookmark</mat-icon>
+            <p class="section-title">Your Collections</p>
+        </div>
         <p (click)="goToAllCollections()" >See More ></p>
     </div>
     <app-collections></app-collections>
