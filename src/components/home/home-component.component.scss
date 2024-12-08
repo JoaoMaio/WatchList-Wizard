@@ -1,3 +1,5 @@
+@use '../../utils/comon';
+
 p {
     color: var(--textColor);
     font-family: var(--fontFamily);
@@ -5,4 +7,44 @@ p {
     text-align: left;
     margin-top: 10px;
     margin-bottom: 5px;
+}
+
+.page{
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    overflow-y: auto;
+}
+
+.titleAndIcon {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.section:last-child {
+    margin-bottom: 40px;
+}
+
+.custom-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; 
+    width: 100%;
+    margin: 5px 0; 
+}
+
+.custom-divider::before, 
+.custom-divider::after {
+    content: ''; 
+    flex: 1; 
+    height: 1px;
+    background: #444; 
+    margin: 0;
+}
+
+.divider-content {
+    position: relative; 
+    padding: 0 10px; 
 }

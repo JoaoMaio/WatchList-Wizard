@@ -1,6 +1,57 @@
-<p>Popular Movies Right Now</p>
-<app-suggestion-component *ngIf="!isLoading" [suggestions]="suggestedMovies"></app-suggestion-component>
+<div class="page" *ngIf="!isLoading">
+    
+    <div class="section">
 
-<p>Popular TvShows Right Now</p>
-<app-suggestion-component *ngIf="!isLoading" [suggestions]="suggestedShows"></app-suggestion-component>
+        <div role="separator" class="custom-divider">
+            <div class="divider-content titleAndIcon">
+                <mat-icon>local_movies</mat-icon>
+                <p class="section-title">Popular Movies Right Now</p>
+            </div>
+        </div>
+        
+        <app-suggestion-component [suggestions]="suggestedMovies"></app-suggestion-component>
+    </div>
+    
 
+    <div class="section">
+
+        <div role="separator" class="custom-divider">
+            <div class="divider-content titleAndIcon">
+                <mat-icon>computer</mat-icon>
+                <p class="section-title">Popular TvShows Right Now</p>
+            </div>
+        </div>
+
+        <app-suggestion-component [suggestions]="suggestedShows"></app-suggestion-component>
+    </div>
+
+    <div class="section">
+
+        <div role="separator" class="custom-divider">
+            <div class="divider-content titleAndIcon">
+                <mat-icon>local_movies</mat-icon>
+                <p class="section-title">Top Rated Movies</p>
+            </div>
+        </div>
+
+        <app-suggestion-component [suggestions]="topRatedMovies"></app-suggestion-component>
+    </div>
+
+    <div class="section">
+
+        <div role="separator" class="custom-divider">
+            <div class="divider-content titleAndIcon">
+                <mat-icon>computer</mat-icon>
+                <p class="section-title">Top Rated Shows</p>
+            </div>
+        </div>
+
+        <app-suggestion-component  [suggestions]="topRatedShows"></app-suggestion-component>
+    </div>
+
+</div>
+
+<app-loading-container
+  [isLoading]="isLoading"
+  *ngIf="isLoading">
+</app-loading-container>

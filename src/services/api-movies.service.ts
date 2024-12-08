@@ -134,6 +134,50 @@ export class ApiMoviesService {
     )
   }
 
+  getSimilarMovies(id: string): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/${id}/similar?language=en-US`, { headers: this.headers }).pipe(
+      map((response: MovieResponse) => {
+        return response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
+          const SimpleObject: SimpleObject = {
+            id: movie.id,
+            original_title: movie.original_title,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            type: "movie",
+            popularity: movie.popularity,
+            timesWatched: 0
+          };
+          return SimpleObject;
+        });
+      })
+    )
+  }
+
+
+  getTopRatedMovies(): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/top_rated?language=en-US`, { headers: this.headers }).pipe(
+      map((response: MovieResponse) => {
+        return response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
+          const SimpleObject: SimpleObject = {
+            id: movie.id,
+            original_title: movie.original_title,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            type: "movie",
+            popularity: movie.popularity,
+            timesWatched: 0
+          };
+          return SimpleObject;
+        });
+      })
+    )
+  }
+
+
   //-------------------------------------------------------------------------------------//
   //----------------------------   MOVIES  FILE  ----------------------------------------//
   //-------------------------------------------------------------------------------------//
@@ -257,4 +301,49 @@ export class ApiMoviesService {
       return [];
     }
   }
+
+  async getLastWatchedMovie(): Promise<SimpleObject> {
+    try {
+
+      if (!await this.generalApi.checkIfFileExists(this.movies_filename)) {
+        return EmptySimpleObject;
+      }
+
+      let movieList: SimpleObject[] = [];
+
+      return await this.generalApi.readFromFile(this.movies_filename).then((data) => {
+        let file = data;
+        if (file.data)
+        {
+          try {
+
+            movieList = JSON.parse(file.data as string) as SimpleObject[];
+          } catch (error) {
+            console.error('Error parsing JSON file:', error);
+          }
+        }
+
+        if (movieList.length > 0)
+        {
+          //invert the list order
+          movieList = movieList.reverse();
+
+          //get the first movie that timesWatched > 0
+          let objectIndex = movieList.findIndex(s => s.timesWatched > 0);
+          if (objectIndex === -1) return EmptySimpleObject;
+
+          return movieList[objectIndex];
+
+        }
+
+        return EmptySimpleObject;
+      });
+
+    } catch (e) {
+      console.error('Error checking if movie exists', e);
+      return EmptySimpleObject;
+    }
+
+  }
+
 }

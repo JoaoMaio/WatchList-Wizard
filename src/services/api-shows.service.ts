@@ -183,6 +183,27 @@ export class ApiShowsService {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
 
+  getTopRatedTvShows(): Observable<SimpleObject[]> {
+    return this.http.get<TvShowResponse>(`${this.BASE_API_URL}/tv/top_rated?language=en-US`, { headers: this.headers }).pipe(
+      map((response: TvShowResponse) => {
+        return response.results
+          .filter((tvshow: any) => tvshow.poster_path !== null)
+          .map((tvshow: any) => {
+          const SimpleObject: SimpleObject = {
+            id: tvshow.id,
+            original_title: tvshow.original_title,
+            title: tvshow.title,
+            poster_path: tvshow.poster_path,
+            type: "tvshow",
+            popularity: tvshow.popularity,
+            timesWatched: 0
+          };
+          return SimpleObject;
+        });
+      })
+    )
+  }
+
   //------------------------------------------------------------------------------------//
   //----------------------------   SHOWS  FILE  ----------------------------------------//
   //------------------------------------------------------------------------------------//

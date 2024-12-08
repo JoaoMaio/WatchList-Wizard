@@ -1,5 +1,5 @@
 <div class="collection-page">
-    <button mat-button (click)="goBack()" class="above-button left-button">
+    <button mat-button (click)="goBack()" *ngIf="!showAddItems" class="above-button left-button">
         <mat-icon>arrow_back</mat-icon>
     </button>
 
