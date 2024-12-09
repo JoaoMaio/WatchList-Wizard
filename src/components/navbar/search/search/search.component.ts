@@ -122,8 +122,6 @@ export class SearchComponent implements OnInit {
               this.responsePerson.sort((a: SimplePerson, b: SimplePerson) => {
                 return b.popularity - a.popularity;
               });
-              console.log(this.responsePerson);
-              console.log(this.selectedFilter);
               resolve();
             },
             error: (error) => {

@@ -138,6 +138,36 @@ export type SimplePerson= {
   popularity: number;
 }
 
+export type Person = {
+  id : number;
+  name: string;
+  adult: boolean;
+  known_for_department: string;
+  profile_path: string;
+  birthday: string;
+  place_of_birth: string;
+  deathday: string;
+  biography: string;
+}
+
+export type Credits = {
+  object : SimpleObject;
+  character?: string;
+  job?: string;
+}
+
+export const EmptyPerson  : Person = {
+  id : 0,
+  name: '',
+  adult: false,
+  known_for_department: '',
+  profile_path: '',
+  birthday: '',
+  place_of_birth: '',
+  deathday: '',
+  biography: ''
+}
+
 export const buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
 export const flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
 
@@ -203,7 +233,7 @@ export class ApiService {
   // Check if the backdrop exists
   doesBackDropExist(string: string | undefined): boolean {
     if (!string) return false;
-
+    
     return !string.endsWith('null');
   }
 
@@ -263,37 +293,122 @@ export class ApiService {
     );
   }
 
-  searchInDatabaseMulti(query: string, page: number = 1): Observable<[SimpleObject[], number]> {
-    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/multi?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
-      map((response: MovieResponse | TvShowResponse) => {
-        const items = response.results.map((result: any) => {
-          if (result.media_type === 'movie') {
-            const SimpleObject: SimpleObject = {
-              id: result.id,
-              original_title: result.original_title,
-              title: result.title,
-              poster_path: result.poster_path,
-              type: "movie",
-              popularity: result.popularity,
-              timesWatched: 0
-            };
-            return SimpleObject;
-          } else {
-            const SimpleObject: SimpleObject = {
-              id: result.id,
-              original_title: result.original_name,
-              title: result.name,
-              poster_path: result.poster_path,
-              type: "tvshow",
-              popularity: result.popularity,
-              timesWatched: 0
-            };
-            return SimpleObject;
-          }
-        });
-        return [items, response.total_pages];
+  getPersonDetails(id: number): Observable<Person> {
+    return this.http.get(`${this.BASE_API_URL}person/${id}`, { headers: this.headers }).pipe(
+      map((response: any) => {
+        const person: Person = {
+          id: response.id,
+          name: response.name,
+          adult: response.adult,
+          known_for_department: response.known_for_department,
+          profile_path: response.profile_path,
+          birthday: response.birthday,
+          place_of_birth: response.place_of_birth,
+          deathday: response.deathday,
+          biography: response.biography
+        };
+        return person;
       })
     );
+  }
+
+  getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
+    return this.http.get(`${this.BASE_API_URL}person/${id}/combined_credits`, { headers: this.headers }).pipe(
+      map((response: any) => {
+      const itemsCast = response.cast
+        .filter((object: any) => {
+          if (object.media_type === 'tv') {
+        return object.poster_path && object.name && object.original_name;
+          } else if (object.media_type === 'movie') {
+        return object.poster_path && object.title && object.original_title;
+          }
+          return false;
+        })
+        .map((object: any) => {
+          var SimpleObject: SimpleObject = {
+        id: object.id,
+        original_title: object.original_name,
+        title:  object.name,
+        poster_path: object.poster_path,
+        type: "tvshow",
+        popularity: object.popularity,
+        timesWatched: 0
+          };
+
+          if (object.media_type === 'movie')
+            SimpleObject.type = "movie";
+
+          const credit: Credits = {
+        object: SimpleObject,
+        character: object.character
+          };
+
+          return credit;
+        });
+
+      const itemsCrew = response.crew
+        .filter((object: any) => {
+          if (object.media_type === 'tv') {
+        return object.poster_path && (object.name && object.original_name);
+          } else if (object.media_type === 'movie') {
+        return object.poster_path && (object.title && object.original_title);
+          }
+          return false;
+        })
+        .map((object: any) => {
+          var SimpleObject: SimpleObject = {
+            id: object.id,
+            original_title: object.original_title,
+            title: object.title,
+            poster_path: object.poster_path,
+            type: "tvshow",
+            popularity: object.popularity,
+            timesWatched: 0
+          };
+
+          if (object.media_type === 'movie')
+            SimpleObject.type = "movie";
+
+          const credit: Credits = {
+            object: SimpleObject,
+            job: object.job
+          };
+
+          return credit;
+        });
+
+      return [itemsCast, itemsCrew];
+      })
+    );
+  }
+
+  searchInDatabaseMulti(query: string, page: number = 1): Observable<[SimpleObject[], number]> {
+    return new Observable<[SimpleObject[], number]>((observer) => {
+      let movieList: SimpleObject[] = [];
+      let tvList: SimpleObject[] = [];
+      let totalPages = 0;
+
+      this.searchInDatabase(query, 'movie', page).subscribe({
+      next: (response) => {
+        movieList = response[0];
+        totalPages = response[1];
+
+        this.searchInDatabase(query, 'tv', page).subscribe({
+        next: (response) => {
+          tvList = response[0];
+          totalPages = Math.max(totalPages, response[1]);
+
+          const combinedList = movieList.concat(tvList);
+          observer.next([combinedList, totalPages]);
+          observer.complete();
+        },
+        error: (err) => observer.error(err)
+        });
+      },
+      error: (err) => observer.error(err)
+      });
+    });
+    
   }
 
   // Remove object (show or movie) from file

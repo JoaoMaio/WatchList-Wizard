@@ -9,12 +9,14 @@ import { ShowAllCollectionsComponent } from '../components/collections/show-all-
 import { CollectionItemsComponent } from '../components/collections/collection-items/collection-items.component';
 import { MovieListComponent } from '../components/profile/movie-list/movie-list.component';
 import { ShowListComponent } from '../components/profile/show-list/show-list.component';
+import { PersonDetailPageComponent } from '../components/detail-page/person-detail-page/person-detail-page.component';
 
 export const routes: Routes = [
 
     { path: '', component: HomeComponentComponent },
     { path: 'info/movie/:id', component: MovieDetailPageComponent },
     { path: 'info/tvshow/:id', component: TvShowDetailPageComponent },
+    { path: 'info/person/:id', component: PersonDetailPageComponent },
     { path: 'search', component: SearchComponent },
     { path: 'profile', component: ProfileComponent },
     { path: 'edit-banner', component: EditBannerComponent },

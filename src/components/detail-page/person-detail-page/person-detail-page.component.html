@@ -1,0 +1,42 @@
+<div *ngIf="!isLoading">
+  <div class="page">
+    <div class="header" [ngStyle]="{'background-image': 'url(' + (knownForCast.length > 0 ? imgPath + backgroundImg : 'fallback-image.png') + ')'}">
+      <img *ngIf="api.doesBackDropExist(person.profile_path)" [src]="imgPath + person.profile_path" alt="{{person.name}}" class="header-image" />
+      <div *ngIf="!api.doesBackDropExist(person.profile_path)" class="fallback-wrapper">
+        <img src="amongus.png" alt="{{person.name}}" class="header-image error" />
+        <p class="header-title">{{person.name}}</p>
+      </div>
+      <div class="header-info">
+        <h1>{{person.name}}</h1>
+        <!-- <p>{{person.biography}}</p> -->
+      </div>
+    </div>
+
+    <ul class="tabs">
+      <li *ngFor="let tab of tabs" (click)="selectTab(tab)" [class.active]="selectedTab === tab">{{ tab }}</li>
+    </ul>
+    <div *ngIf="selectedTab === 'Bio'">
+      <!-- Bio content goes here -->
+    </div>
+    <div *ngIf="selectedTab === 'Acting'">
+        <div class="grid">
+            <div *ngFor="let item of knownForCast" class="item">
+              <img *ngIf="api.doesBackDropExist(item.object.poster_path)" [src]="imgPath + item.object.poster_path" alt="{{item.object.title}}" class="item-image" (click)="showInfo(item.object)" />
+              <div *ngIf="!api.doesBackDropExist(item.object.poster_path)" class="fallback-wrapper">
+                <img src="amongus.png" alt="{{item.object.title}}" class="item-image error" (click)="showInfo(item.object)" />
+                <p class="item-title">{{item.object.title}}</p>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="selectedTab !== 'Bio' && selectedTab !== 'Acting'">
+      <ul *ngIf="knownForCrewByJob[selectedTab]">
+        <li *ngFor="let credit of knownForCrewByJob[selectedTab]">
+          <p>{{ credit.object.title }}</p>
+          <small>{{ credit.job }}</small>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+  
