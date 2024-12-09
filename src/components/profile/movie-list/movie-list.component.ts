@@ -22,6 +22,7 @@ export class MovieListComponent implements OnInit {
   UnwatchedMovies: SimpleObject[] = [];
   WatchedMoviesGeneralItem: GeneralItem[] = [];
   UnwatchedMoviesGeneralItem: GeneralItem[] = [];
+  watchedPercentage: number = 0;
 
   imgPath = environment.imgPath;
 
@@ -43,6 +44,7 @@ export class MovieListComponent implements OnInit {
   separateMovies() {
     this.WatchedMovies = this.AllMovies.filter(movie => movie.timesWatched > 0);
     this.UnwatchedMovies = this.AllMovies.filter(movie => movie.timesWatched == 0);
+    this.watchedPercentage = Math.round(this.WatchedMovies.length / this.AllMovies.length * 100);
     this.WatchedMoviesGeneralItem = this.WatchedMovies.map(movie => ({id: movie.id, poster_path: movie.poster_path, title: movie.title, type: 'movie'}));
     this.UnwatchedMoviesGeneralItem = this.UnwatchedMovies.map(movie => ({id: movie.id, poster_path: movie.poster_path, title: movie.title, type: 'movie'}));
     this.isLoading = false;
@@ -52,5 +54,10 @@ export class MovieListComponent implements OnInit {
   goBack(){
     window.history.back();
   }
+
+  getBackgroundGradient(): string {
+    return `linear-gradient(to right, green ${this.watchedPercentage}%, var(--a_secondaryColor) ${this.watchedPercentage}%)`;
+  }
+  
 
 }

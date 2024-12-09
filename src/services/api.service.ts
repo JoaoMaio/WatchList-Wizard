@@ -200,11 +200,11 @@ export class ApiService {
   }
 
   // Search in their database
-  searchInDatabase(query: string, type: string, page: number = 1): Observable<SimpleObject[]> {
+  searchInDatabase(query: string, type: string, page: number = 1): Observable<[SimpleObject[], number]> {
     return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/${type}?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
       map((response: MovieResponse | TvShowResponse) => {
         if (type === 'movie') {
-          return response.results.map((movie: any) => {
+          const items = response.results.map((movie: any) => {
             const SimpleObject: SimpleObject = {
               id: movie.id,
               original_title: movie.original_title,
@@ -216,9 +216,10 @@ export class ApiService {
             };
             return SimpleObject;
           });
+          return [items, response.total_pages];
         }
         else {
-          return response.results.map((tvshow: any) => {
+          const items = response.results.map((tvshow: any) => {
             const SimpleObject: SimpleObject = {
               id: tvshow.id,
               original_title: tvshow.original_name,
@@ -230,6 +231,7 @@ export class ApiService {
             };
             return SimpleObject;
           });
+          return [items, response.total_pages];
         }
       })
     )

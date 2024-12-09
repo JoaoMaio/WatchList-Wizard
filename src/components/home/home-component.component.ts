@@ -31,6 +31,8 @@ export class HomeComponentComponent implements OnInit {
 
   ngOnInit(): void {
     localStorage.removeItem('searchTerm');
+    localStorage.removeItem('selectedFilter');
+
     this.isLoading = true;
 
       Promise.all([

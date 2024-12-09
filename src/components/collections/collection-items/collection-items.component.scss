@@ -1,5 +1,10 @@
 @use '../../../utils/comon';
 
+
+.page{
+    padding: 0 10px;
+}
+
 .collection-page{
     margin: 10px;
     display: flex;
@@ -21,7 +26,6 @@
 }
 
 .grid{
-    margin: 10px;
-    overflow-y: auto;
-    max-height: 79vh;
+    margin-top: 5px;
+    margin-bottom: 50px;
 }

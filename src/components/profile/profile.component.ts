@@ -48,6 +48,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     localStorage.removeItem('searchTerm');
+    localStorage.removeItem('selectedFilter');
 
     this.isLoading = true;
     const { value } =  await Preferences.get({ key: this.BANNER_IMAGE });

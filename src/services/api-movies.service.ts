@@ -155,7 +155,6 @@ export class ApiMoviesService {
     )
   }
 
-
   getTopRatedMovies(): Observable<SimpleObject[]> {
     return this.http.get<MovieResponse>(`${this.BASE_API_URL}/movie/top_rated?language=en-US`, { headers: this.headers }).pipe(
       map((response: MovieResponse) => {
@@ -178,6 +177,8 @@ export class ApiMoviesService {
   }
 
 
+
+  
   //-------------------------------------------------------------------------------------//
   //----------------------------   MOVIES  FILE  ----------------------------------------//
   //-------------------------------------------------------------------------------------//

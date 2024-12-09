@@ -1,9 +1,35 @@
 <div class="search-container">  
     <!-- Search Input -->
     <div class="search-input">
-      <input type="text" placeholder="Search shows and movies" [(ngModel)]="searchTerm" (keyup.enter)="search()"/>
+      <input type="text" placeholder="Search shows and movies" 
+              [(ngModel)]="searchTerm" 
+              (ngModelChange)="onSearchTermChange($event)"
+              (keyup.enter)="search()"/>
+      <button class="search-icon" (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
     </div>
-  
+
+    <!-- Search Filters -->
+    <div class="search-filters">
+      <label [class.active]="selectedFilter === 'all'">
+        <input type="radio" name="filter" value="all" [(ngModel)]="selectedFilter" /> 
+        All
+      </label>
+      <label [class.active]="selectedFilter === 'movies'">
+        <input type="radio" name="filter" value="movies" [(ngModel)]="selectedFilter" /> 
+        Movies
+      </label>
+      <label [class.active]="selectedFilter === 'shows'">
+        <input type="radio" name="filter" value="shows" [(ngModel)]="selectedFilter" /> 
+        Shows
+      </label>
+      <label [class.active]="selectedFilter === 'person'">
+        <input type="radio" name="filter" value="person" [(ngModel)]="selectedFilter" /> 
+        Person
+      </label>
+    </div>
+
     <!-- Search Results Grid -->
     <div [ngClass]="{'has-more-results': totalPages <= page}">
       <app-show-items-in-grid [items]="response" [howManyColumns]="3" ></app-show-items-in-grid>
@@ -13,4 +39,15 @@
     <div class="load-more" *ngIf="response.length > 0 && totalPages > page">
       <button (click)="incrementPage()">Load More</button>
     </div>
+
+    <!-- No Results -->
+    <div class="no-results" *ngIf="response.length === 0 && searched && searchTerm.length > 0">
+      <img class="search-img" src="empty_search.png" alt="Search" />
+    </div>
+
+    <!-- Base  -->
+    <div class="base" *ngIf="response.length === 0 && !searched">
+      <img class="search-img" src="search.png" alt="Search" />
+    </div>
+
 </div>

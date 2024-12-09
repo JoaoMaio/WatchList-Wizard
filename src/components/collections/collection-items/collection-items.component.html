@@ -1,4 +1,5 @@
-<div class="collection-page">
+<div class="page">
+    <div class="collection-page">
     <button mat-button (click)="goBack()" *ngIf="!showAddItems" class="above-button left-button">
         <mat-icon>arrow_back</mat-icon>
     </button>
@@ -22,3 +23,5 @@
 
 <app-add-items-collection *ngIf="showAddItems" [collectionId]="collection.id"></app-add-items-collection>
 
+
+</div>

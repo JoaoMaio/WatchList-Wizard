@@ -1,14 +1,32 @@
-<button mat-button (click)="goBack()" class="above-button left-button">
-    <mat-icon>arrow_back</mat-icon>
-</button>
-
-<div class="movie-list">
-    <p class="section-title"> Watched - {{WatchedMoviesGeneralItem.length}}</p>
-    <app-show-items-in-grid [items]="WatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
+<div class="page">
+    <div class="movie-list">
+        
+        <div class="section-title">
+            <p class="text"> {{WatchedMoviesGeneralItem.length}} Watched Movies </p> 
+    
+            <div class="percentage">
+                <mat-icon class="percentage-text"> remove_red_eye</mat-icon>
+                <p class="text percentage-text">{{watchedPercentage}}%</p>
+            </div>
+        </div>
+    
+        <app-show-items-in-grid [items]="WatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
+    </div>
+    
+    <div class="movie-list">
+    
+        <div class="section-title">
+            <p class="text"> {{ UnwatchedMoviesGeneralItem.length }} Unwatched Movies  </p> 
+    
+            <div class="percentage">
+                <mat-icon class="percentage-text">remove_red_eye</mat-icon>
+                <p class="text percentage-text">{{100 - watchedPercentage}}%</p>
+            </div>
+        </div>
+    
+        <app-show-items-in-grid
+          [items]="UnwatchedMoviesGeneralItem"
+          [howManyColumns]="4"
+        ></app-show-items-in-grid>
+    </div>
 </div>
-
-<div class="movie-list">
-    <p class="section-title"> Unwatched - {{UnwatchedMoviesGeneralItem.length}}</p>
-    <app-show-items-in-grid [items]="UnwatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
-</div>
-
