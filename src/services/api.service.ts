@@ -130,6 +130,14 @@ export const EmptySeason: Season = {
   timesWatched: 0
 }
 
+export type SimplePerson= {
+  id: number;
+  poster_path: string;
+  title: string;
+  type: string;
+  popularity: number;
+}
+
 export const buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
 export const flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
 
@@ -237,6 +245,23 @@ export class ApiService {
     )
   }
 
+  searchPeople(query: string, page: number = 1): Observable<[SimplePerson[], number]> {
+    return this.http.get(`${this.BASE_API_URL}search/person?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: any) => {
+        const items = response.results.map((person: any) => {
+          const SimplePerson: SimplePerson = {
+            id: person.id,
+            title: person.name,
+            poster_path: person.profile_path,
+            popularity: person.popularity,
+            type: "person"
+          };
+          return SimplePerson;
+        });
+        return [items, response.total_pages];
+      })
+    );
+  }
 
   searchInDatabaseMulti(query: string, page: number = 1): Observable<[SimpleObject[], number]> {
     return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}search/multi?query=${query}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(

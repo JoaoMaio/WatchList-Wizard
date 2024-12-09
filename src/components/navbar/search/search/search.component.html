@@ -31,8 +31,13 @@
     </div>
 
     <!-- Search Results Grid -->
-    <div [ngClass]="{'has-more-results': totalPages <= page}">
+    <div class="grid" [ngClass]="{'has-more-results': totalPages <= page}" *ngIf="selectedFilter != 'person'">
       <app-show-items-in-grid [items]="response" [howManyColumns]="3" ></app-show-items-in-grid>
+    </div>
+
+    <!-- Search Results Grid Person-->
+    <div class="grid" [ngClass]="{'has-more-results': totalPages <= page}" *ngIf="selectedFilter === 'person'">
+      <app-show-items-in-grid [items]="responsePerson" [howManyColumns]="4" ></app-show-items-in-grid>
     </div>
 
     <!-- Load More-->
@@ -40,14 +45,5 @@
       <button (click)="incrementPage()">Load More</button>
     </div>
 
-    <!-- No Results -->
-    <div class="no-results" *ngIf="response.length === 0 && searched && searchTerm.length > 0">
-      <img class="search-img" src="empty_search.png" alt="Search" />
-    </div>
-
-    <!-- Base  -->
-    <div class="base" *ngIf="response.length === 0 && !searched">
-      <img class="search-img" src="search.png" alt="Search" />
-    </div>
 
 </div>

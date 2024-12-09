@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { ApiService, SimpleObject } from '../../../../services/api.service';
+import { ApiService, SimpleObject, SimplePerson } from '../../../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { Router } from '@angular/router';
@@ -21,7 +21,7 @@ export class SearchComponent implements OnInit {
   selectedFilter: string = 'all';
   isLoading: boolean = false
   response: SimpleObject[] = []
-  responseGeneralItems: GeneralItem[] = []
+  responsePerson: SimplePerson[] = []
   imgPath = environment.imgPath;
   page = 1;
   totalPages = 0;
@@ -46,16 +46,16 @@ export class SearchComponent implements OnInit {
   }
 
   resetSearch() {
-    this.searchTerm = ''
+    //this.searchTerm = ''
     this.response = []
+    this.responsePerson = []
     this.page = 1
     this.searched = false
   }
 
   search() {  
     this.isLoading = true;
-    this.response = []
-    this.page = 1
+    this.resetSearch()
 
     localStorage.setItem('searchTerm', this.searchTerm);    // save search term to local storage
     localStorage.setItem('selectedFilter', this.selectedFilter);    // save search type to local storage
@@ -114,22 +114,24 @@ export class SearchComponent implements OnInit {
           });
         }
 
-        // if (this.selectedFilter === 'person') {
-        //   this.api.searchInDatabase(this.searchTerm, "tv", page).subscribe({
-        //     next: (response) => {
-        //     this.response = this.response.concat(response[0]);
-        //     this.totalPages = response[1];
-        //     this.response.sort((a: SimpleObject, b: SimpleObject) => {
-        //       return b.popularity - a.popularity;
-        //     });
-        //     resolve();
-        //     },
-        //     error: (error) => {
-        //       console.error('Error fetching results:', error);
-        //     reject(error);
-        //     }
-        //   });
-        // }
+        if (this.selectedFilter === 'person') {
+          this.api.searchPeople(this.searchTerm, page).subscribe({
+            next: (response) => {
+              this.responsePerson = this.responsePerson.concat(response[0]);
+              this.totalPages = response[1];
+              this.responsePerson.sort((a: SimplePerson, b: SimplePerson) => {
+                return b.popularity - a.popularity;
+              });
+              console.log(this.responsePerson);
+              console.log(this.selectedFilter);
+              resolve();
+            },
+            error: (error) => {
+              console.error('Error fetching results:', error);
+            reject(error);
+            }
+          });
+        }
 
       });
     };
