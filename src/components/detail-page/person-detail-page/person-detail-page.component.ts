@@ -20,7 +20,6 @@ export class PersonDetailPageComponent implements OnInit{
 
   knownForCast: Credits[] = [];
   knownForCrew: Credits[] = [];
-  knownForCrewByJob: { [key: string]: Credits[] } = {}; 
 
   backgroundImg: string = '';
 
@@ -75,18 +74,18 @@ export class PersonDetailPageComponent implements OnInit{
           this.knownFor = response;
 
           this.knownForCast = this.knownFor[0];
-
+          this.knownForCrew = this.knownFor[1];
+          
           //order by popularity
           this.knownForCast.sort((a, b) => b.object.popularity - a.object.popularity);
-
-          this.knownForCrew = this.knownFor[1];
+          this.knownForCrew.sort((a, b) => b.object.popularity - a.object.popularity);
 
           if (this.knownForCast.length > 0) 
-            this.tabs.push("Acting");
-          
-          if (this.knownForCrew.length > 0)      
-            this.knownForCrewByJob = this.groupByJob(this.knownForCrew);
+            this.tabs.push("Acting Roles");
 
+          if (this.knownForCrew.length > 0)
+            this.tabs.push("Production Roles");
+            
           resolve();
         },
         error: (error) => {
@@ -97,58 +96,6 @@ export class PersonDetailPageComponent implements OnInit{
     });
   }
 
-  private groupByJob(crew: Credits[]): { [key: string]: Credits[] } {
-    // Define the jobs you want to include
-    const allowedJobs = ['Director', 'Executive Producer', 'Producer', 'Writer'];
-  
-    // order by popularity
-    crew.sort((a, b) => b.object.popularity - a.object.popularity);
-
-
-    // Create a map to group crew credits
-    const groupedCrew = crew.reduce((acc, credit) => {
-      // Skip jobs that are not in the allowed list
-      const job = credit.job;
-
-      if (!job || !allowedJobs.includes(job)) return acc;
-  
-      // Combine "Executive Producer" and "Producer" under the "Producer" category
-      const normalizedJob = (job === 'Executive Producer') ? 'Producer' : job;
-  
-      // Initialize category if it doesn't exist
-      if (!acc[normalizedJob]) {
-        acc[normalizedJob] = [];
-      }
-  
-      // Check for duplicates based on object.title
-      const isDuplicate = acc[normalizedJob].some(existingCredit => 
-        existingCredit.object.title === credit.object.title
-      );
-  
-      if (!isDuplicate) {
-        acc[normalizedJob].push(credit);
-        if (job === 'Executive Producer')
-        {
-          if (!this.tabs.includes('Producer'))
-            this.tabs.push('Producer');
-        }
-        else 
-        {
-          if (!this.tabs.includes(job))
-            this.tabs.push(job);
-        }
-
-      }
-  
-      return acc;
-    }, {} as { [key: string]: Credits[] });
-  
-    return groupedCrew;
-  }
-  
-  objectKeys(obj: object): string[] {
-    return Object.keys(obj);
-  }
   
   selectTab(tab: string) {
     this.selectedTab = tab; 
@@ -161,12 +108,11 @@ export class PersonDetailPageComponent implements OnInit{
   getBackgroundImage(){
 
     var obj = 0;
-
-    if(this.person.known_for_department === 'Crew')
-      obj = this.knownForCrew[0].object.id;
-
+      
     if(this.person.known_for_department === 'Acting')
       obj = this.knownForCast[0].object.id;
+    else
+      obj = this.knownForCrew[0].object.id;
 
 
     this.api.getImages(obj, this.knownForCast[0].object.type == 'tvshow' ? 'tv' : 'movie' ).subscribe({

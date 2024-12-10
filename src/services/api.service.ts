@@ -312,48 +312,73 @@ export class ApiService {
     );
   }
 
+  isValidTvCharacter(object: any): boolean {
+
+    // return object.poster_path && (object.name && object.original_name && object.character && !object.character.includes('Self') && !object.character.includes('self') && !object.character.includes('Himself') && !object.character.includes('himself'));
+
+    // Check if  has a poster, a name, an original name and a character
+    if (!object.poster_path || !object.name || !object.original_name || !object.character) return false;
+
+    // Check if the character is not a self role
+    if (object.character.includes('Self') || 
+        object.character.includes('self') || 
+        object.character.includes('Himself') || 
+        object.character.includes('himself') || 
+        object.character.includes('Herself') ||
+        object.character.includes('herself')
+      ) return false;
+
+    return true;
+  }
+
+  isValidMovieCharacter(object: any): boolean {
+    // Check if  has a poster, a title, an original title and a character
+    if (!object.poster_path || !object.title || !object.original_title) return false;
+
+    return true
+  }
+
+
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
     return this.http.get(`${this.BASE_API_URL}person/${id}/combined_credits`, { headers: this.headers }).pipe(
       map((response: any) => {
-      const itemsCast = response.cast
+      var itemsCast = response.cast
         .filter((object: any) => {
-          if (object.media_type === 'tv') {
-        return object.poster_path && object.name && object.original_name;
-          } else if (object.media_type === 'movie') {
-        return object.poster_path && object.title && object.original_title;
-          }
-          return false;
+            if (object.media_type === 'tv') 
+              return this.isValidTvCharacter(object);
+            else if (object.media_type === 'movie') 
+              return this.isValidMovieCharacter(object);
+        return false;
         })
         .map((object: any) => {
           var SimpleObject: SimpleObject = {
-        id: object.id,
-        original_title: object.original_name,
-        title:  object.name,
-        poster_path: object.poster_path,
-        type: "tvshow",
-        popularity: object.popularity,
-        timesWatched: 0
+            id: object.id,
+            original_title: object.original_name,
+            title:  object.name,
+            poster_path: object.poster_path,
+            type: "tvshow",
+            popularity: object.popularity,
+            timesWatched: 0
           };
 
           if (object.media_type === 'movie')
             SimpleObject.type = "movie";
 
           const credit: Credits = {
-        object: SimpleObject,
-        character: object.character
+            object: SimpleObject,
+            character: object.character
           };
 
           return credit;
         });
 
-      const itemsCrew = response.crew
+      var itemsCrew = response.crew
         .filter((object: any) => {
-          if (object.media_type === 'tv') {
-        return object.poster_path && (object.name && object.original_name);
-          } else if (object.media_type === 'movie') {
-        return object.poster_path && (object.title && object.original_title);
-          }
-          return false;
+          if (object.media_type === 'tv') 
+            return this.isValidTvCharacter(object);
+          else if (object.media_type === 'movie') 
+            return this.isValidMovieCharacter(object);
+        return false;
         })
         .map((object: any) => {
           var SimpleObject: SimpleObject = {
@@ -377,7 +402,17 @@ export class ApiService {
           return credit;
         });
 
-      return [itemsCast, itemsCrew];
+          // Remove duplicates by using a Set to track seen IDs
+          itemsCast = itemsCast.filter((item: Credits, index: number, self: Credits[]) => {
+            return self.findIndex((i:Credits) => i.object.id === item.object.id) === index;
+          });
+
+          itemsCrew = itemsCrew.filter((item: Credits, index: number, self: Credits[]) => {
+            return self.findIndex((i:Credits ) => i.object.id === item.object.id) === index;
+          });
+
+          return [itemsCast, itemsCrew];
+
       })
     );
   }

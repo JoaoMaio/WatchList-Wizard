@@ -3,13 +3,14 @@
   padding: 0; 
   display: flex;
   margin-bottom: 20px; 
+  overflow-x: auto;
 
-  li {
-    margin-right: 20px; 
-    cursor: pointer; 
+  p {
     padding: 10px 15px;
     border: 1px solid transparent; 
     border-radius: 5px; 
+    transition: all 0.3s;
+    font-size: 15px;
 
     &.active {
       border-color: #007bff; 
@@ -81,7 +82,7 @@
 
 .header {
   display: flex;
-  align-items: center;
+  align-items: end;
   padding: 4px;
   background-size: cover;
   //background-position: center;
@@ -99,16 +100,16 @@
     align-items: center;
   }
 
-  .header-title {
-    font-size: 1.2em;
-    color: #333;
-  }
-
   .header-info {
+    //blurred background
+    background: rgba(255, 255, 255, 0.186);
+    backdrop-filter: blur(5px);
+    padding: 3px 8px;
+    
     h1 {
-      font-size: 2em;
+      font-size: 20px;
+      color: var(--a_secondaryColor);
       margin: 0;
-      color: var(--textColor)
     }
   }
 }
