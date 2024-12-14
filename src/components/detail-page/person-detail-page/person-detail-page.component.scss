@@ -2,22 +2,20 @@
   list-style-type: none; 
   padding: 0; 
   display: flex;
-  margin-bottom: 20px; 
-  overflow-x: auto;
+  flex-direction: row;
+  margin-bottom: 10px; 
 
   p {
     padding: 10px 15px;
-    border: 1px solid transparent; 
     border-radius: 5px; 
-    transition: all 0.3s;
     font-size: 15px;
+    border: 1px solid #7126a347;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #fff;
 
     &.active {
-      border-color: #007bff; 
-      background-color: #e7f1ff; 
-      font-weight: bold; 
+      background-color: var(--a_quaternaryColor);
     }
-
   }
 }
 
@@ -34,7 +32,6 @@
     width: 100%;
     padding-top: 150%; /* Aspect ratio 1:1.5 for poster style */
     overflow: hidden;
-    border: 1px solid #1f2a46d6;
     transition: transform 0.2s, box-shadow 0.3s;
 
     .item-image {
@@ -78,6 +75,8 @@
 .page {
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 .header {
@@ -85,7 +84,6 @@
   align-items: end;
   padding: 4px;
   background-size: cover;
-  //background-position: center;
 
   .header-image {
     width: 100px;
@@ -101,15 +99,64 @@
   }
 
   .header-info {
-    //blurred background
-    background: rgba(255, 255, 255, 0.186);
+    background: rgba(255, 255, 255, 0.158);
     backdrop-filter: blur(5px);
-    padding: 3px 8px;
+    padding: 0px 5px;
+    border-radius: 5px;
+
+    .header-name-department {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 3px;
     
-    h1 {
-      font-size: 20px;
-      color: var(--a_secondaryColor);
-      margin: 0;
+      .bio-department {
+        font-size: 11px;
+        color: black;
+        padding-top: 2px;
+      }
+
+      h1 {
+        font-size: 17px;
+        color: black;
+        margin: 0;
+      }
     }
   }
 }
+
+.bio-container {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  margin: 0;
+  margin-bottom: 50px;
+  color: white;
+
+  p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.bio-info {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: black;
+
+  .biot{
+    font-size: 14px;
+  }
+
+  .bio-dates {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+  }
+}
+

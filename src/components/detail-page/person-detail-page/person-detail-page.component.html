@@ -7,26 +7,36 @@
         <p class="header-title">{{person.name}}</p>
       </div>
       <div class="header-info">
-        <h1>{{person.name}}</h1>
-        <!-- <p>{{person.biography}}</p> -->
+        <div class="header-name-department">
+          <h1>{{person.name}}</h1>
+          <p class="bio-department">{{person.known_for_department}}</p>
+        </div>
+
+        <div class="bio-info">
+          <p *ngIf="person.birthday" class="bio-dates">
+            <strong class="biot">Born:</strong> {{person.birthday}} 
+            <span *ngIf="person.place_of_birth">in {{person.place_of_birth}}</span>
+          </p>
+          <p *ngIf="person.deathday" class="bio-dates">
+            <strong class="biot">Died:  </strong> {{person.deathday}}
+          </p>
+        </div>
       </div>
     </div>
 
     <div class="tabs">
       <p *ngFor="let tab of tabs" (click)="selectTab(tab)" [class.active]="selectedTab === tab">{{ tab }}</p>
     </div>
-    <div *ngIf="selectedTab === 'Bio'">
-      <!-- Bio content goes here -->
+    <div *ngIf="selectedTab === 'Bio'" class="bio-container">
+        <p>{{person.biography}}</p>
     </div>
-    <div *ngIf="selectedTab !== 'Bio'">
-        <div class="grid">
-            <div *ngFor="let item of selectedTab === 'Acting Roles' ? knownForCast : knownForCrew" class="item">
-              <img *ngIf="api.doesBackDropExist(item.object.poster_path)" [src]="imgPath + item.object.poster_path" alt="{{item.object.title}}" class="item-image" (click)="showInfo(item.object)" />
-              <div *ngIf="!api.doesBackDropExist(item.object.poster_path)" class="fallback-wrapper">
-                <img src="amongus.png" alt="{{item.object.title}}" class="item-image error" (click)="showInfo(item.object)" />
-                <p class="item-title">{{item.object.title}}</p>
-              </div>
-            </div>
+    <div class="grid" *ngIf="selectedTab !== 'Bio'">
+        <div *ngFor="let item of selectedTab === 'Acting Roles' ? knownForCast : knownForCrew" class="item">
+          <img *ngIf="api.doesBackDropExist(item.object.poster_path)" [src]="imgPath + item.object.poster_path" alt="{{item.object.title}}" class="item-image" (click)="showInfo(item.object)" />
+          <div *ngIf="!api.doesBackDropExist(item.object.poster_path)" class="fallback-wrapper">
+            <img src="amongus.png" alt="{{item.object.title}}" class="item-image error" (click)="showInfo(item.object)" />
+            <p class="item-title">{{item.object.title}}</p>
+          </div>
         </div>
     </div>
   </div>
