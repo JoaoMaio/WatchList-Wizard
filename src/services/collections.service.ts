@@ -26,6 +26,18 @@ export class CollectionsService {
       if (fileData.data) {
         try {
           const collections = JSON.parse(fileData.data as string);
+
+          // if See Later collection doesn't exist, create it
+          if (!collections.find((c: Collection) => c.name === 'See Later')) {
+            collections.push({
+              id: Date.now().toString(),
+              name: 'See Later',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              items: []
+            });
+          }
+
           this.collectionsSubject.next(collections);
         } catch (error) {
           console.error('Error parsing collections JSON file:', error);
@@ -63,6 +75,23 @@ export class CollectionsService {
   async addToCollection(collectionId: string, item: GeneralItem): Promise<void> {
     const collections = this.collectionsSubject.value;
     const collection = collections.find(c => c.id === collectionId);
+
+    if (collection) 
+    {
+      if (collection.items.find(i => i.id === item.id)) 
+      {
+        return;
+      }
+
+      collection.items.push(item);
+      collection.updated_at = new Date().toISOString();
+      await this.saveCollections(collections);
+    }
+  }
+
+  async addToSeeLater(item: GeneralItem): Promise<void> {
+    const collections = this.collectionsSubject.value;
+    const collection = collections.find(c => c.name === 'See Later');
 
     if (collection) 
     {

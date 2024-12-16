@@ -48,7 +48,6 @@ export class AddItemsCollectionComponent {
     //Get all shows and movies
     this.api.getFromFile(0, 'tv').then((response) => {
       this.Shows.push(...response)
-      this.isLoading = false;
       this.items = this.Shows.map(show => ({ item: show, added: false }));
 
       if (this.collectionId) 
@@ -69,8 +68,7 @@ export class AddItemsCollectionComponent {
     })
   }
 
-  sortItems()
-  {
+  sortItems(){
       // order the items, showing the added items first
       this.items.sort((a, b) => {
         if (a.added && !b.added) return -1;
@@ -78,7 +76,6 @@ export class AddItemsCollectionComponent {
         return 0;
       });
   }
-
 
   checkForAddedItems(){
     this.items = this.items.map((item) => {

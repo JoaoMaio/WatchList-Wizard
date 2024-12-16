@@ -1,9 +1,5 @@
 <div *ngIf="!isLoading" class="page">
 
-  <button mat-button (click)="addToCollection()" class="add-to-collection-button">
-    <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
-  </button>
-
   <button mat-button (click)="goBack()" class="above-button left-button">
     <mat-icon>arrow_back</mat-icon>
   </button>
@@ -16,7 +12,7 @@
         <div class="info">
           <h1 class="title">{{ movie .title }}</h1>
           <div class="countSeasons_RunTime">
-            <span>{{ movie .runtime }} min</span>
+            <span>{{ movie.runtime }} min</span>
             <div class="rating">
               <div class="rating_inside">
                 <span class="badge"
@@ -32,9 +28,6 @@
           </div>
         </div>
           <div class="markAsWatchedTitle">
-            <button *ngIf="!watched" (click)="addMovieToWatchList()" class="markAsWatchedbutton">
-              +
-            </button>
             <button *ngIf="watched" (click)="removeMovieFromWatchList()" class="markAsWatchedbutton watched">
               <span *ngIf="timesWatched == 1">✓</span>
               <span class="biggerthanone"  *ngIf="timesWatched > 1">{{timesWatched}} X</span>
@@ -46,6 +39,36 @@
 
   <div class="content">
     <div class="movie_info">
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <!-- Button 1: To See Later -->
+          <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
+            <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
+            <span>To See Later</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="dividerr" *ngIf="!inToSeeLater"></div>
+
+          <!-- Button 2: Add to Collection -->
+          <div class="button" (click)="addToCollection()">
+            <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
+            <span>Add to Collection</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="dividerr" *ngIf="!watched"></div>
+
+          <!-- Button 3: Watched -->
+          <div class="button" *ngIf="!watched" (click)="addMovieToWatchList()">
+            <mat-icon class="add-to-collection-icon">remove_red_eye</mat-icon>
+            <span>Watched</span>
+          </div>
+        </div>
+
+
+
 
       <p class="overview">{{ movie .overview }}</p>
 

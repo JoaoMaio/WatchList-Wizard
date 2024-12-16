@@ -28,8 +28,8 @@ export class MovieDetailPageComponent implements OnInit {
   timesWatched: number = 0;
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
-
   showRewatchedOrRemoveMovieModal: boolean = false;
+  inToSeeLater: boolean = false;
 
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
@@ -39,12 +39,13 @@ export class MovieDetailPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.route.params.subscribe(params => {
       this.isLoading  = true;
       this.movies_api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
+
+          // Check if movie is in watch list
           this.movies_api.movieExistsById(this.movie.id).then(object => {
             if (object.id > 0)
             {
@@ -52,6 +53,28 @@ export class MovieDetailPageComponent implements OnInit {
               this.timesWatched = object.timesWatched || 0;
             }
           });
+
+
+          var GeneralItem: GeneralItem = {
+            id: this.movie.id,
+            type: 'movie',
+            title: this.movie.title,
+            poster_path: this.movie.poster_path,
+          };
+
+          // Check if movie is in see later collection
+          this.collectionsService.collections$.subscribe(collections => {
+            collections.forEach(collection => {
+              if (collection.name === 'See Later') {
+                collection.items.forEach(item => {
+                  if (item.id === GeneralItem.id && item.type === GeneralItem.type)
+                    this.inToSeeLater = true;
+                });
+              }
+            });
+          });
+
+
         },
         complete: () => {
          this.isLoading = false;
@@ -117,6 +140,21 @@ export class MovieDetailPageComponent implements OnInit {
         await this.movies_api.saveMoviesToFile(this.movie!, 0);
       }
     });
+  }
+
+  async addToSeeLater() {
+    this.inToSeeLater = true;
+
+    //transform movie to GeneralItem
+    const GI: GeneralItem = {
+      id: this.movie.id,
+      type: 'movie',
+      title: this.movie.title,
+      poster_path: this.movie.poster_path,
+    };
+
+    this.collectionsService.addToSeeLater(GI);
+    await this.movies_api.saveMoviesToFile(this.movie!, 0);
   }
 
   goBack(){
