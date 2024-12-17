@@ -50,7 +50,6 @@ export class MovieDetailPageComponent implements OnInit {
       this.movies_api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
-          console.log(this.movie);
 
           // Check if movie is in watch list
           this.movies_api.movieExistsById(this.movie.id).then(object => {
@@ -61,20 +60,12 @@ export class MovieDetailPageComponent implements OnInit {
             }
           });
 
-
-          var GeneralItem: GeneralItem = {
-            id: this.movie.id,
-            type: 'movie',
-            title: this.movie.title,
-            poster_path: this.movie.poster_path,
-          };
-
           // Check if movie is in see later collection
           this.collectionsService.collections$.subscribe(collections => {
             collections.forEach(collection => {
               if (collection.name === 'See Later') {
                 collection.items.forEach(item => {
-                  if (item.id === GeneralItem.id && item.type === GeneralItem.type)
+                  if (item.id === this.movie.id && item.type === 'movie')
                     this.inToSeeLater = true;
                 });
               }

@@ -41,6 +41,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   isOnWatchList: boolean = false;
   isOverviewExpanded = false;
+  inToSeeLater: boolean = false;
+  isTextClamped: boolean = false;
 
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
@@ -58,6 +60,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       this.shows_api.getTvShowById(params['id']).subscribe({
         next: (response: ComplexTvshow) => {
           this.tvshow = response;
+          this.isTextClamped = this.tvshow.overview.length > 200;
           this.getSeasons();
           this.getIfShowIsOnWatchList();
         },
@@ -65,11 +68,22 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           this.api.getCredits(this.tvshow.id, 'tv').subscribe({
             next: (response) => {
               this.crew = response;
-              console.log('Crew:', this.crew);
             },
             error: (error) => {
               console.error('Error fetching credits:', error);
             }
+          });
+
+          // Check if show is in see later collection
+          this.collectionsService.collections$.subscribe(collections => {
+            collections.forEach(collection => {
+              if (collection.name === 'See Later') {
+                collection.items.forEach(item => {
+                  if (item.id === this.tvshow.id && item.type === 'tvshow')
+                    this.inToSeeLater = true;
+                });
+              }
+            });
           });
         },
         error: (error) => {
@@ -225,6 +239,21 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
         await this.shows_api.saveShowsToFile(this.tvshow!, 0);
       }
     });
+  }
+
+  async addToSeeLater() {
+    this.inToSeeLater = true;
+
+    //transform movie to GeneralItem
+    const GI: GeneralItem = {
+      id: this.tvshow.id,
+      type: 'tvshow',
+      title: this.tvshow.name,
+      poster_path: this.tvshow.poster_path,
+    };
+
+    this.collectionsService.addToSeeLater(GI);
+    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
   }
 
   // go to the previous page

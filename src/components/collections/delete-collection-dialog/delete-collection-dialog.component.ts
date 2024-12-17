@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-create-collection-dialog',
+  selector: 'app-delete-collection-dialog',
   standalone: true,
   imports: [
     MatDialogModule,
@@ -15,17 +15,14 @@ import { FormsModule } from '@angular/forms';
     MatButtonModule,
     FormsModule
   ],
-  templateUrl: './create-collection-dialog.component.html',
+  templateUrl: './delete-collection-dialog.component.html',
   styleUrl: '../select-collection-dialog/select-collection-dialog.component.scss'
 })
-export class CreateCollectionDialogComponent {
-  name = '';
-  constructor(private dialogRef: MatDialogRef<CreateCollectionDialogComponent>) {}
+export class DeleteCollectionDialogComponent {
+  constructor(private dialogRef: MatDialogRef<DeleteCollectionDialogComponent>) {}
 
-  create(): void {
-    if (this.name) {
-      this.dialogRef.close({ name: this.name });
-    }
+  delete(): void {
+    this.dialogRef.close(true);
   }
 
   onCancel(): void {

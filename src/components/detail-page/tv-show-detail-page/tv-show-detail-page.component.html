@@ -1,9 +1,5 @@
 <div *ngIf="!isLoading" class="page">
 
-  <button mat-button (click)="addToCollection()" class="add-to-collection-button">
-    <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
-  </button>
-
   <button mat-button (click)="goBack()" class="above-button left-button">
     <mat-icon>arrow_back</mat-icon>
   </button>
@@ -33,9 +29,6 @@
           </div>
         </div>
           <div class="markAsWatchedTitle">
-            <button *ngIf="!isOnWatchList" (click)="addShowToWatchList()" class="markAsWatchedbutton">
-              +
-            </button>
             <button *ngIf="isOnWatchList" (click)="removeShowsFromWatchList()" class="markAsWatchedbutton watched">
               ✓
             </button>
@@ -47,17 +40,50 @@
 
   <div class="content">
     <div class="tvshow_info">
-      <div class="overview-container">
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <!-- Button 1: To See Later -->
+        <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
+          <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
+          <span>To See Later</span>
+        </div>
+
+        <!-- Button 2: Add to Collection -->
+        <div class="button" (click)="addToCollection()">
+          <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
+          <span>Add to Collection</span>
+        </div>
+
+        <!-- Button 3: Watched -->
+        <div class="button" *ngIf="!isOnWatchList" (click)="addShowToWatchList()">
+          <mat-icon class="add-to-collection-icon">remove_red_eye</mat-icon>
+          <span>Watched</span>
+        </div>
+      </div>
+
+      <!-- Tagline -->
+      <p class="tagline" *ngIf="tvshow.tagline">{{ tvshow.tagline }}</p>
+
+      <div class="overview-container" *ngIf="tvshow.overview">
         <p class="overview" [ngClass]="{ 'expanded': isOverviewExpanded }">{{ tvshow.overview }}</p>
-        <button class="toggle-button" (click)="isOverviewExpanded = !isOverviewExpanded">
+        <button class="toggle-button" *ngIf="isTextClamped" (click)="isOverviewExpanded = !isOverviewExpanded">
           {{ isOverviewExpanded  ? 'Show Less' : 'Show More' }}
         </button>
       </div>
 
-
       <div class="divider"></div>
 
-      <p class="section_title">Genres:</p>
+      <div class="release_date" *ngIf="tvshow.first_air_date">
+        <p class="section_title">First Air Date:</p>
+        <p class="textt">{{ tvshow.first_air_date }}</p>
+      </div>
+
+      <div class="budget">
+        <p class="section_title">Status:</p>
+        <p class="textt">{{ tvshow.status}}</p>
+      </div>
+
       <div class="genres" *ngIf="tvshow.genres">
         <span *ngFor="let genre of tvshow.genres">{{ genre.name }}</span>
       </div>

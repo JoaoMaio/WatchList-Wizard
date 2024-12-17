@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { CreateCollectionDialogComponent } from '../create-collection-dialog/create-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { DeleteCollectionDialogComponent } from '../delete-collection-dialog/delete-collection-dialog.component';
 
 @Component({
   selector: 'app-show-all-collections',
@@ -37,9 +38,18 @@ export class ShowAllCollectionsComponent {
     const dialogRef = this.dialog.open(CreateCollectionDialogComponent);
   
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (result) 
         this.collectionsService.createCollection(result.name);
-      }
+    });
+  }
+
+  deleteCollection(collection: Collection){
+
+    const dialogRef = this.dialog.open(DeleteCollectionDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) 
+        this.collectionsService.deleteCollection(collection.id);
     });
   }
 

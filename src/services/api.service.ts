@@ -62,6 +62,7 @@ export const EmptyTvShow: ComplexTvshow = {
   in_production: false,
   languages: [],
   last_air_date: '',
+  first_air_date: '',
   last_episode_to_air: EmptyEpisode,
   next_episode_to_air: EmptyEpisode,
   number_of_episodes: 0,

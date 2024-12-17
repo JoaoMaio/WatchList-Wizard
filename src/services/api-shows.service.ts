@@ -25,6 +25,7 @@ export type ComplexTvshow = {
   in_production: boolean
   languages: string[]
   last_air_date: string
+  first_air_date: string
   last_episode_to_air: Episode
   next_episode_to_air: Episode
   number_of_episodes: number
@@ -428,8 +429,6 @@ export class ApiShowsService {
         }
 
         await this.generalApi.writeToFile(this.shows_filename, updatedContent);
-
-
       });
 
     } catch (e) {

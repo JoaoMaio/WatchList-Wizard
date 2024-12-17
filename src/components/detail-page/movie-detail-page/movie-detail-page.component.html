@@ -6,11 +6,11 @@
 
   <div class="card">
     <div class="backdrop">
-      <img *ngIf="api.doesBackDropExist(movie .backdrop_path)" src="{{ backdropPath + movie .backdrop_path}}" alt="backdrop" />
-      <img *ngIf="!api.doesBackDropExist(movie .backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
+      <img *ngIf="api.doesBackDropExist(movie.backdrop_path)" src="{{ backdropPath + movie.backdrop_path}}" alt="backdrop" />
+      <img *ngIf="!api.doesBackDropExist(movie.backdrop_path)" src="404.png" alt="backdrop" class="error_image" />
       <div class="title_checkmark">
         <div class="info">
-          <h1 class="title">{{ movie .title }}</h1>
+          <h1 class="title">{{ movie.title }}</h1>
           <div class="countSeasons_RunTime">
             <span>{{ movie.runtime }} min</span>
             <div class="rating">

@@ -1,0 +1,11 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="dialog-title">Do you really want to delete this collection?</h2>
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="cancel-btn" (click)="onCancel()">
+      Cancel
+    </button>
+    <button mat-flat-button color="primary" class="confirm-btn" (click)="delete()">
+      Delete
+    </button>
+  </mat-dialog-actions>
+</div>
