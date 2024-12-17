@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService, EmptyMovie} from '../../../services/api.service';
+import {ApiService, EmptyMovie, SimpleCharacter} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule} from '@angular/common';
 import { environment } from '../../../environment';
@@ -11,25 +11,31 @@ import { GeneralItem } from '../../../utils/collection.model';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CollectionsService } from '../../../services/collections.service';
+import { CrewListComponent } from "../crew-list/crew-list.component";
 
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule],
+  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule, CrewListComponent],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
 export class MovieDetailPageComponent implements OnInit {
 
   movie: ComplexMovie = EmptyMovie;
+  crew: SimpleCharacter[] = [];
+
+  timesWatched: number = 0;
+
   isLoading: boolean = true;
   watched: boolean = false;
-  timesWatched: number = 0;
-  imgPath = environment.imgPath;
-  backdropPath = environment.backdropPath;
   showRewatchedOrRemoveMovieModal: boolean = false;
   inToSeeLater: boolean = false;
+  isOverviewExpanded = false;
+
+  imgPath = environment.imgPath;
+  backdropPath = environment.backdropPath;
 
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
@@ -44,6 +50,7 @@ export class MovieDetailPageComponent implements OnInit {
       this.movies_api.getMovieById(params['id']).subscribe({
         next: (response: ComplexMovie) => {
           this.movie = response;
+          console.log(this.movie);
 
           // Check if movie is in watch list
           this.movies_api.movieExistsById(this.movie.id).then(object => {
@@ -73,11 +80,20 @@ export class MovieDetailPageComponent implements OnInit {
               }
             });
           });
-
-
         },
         complete: () => {
-         this.isLoading = false;
+
+          this.api.getCredits(this.movie.id, 'movie').subscribe({
+            next: (response) => {
+              this.crew = response;
+            },
+            error: (error) => {
+              console.error('Error fetching credits:', error);
+            },
+            complete: () => {
+              this.isLoading = false;
+            }
+          });
         },
         error: (error) => {
           console.error('Error fetching movies:', error);

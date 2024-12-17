@@ -2,7 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   ApiService,
   EmptyEpisode,
-  EmptyTvShow
+  EmptyTvShow,
+  SimpleCharacter
 } from '../../../services/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -20,12 +21,13 @@ import { FormsModule } from '@angular/forms';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
+import { CrewListComponent } from "../crew-list/crew-list.component";
 
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent,  MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: './tv-show-detail-page.component.scss'
 })
@@ -34,6 +36,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   tvshow: ComplexTvshow = EmptyTvShow;
   nextEpisode: Episode = EmptyEpisode;
   seasons: Season[] = [];
+  crew: SimpleCharacter[] = [];
 
   isLoading: boolean = true;
   isOnWatchList: boolean = false;
@@ -59,6 +62,15 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           this.getIfShowIsOnWatchList();
         },
         complete: () => {
+          this.api.getCredits(this.tvshow.id, 'tv').subscribe({
+            next: (response) => {
+              this.crew = response;
+              console.log('Crew:', this.crew);
+            },
+            error: (error) => {
+              console.error('Error fetching credits:', error);
+            }
+          });
         },
         error: (error) => {
           console.error('Error fetching movies:', error);

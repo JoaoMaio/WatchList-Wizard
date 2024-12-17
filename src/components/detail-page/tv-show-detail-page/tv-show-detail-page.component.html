@@ -58,8 +58,8 @@
       <div class="divider"></div>
 
       <p class="section_title">Genres:</p>
-      <div class="genres" *ngIf="tvshow .genres">
-        <span *ngFor="let genre of tvshow .genres">{{ genre.name }}</span>
+      <div class="genres" *ngIf="tvshow.genres">
+        <span *ngFor="let genre of tvshow.genres">{{ genre.name }}</span>
       </div>
 
       <div class="divider"></div>
@@ -75,6 +75,8 @@
       </div>
 
       <div class="divider" *ngIf="nextEpisode.id > 0"></div>
+
+      <app-crew-list [crew]="crew"></app-crew-list>
 
       <p class="section_title" *ngIf="nextEpisode.id > 0">Continue to Watch:</p>
 

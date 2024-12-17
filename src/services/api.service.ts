@@ -141,7 +141,6 @@ export type SimplePerson= {
 export type Person = {
   id : number;
   name: string;
-  adult: boolean;
   known_for_department: string;
   profile_path: string;
   birthday: string;
@@ -159,13 +158,21 @@ export type Credits = {
 export const EmptyPerson  : Person = {
   id : 0,
   name: '',
-  adult: false,
   known_for_department: '',
   profile_path: '',
   birthday: '',
   place_of_birth: '',
   deathday: '',
   biography: ''
+}
+
+
+export type SimpleCharacter = {
+  id: number;
+  name: string;
+  profile_path: string;
+  popularity: number;
+  character: string;
 }
 
 export const buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
@@ -293,13 +300,33 @@ export class ApiService {
     );
   }
 
+  getCredits(id: number, type: string): Observable<SimpleCharacter[]> {
+    return this.http.get(`${this.BASE_API_URL}${type}/${id}/credits`, { headers: this.headers }).pipe(
+      map((response: any) => {
+        return response.cast
+          .map((credit: any) => {
+            const SimpleCharacter: SimpleCharacter = {
+              id: credit.id,
+              name: credit.name,
+              profile_path: credit.profile_path,
+              popularity: credit.popularity,
+              character: credit.character
+            };
+            return SimpleCharacter;
+          })
+          .sort((a: SimpleCharacter, b: SimpleCharacter) => b.popularity - a.popularity)
+          .slice(0, 30);
+      })
+    );
+  }
+
+
   getPersonDetails(id: number): Observable<Person> {
     return this.http.get(`${this.BASE_API_URL}person/${id}`, { headers: this.headers }).pipe(
       map((response: any) => {
         const person: Person = {
           id: response.id,
           name: response.name,
-          adult: response.adult,
           known_for_department: response.known_for_department,
           profile_path: response.profile_path,
           birthday: response.birthday,
@@ -337,7 +364,6 @@ export class ApiService {
 
     return true
   }
-
 
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
     return this.http.get(`${this.BASE_API_URL}person/${id}/combined_credits`, { headers: this.headers }).pipe(

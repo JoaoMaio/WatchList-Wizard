@@ -1,0 +1,16 @@
+<div class="carouselContainer">
+    <div class="suggestionsContainer" >
+        <div *ngFor="let person of crew" class="character">
+            <img *ngIf="api.doesBackDropExist(person.profile_path)" [src]="imgPath + person.profile_path" alt="Person image" (click)="goToPersonPage(person.id)" />
+            <div *ngIf="!api.doesBackDropExist(person.profile_path)" class="fallback-wrapper">
+                <img src="amongus.png" alt="{{person.name}}" class="item-image error" (click)="goToPersonPage(person.id)" />
+              </div>
+            
+            <div class="char_info">
+                <p class="person">{{ person.name }}</p>
+                <p class="person"> as </p>
+                <p class="person-darker">{{ person.character }} </p>
+            </div>
+        </div>
+    </div>
+</div>

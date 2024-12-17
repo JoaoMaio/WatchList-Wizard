@@ -40,60 +40,61 @@
   <div class="content">
     <div class="movie_info">
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <!-- Button 1: To See Later -->
-          <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
-            <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
-            <span>To See Later</span>
-          </div>
-
-          <!-- Divider -->
-          <div class="dividerr" *ngIf="!inToSeeLater"></div>
-
-          <!-- Button 2: Add to Collection -->
-          <div class="button" (click)="addToCollection()">
-            <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
-            <span>Add to Collection</span>
-          </div>
-
-          <!-- Divider -->
-          <div class="dividerr" *ngIf="!watched"></div>
-
-          <!-- Button 3: Watched -->
-          <div class="button" *ngIf="!watched" (click)="addMovieToWatchList()">
-            <mat-icon class="add-to-collection-icon">remove_red_eye</mat-icon>
-            <span>Watched</span>
-          </div>
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <!-- Button 1: To See Later -->
+        <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
+          <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
+          <span>To See Later</span>
         </div>
 
+        <!-- Button 2: Add to Collection -->
+        <div class="button" (click)="addToCollection()">
+          <mat-icon class="add-to-collection-icon">playlist_add</mat-icon>
+          <span>Add to Collection</span>
+        </div>
 
-
-
-      <p class="overview">{{ movie .overview }}</p>
-
-      <div class="divider"></div>
-
-      <div class="genres" *ngIf="movie .genres">
-        <span *ngFor="let genre of movie .genres">{{ genre.name }}</span>
+        <!-- Button 3: Watched -->
+        <div class="button" *ngIf="!watched" (click)="addMovieToWatchList()">
+          <mat-icon class="add-to-collection-icon">remove_red_eye</mat-icon>
+          <span>Watched</span>
+        </div>
       </div>
+
+      <!-- Tagline -->
+      <p class="tagline" *ngIf="movie.tagline">{{ movie.tagline }}</p>
+
+      <div class="overview-container">
+        <p class="overview" [ngClass]="{ 'expanded': isOverviewExpanded }">
+          {{ movie.overview }} 
+        </p>
+        <button class="toggle-button" (click)="isOverviewExpanded = !isOverviewExpanded">
+          {{ isOverviewExpanded  ? 'Show Less' : 'Show More' }}
+        </button>
+      </div>
+
 
       <div class="divider"></div>
 
       <div class="release_date">
-        <span>{{ movie .release_date }}</span>
+        <p class="section_title">Release Date:</p>
+        <p class="textt">{{ movie.release_date }}</p>
       </div>
-
-      <div class="divider"></div>
 
       <div class="budget">
-        <span>{{ movie .budget | currency:'USD':'symbol':'1.0-0' }}</span>
+        <p class="section_title">Budget:</p>
+        <p class="textt">{{ movie.budget | currency:'USD':'symbol':'1.0-0' }}</p>
       </div>
 
+
+      <div class="genres" *ngIf="movie.genres">
+        <span *ngFor="let genre of movie.genres">{{ genre.name }}</span>
+      </div>
+      
       <div class="divider"></div>
 
       <div class="providers_section" *ngIf="movie .watch_providers!.length > 0">
-        <p>Watch on:</p>
+        <p class="section_title">Watch on:</p>
         <div class="providers">
           <span *ngFor="let provider of movie .watch_providers">
             <img src="{{imgPath + provider.logo_path }}" alt="{{ provider.provider_name }}" />
@@ -102,6 +103,11 @@
         </div>
       </div>
 
+      <div class="divider"></div>
+
+      <app-crew-list [crew]="crew"></app-crew-list>
+
+      <div class="empty_space"></div>
     </div>
   </div>
 </div>
