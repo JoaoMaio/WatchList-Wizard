@@ -103,15 +103,55 @@
       .text_container {
         width: 60%;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
 
         .episode-title {
             font-size: 14px;
+            margin: 0;
+        }
+
+        .episode-details-bottom {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .episode-runtime, .episode-vote{
+            font-size: 12px;
             margin: 0;
             line-height: 1.2;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: normal;
+            color: grey;
         }
+
+        .episode-vote {
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+            align-items: center;
+            bottom: 0;
+
+            p{
+              margin: 0;
+              padding: 0;
+            }
+            
+            mat-icon{
+              font-size: 14px;
+              height: 14px;
+              width: 14px;
+              vertical-align: middle;
+            }
+        }
+
+
       }
 
       .markAsWatched{
