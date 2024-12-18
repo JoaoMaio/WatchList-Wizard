@@ -100,6 +100,19 @@
         </div>
       </div>
 
+      <!-- app.component.html -->
+      <div style="display: block;">
+        <canvas
+          baseChart
+          [datasets]="lineChartData"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [type]="'line'"
+          >
+        </canvas>
+      </div>
+
+
       <div class="divider" *ngIf="nextEpisode.id > 0"></div>
 
       <app-crew-list [crew]="crew"></app-crew-list>

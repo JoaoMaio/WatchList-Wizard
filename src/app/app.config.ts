@@ -4,6 +4,7 @@ import { routes } from './app.routes';
 import {provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { cachingInterceptor } from '../services/cache.interceptor';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 
 export const appConfig: ApplicationConfig = {
@@ -11,6 +12,7 @@ export const appConfig: ApplicationConfig = {
       provideZoneChangeDetection({ eventCoalescing: true }), 
       provideRouter(routes),
       provideAnimationsAsync(),
-      provideHttpClient(withInterceptors([cachingInterceptor])), 
+      provideHttpClient(withInterceptors([cachingInterceptor])), provideCharts(withDefaultRegisterables()), 
+      provideCharts(withDefaultRegisterables())
     ]
 };

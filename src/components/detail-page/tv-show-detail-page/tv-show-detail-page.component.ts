@@ -22,12 +22,14 @@ import { SelectCollectionDialogComponent } from '../../collections/select-collec
 import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 import { CrewListComponent } from "../crew-list/crew-list.component";
+import { BaseChartDirective } from 'ng2-charts';
+import { scales } from 'chart.js';
 
 
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent, BaseChartDirective],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: './tv-show-detail-page.component.scss'
 })
@@ -46,6 +48,30 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
+
+  public lineChartData : any
+  public lineChartLabels : any
+  public lineChartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        ticks: {
+          color: 'white', // Change the X-axis tick color
+        },
+        grid: {
+          color: 'rgba(198, 194, 194, 0.2)', // Change the X-axis gridline color
+        },
+      },
+      y: {
+        ticks: {
+          color: 'white', // Change the Y-axis tick color
+        },
+        grid: {
+          color: 'rgba(198, 194, 194, 0.2)', // Change the Y-axis gridline color
+        },
+      },
+    },
+  };
 
   constructor(public api: ApiService,
               public shows_api: ApiShowsService,
@@ -126,7 +152,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     } catch (error) {
         console.error('Error processing seasons:', error);
     }
-}
+  }
 
   getEpisodes() {
     this.shows_api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
@@ -141,9 +167,39 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
             });
           });
           this.nextEpisode = this.getNextEpisodeToWatch();
+          this.createChartData();
           this.isLoading = false;
         }
       });
+  }
+
+
+  createChartData()
+  {
+    //     public lineChartData = [
+    //       { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
+    //     ];
+      
+    // // Chart labels
+    // public lineChartLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+    // // Chart options
+    // public lineChartOptions = {
+    //   responsive: true,
+    // };
+
+    const season1 = this.seasons.find(season => season.season_number === 1);
+    if (season1) {
+      this.lineChartData = [
+        {
+          data: season1.episodes.map(episode => episode.vote_average),
+          label: 'Season 1 Episodes'
+        }
+      ];
+      this.lineChartLabels = season1.episodes.map(episode => `Ep ${episode.episode_number}`);
+    }
+
+
   }
 
   async addShowToWatchList() {
