@@ -155,6 +155,13 @@ export class ApiShowsService {
     return this.http.get<ComplexTvshow>(`${this.BASE_API_URL}/tv/${id}?append_to_response=watch/providers`, {headers: this.headers}).pipe(
       map((tvshow: any) => {
         let watchProvidersR = this.generalApi.getWatchProviders(tvshow)
+
+        //remove duplicate providers based on provider_name
+        watchProvidersR = watchProvidersR.filter((provider, index, self) =>
+          index === self.findIndex((t) => (
+            t.provider_name === provider.provider_name
+          )));
+
         return {
           ...tvshow,
           poster_path: tvshow.poster_path,

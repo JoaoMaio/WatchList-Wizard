@@ -93,7 +93,7 @@
       <div class="providers_section" *ngIf="tvshow .watch_providers!.length > 0">
         <p class="section_title">Watch on:</p>
         <div class="providers">
-          <span *ngFor="let provider of tvshow .watch_providers">
+          <span *ngFor="let provider of tvshow.watch_providers">
             <img src="{{ imgPath + provider.logo_path }}" alt="{{ provider.provider_name }}" />
             <p>{{ provider.provider_name }}</p>
           </span>

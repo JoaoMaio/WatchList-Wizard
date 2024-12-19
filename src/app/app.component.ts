@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HomeComponentComponent } from '../components/home/home-component.component';
 import { RouterModule } from '@angular/router';
 import { NavBarComponent } from "../components/navbar/nav-bar/nav-bar.component";
 import { App } from '@capacitor/app';
@@ -12,7 +11,7 @@ import {ApiService} from '../services/api.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,
-  imports: [HomeComponentComponent, RouterModule, NavBarComponent],
+  imports: [RouterModule, NavBarComponent],
 })
 
 export class AppComponent implements OnInit {

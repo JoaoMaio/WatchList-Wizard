@@ -95,6 +95,18 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
         },
       },
     },  
+    elements: {
+      line: {
+        borderColor: '#87edd8', 
+        borderWidth: 2, 
+        tension: 0.2, 
+      },
+      point: {
+        radius: 4, 
+        borderColor: '#87edd8',
+      },
+    },
+
   };
 
   public currentSeasonIndex = 0; // Start with the first season
@@ -212,7 +224,6 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     }
   }
   
-
   createChartData()
   {
     this.seasons.forEach(season => {
