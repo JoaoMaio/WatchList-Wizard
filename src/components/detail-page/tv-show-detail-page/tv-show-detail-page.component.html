@@ -100,19 +100,34 @@
         </div>
       </div>
 
-      <!-- app.component.html -->
-      <div style="display: block;">
-        <canvas
-          baseChart
-          [datasets]="lineChartData"
-          [labels]="lineChartLabels"
-          [options]="lineChartOptions"
-          [type]="'line'"
-          >
-        </canvas>
+      <div class="chart-buttons" *ngIf="charts.data.length > 0">
+        <!-- Navigation Buttons -->
+        <button *ngIf="currentSeasonIndex != 0"
+          (click)="previousSeason()" 
+          [disabled]="currentSeasonIndex === 0">
+          Previous Season
+        </button>
+        <button *ngIf="currentSeasonIndex != charts.data.length - 1"
+          (click)="nextSeason()" >
+          Next Season
+        </button>
       </div>
-
-
+      
+      <div *ngIf="charts.data.length > 0" class="chart">
+        <!-- Display Current Season Chart -->
+        <div style="display: block;">
+          <canvas
+            baseChart
+            [datasets]="[charts.data[currentSeasonIndex]]"
+            [labels]="charts.labels[currentSeasonIndex]"
+            [options]="lineChartOptions"
+            [type]="'line'"
+            style="max-height: 200px;"
+          >
+          </canvas>
+        </div>
+      </div>
+      
       <div class="divider" *ngIf="nextEpisode.id > 0"></div>
 
       <app-crew-list [crew]="crew"></app-crew-list>

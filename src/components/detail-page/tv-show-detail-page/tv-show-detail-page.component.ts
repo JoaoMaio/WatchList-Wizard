@@ -25,6 +25,18 @@ import { CrewListComponent } from "../crew-list/crew-list.component";
 import { BaseChartDirective } from 'ng2-charts';
 import { scales } from 'chart.js';
 
+type seasonData = {
+  data: number[];
+  label: string;
+}
+
+type seasonLabels = string[];
+
+type chartData = {
+  data: seasonData[];
+  labels: seasonLabels[];
+}
+
 
 @Component({
   selector: 'app-tv-show-detail-page',
@@ -49,10 +61,15 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
-  public lineChartData : any
-  public lineChartLabels : any
+
+  public charts: chartData = {
+    data: [],
+    labels: []
+  };
+
   public lineChartOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Allow the chart to adjust height
     scales: {
       x: {
         ticks: {
@@ -71,7 +88,17 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
         },
       },
     },
+    plugins: {
+      legend: {
+        labels: {
+          color: 'white', // Change the legend text color
+        },
+      },
+    },  
   };
+
+  public currentSeasonIndex = 0; // Start with the first season
+
 
   constructor(public api: ApiService,
               public shows_api: ApiShowsService,
@@ -168,38 +195,38 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           });
           this.nextEpisode = this.getNextEpisodeToWatch();
           this.createChartData();
-          this.isLoading = false;
+          
         }
       });
   }
 
+  public previousSeason() {
+    if (this.currentSeasonIndex > 0) {
+      this.currentSeasonIndex--;
+    }
+  }
+  
+  public nextSeason() {
+    if (this.currentSeasonIndex < this.charts.data.length - 1) {
+      this.currentSeasonIndex++;
+    }
+  }
+  
 
   createChartData()
   {
-    //     public lineChartData = [
-    //       { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-    //     ];
-      
-    // // Chart labels
-    // public lineChartLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    this.seasons.forEach(season => {
+      const seasonData = {
+        data: season.episodes.map(episode => episode.vote_average),
+        label: `Season ${season.season_number} Episodes`
+      };
+      const seasonLabels = season.episodes.map(episode => `Ep ${episode.episode_number}`);
 
-    // // Chart options
-    // public lineChartOptions = {
-    //   responsive: true,
-    // };
+      this.charts.data.push(seasonData);
+      this.charts.labels.push(seasonLabels);
+    });
 
-    const season1 = this.seasons.find(season => season.season_number === 1);
-    if (season1) {
-      this.lineChartData = [
-        {
-          data: season1.episodes.map(episode => episode.vote_average),
-          label: 'Season 1 Episodes'
-        }
-      ];
-      this.lineChartLabels = season1.episodes.map(episode => `Ep ${episode.episode_number}`);
-    }
-
-
+    this.isLoading = false;
   }
 
   async addShowToWatchList() {

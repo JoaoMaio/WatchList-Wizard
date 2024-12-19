@@ -48,3 +48,24 @@
     width: 10%;
   }
 }
+
+.chart-buttons{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+
+  button{
+    padding: 10px 20px;
+    border: 1px solid rgba(119, 119, 119, 0.555);
+    border-radius: 5px;
+    background-color: var(--primaryColor);
+    color: var(--textColor);  
+  }	
+}
+
+.chart{
+  margin-bottom: 20px;
+}
