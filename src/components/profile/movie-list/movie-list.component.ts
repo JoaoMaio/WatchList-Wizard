@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ApiMoviesService } from '../../../services/api-movies.service';
 import { ApiService, SimpleObject } from '../../../services/api.service';
 import { environment } from '../../../environment';
 import { ShowItemsInGridComponent } from "../../show-items-in-grid/show-items-in-grid.component";
@@ -26,8 +25,7 @@ export class MovieListComponent implements OnInit {
 
   imgPath = environment.imgPath;
 
-  constructor(public movies_api: ApiMoviesService,
-              public api: ApiService,
+  constructor(public api: ApiService,
   ) { }
 
   async ngOnInit() {

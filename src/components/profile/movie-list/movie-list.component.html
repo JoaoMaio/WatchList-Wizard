@@ -1,5 +1,5 @@
-<div class="page">
-    <div class="movie-list">
+<div class="pageList">
+    <div class="item-list">
         
         <div class="section-title">
             <p class="text"> {{WatchedMoviesGeneralItem.length}} Watched Movies </p> 
@@ -12,8 +12,10 @@
     
         <app-show-items-in-grid [items]="WatchedMoviesGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
     </div>
+
+    <!---------------------------------------------->
     
-    <div class="movie-list">
+    <div class="item-list">
     
         <div class="section-title">
             <p class="text"> {{ UnwatchedMoviesGeneralItem.length }} Unwatched Movies  </p> 

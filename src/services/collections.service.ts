@@ -23,7 +23,8 @@ export class CollectionsService {
       }
 
       const fileData = await this.generalApi.readFromFile(this.collections_filename);
-      if (fileData.data) {
+      if (fileData.data) 
+      {
         try {
           const collections = JSON.parse(fileData.data as string);
 
@@ -43,6 +44,21 @@ export class CollectionsService {
           console.error('Error parsing collections JSON file:', error);
         }
       }
+
+      // if file is empty, create See Later collection
+      if (fileData.data === '') {
+        this.collectionsSubject.next([{
+          id: Date.now().toString(),
+          name: 'See Later',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          items: []
+        }]);
+
+        await this.saveCollections(this.collectionsSubject.value);
+      }
+
+    
     } catch (e) {
       console.error('Error loading collections:', e);
     }

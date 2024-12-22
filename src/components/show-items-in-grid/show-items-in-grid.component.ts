@@ -25,7 +25,8 @@ export class ShowItemsInGridComponent {
 
 
   showInfo(object: GeneralItem) {
-    this.router.navigateByUrl(`/info/${object.type}/${object.id}`);
+    console.log(object);
+    this.router.navigate([`/info/${object.type}`, object.id]);
   }
 
 }

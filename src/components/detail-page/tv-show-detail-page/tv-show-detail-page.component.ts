@@ -240,6 +240,11 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     this.isLoading = false;
   }
 
+  async addShowToWatchListN() {
+    this.isOnWatchList = true;
+    await this.shows_api.saveShowsToFile(this.tvshow!, -1);
+  }
+
   async addShowToWatchList() {
     this.isOnWatchList = true;
     await this.shows_api.saveShowsToFile(this.tvshow!, 0);
