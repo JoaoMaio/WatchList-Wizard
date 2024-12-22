@@ -391,6 +391,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     };
 
     this.collectionsService.addToSeeLater(GI);
+    this.isOnWatchList = true;
     await this.shows_api.saveShowsToFile(this.tvshow!, 0);
   }
 
