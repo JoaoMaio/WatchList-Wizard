@@ -116,8 +116,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   //--------------------- EPISODE RELATED --------------------------------//
 
   async markEpisodeAsWatched(episode: Episode) {
-    if(!this.isOnWatchList)
-      await this.addShowToWatchList();
+    await this.addShowToWatchList();
 
     //if episode before current episode is not watched pop up a message
     if(episode.episode_number > 1)
@@ -208,8 +207,7 @@ export class CustomExpansionPanelComponent implements OnInit {
     
     if(!this.isSeasonWatchedExcludingAiring())
     {
-      if(!this.isOnWatchList)
-        await this.addShowToWatchList();
+      await this.addShowToWatchList();
 
       this.season!.timesWatched += 1;
 
@@ -237,7 +235,6 @@ export class CustomExpansionPanelComponent implements OnInit {
   if(event)
     event.stopPropagation();
 
-  if(!this.isOnWatchList)
     await this.addShowToWatchList();
 
     //get the episode with least times watched

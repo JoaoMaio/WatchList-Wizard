@@ -327,8 +327,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   }
 
   async markEpisodeAsWatched(episode: Episode) {
-    if(!this.isOnWatchList)
-      await this.addShowToWatchList();
+    await this.addShowToWatchList();
 
     if(this.isLastEpisodeOfShow(episode))
       await this.markShowAsWatched();
