@@ -242,7 +242,23 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
+    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
+  }
+
+  isLastSeasonAvailable(season: Season): boolean {
+    
+    if(this.seasons.length === 0)
+      return false;
+
+    if(this.seasons[this.seasons.length - 1].season_number === season.season_number)
+      return true;
+
+    //if the last season as no episodes
+    if(this.seasons[this.seasons.length - 1].episodes.length === 0 && this.seasons[this.seasons.length - 1].season_number - 1 === season.season_number)
+      return true;
+      
+    return false;
+
   }
 
   async removeShowsFromWatchList() {
@@ -253,7 +269,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       season.episodes.forEach(episode => {
         if (episode.watched) {
           episode.watched = false;
+          episode.timesWatched = 0;
         }
+        season.timesWatched = 0;
       });
     });
 
@@ -280,9 +298,35 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     return EmptyEpisode;
   }
 
+
+  isLastEpisodeOfShow(episode: Episode) {
+    const season = this.seasons.find(s => s.season_number === episode.season_number);
+    const isLastSeason = this.isLastSeasonAvailable(season!);
+
+    if(isLastSeason)
+      {
+        if(episode.episode_number === season!.episodes.length)
+          return true;
+  
+        //if its not the last episode of the season check if there are any episodes after it
+        const nextEpisode = season!.episodes.find(e => e.episode_number === episode.episode_number + 1);
+        if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
+          return true;
+      }
+      
+      return false;
+  }
+
+  async markShowAsWatched() {
+    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
+  }
+
   async markEpisodeAsWatched(episode: Episode) {
     if(!this.isOnWatchList)
       await this.addShowToWatchList();
+
+    if(this.isLastEpisodeOfShow(episode))
+      await this.markShowAsWatched();
 
     episode.watched = true;
     episode.timesWatched += 1;

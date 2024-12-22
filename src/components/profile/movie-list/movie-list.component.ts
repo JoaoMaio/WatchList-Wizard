@@ -40,7 +40,6 @@ export class MovieListComponent implements OnInit {
     })
   }
 
-
   separateMovies() {
     this.WatchedMovies = this.AllMovies.filter(movie => movie.timesWatched > 0);
     this.UnwatchedMovies = this.AllMovies.filter(movie => movie.timesWatched == 0);
@@ -50,14 +49,8 @@ export class MovieListComponent implements OnInit {
     this.isLoading = false;
   }
 
-  // go to the previous page
   goBack(){
     window.history.back();
   }
-
-  getBackgroundGradient(): string {
-    return `linear-gradient(to right, green ${this.watchedPercentage}%, var(--a_secondaryColor) ${this.watchedPercentage}%)`;
-  }
-  
 
 }

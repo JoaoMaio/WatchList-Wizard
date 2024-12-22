@@ -34,6 +34,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   @Input() title: string = '';
   @Input() season: Season = EmptySeason ;
+  @Input() isLastSeason: boolean = false;
   @Input() tvshow: ComplexTvshow  = EmptyTvShow;
   @Input() isOnWatchList: boolean = false;
   @Output() addOrRemoveEpisode = new EventEmitter();
@@ -74,8 +75,12 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
+    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
     this.addedShow.emit();
+  }
+
+  async markShowAsWatched() {
+    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
   }
 
   getSeasonCountWatchedEpisodes(season: Season) {
@@ -91,6 +96,21 @@ export class CustomExpansionPanelComponent implements OnInit {
     if (watchedEpisodes === 0) return 0;
     const totalEpisodes = season.episode_count;
     return (watchedEpisodes / totalEpisodes) * 100;
+  }
+
+  isLastEpisodeOfShow(episode: Episode) {
+    if(this.isLastSeason)
+    {
+      if(episode.episode_number === this.season!.episodes.length)
+        return true;
+
+      //if its not the last episode of the season check if there are any episodes after it
+      const nextEpisode = this.season!.episodes.find(e => e.episode_number === episode.episode_number + 1);
+      if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
+        return true;
+    }
+    
+    return false;
   }
 
   //--------------------- EPISODE RELATED --------------------------------//
@@ -109,6 +129,9 @@ export class CustomExpansionPanelComponent implements OnInit {
         return;
       }
     }
+
+    if(this.isLastEpisodeOfShow(episode))
+      await this.markShowAsWatched();
 
     episode.watched = true;
     episode.timesWatched = episode.timesWatched + 1;
@@ -156,12 +179,15 @@ export class CustomExpansionPanelComponent implements OnInit {
 
         try {
           await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+          if(this.isLastEpisodeOfShow(episode))
+            await this.markShowAsWatched();
         } catch (error) {
           console.error('Error saving episode:', episode, error);
         }
       }
     }
 
+    this.addOrRemoveEpisode.emit();
   }
 
   onMarkAllEpisodesBehindAsWatchedCancel() {
@@ -194,6 +220,9 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.timesWatched += 1;
           try {
             await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+            if(this.isLastEpisodeOfShow(episode))
+              await this.markShowAsWatched();
+        
           } catch (error) {
             console.error('Error saving episode:', episode, error);
           }
@@ -231,6 +260,9 @@ export class CustomExpansionPanelComponent implements OnInit {
               this.season!.timesWatched = episode.timesWatched;
               try {
                 await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+                if(this.isLastEpisodeOfShow(episode))
+                  await this.markShowAsWatched();
+            
               } catch (error) {
                 console.error('Error saving episode:', episode, error);
               }

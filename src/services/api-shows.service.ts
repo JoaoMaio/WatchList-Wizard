@@ -89,6 +89,16 @@ export type EInfo = {
   timesWatched: number;
 }
 
+  // dictionary for status
+  export const ShowStatus = {
+    0: 'Returning Series',
+    1: 'Planned',
+    2: 'In Production',
+    3: 'Ended',
+    4: 'Canceled',
+    5: 'Pilot'
+  };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -236,9 +246,8 @@ export class ApiShowsService {
           }
 
           const show = showList.find(s => s.id === showID);
-          if (show && show.timesWatched !== undefined && show.timesWatched > 0) {
+          if (show && show.timesWatched !== undefined) 
             return true;
-          }
 
           return false;
         }
@@ -392,6 +401,14 @@ export class ApiShowsService {
     }
   }
 
+  getShowStatus(status: string): number {
+      for (const [key, value] of Object.entries(ShowStatus)) {
+        if (value === status) 
+          return parseInt(key, 10); 
+      }
+      return -1;
+  }
+
   async saveShowsToFile(newShow: ComplexTvshow, watched_times: number) {
     try {
 
@@ -419,7 +436,8 @@ export class ApiShowsService {
           poster_path: newShow.poster_path,
           type: "tvshow",
           popularity: newShow.popularity,
-          timesWatched: watched_times
+          timesWatched: watched_times,
+          status: this.getShowStatus(newShow.status)
         };
 
         var updatedContent = '';

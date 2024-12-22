@@ -163,6 +163,7 @@
             [title]="'Season ' + season.season_number"
             [season]="season"
             [tvshow]="tvshow"
+            [isLastSeason]="isLastSeasonAvailable(season)"
             [isOnWatchList]="isOnWatchList"
             (addOrRemoveEpisode)="onAddOrRemoveEpisode()"
             (addedShow)="onAddedShow()">

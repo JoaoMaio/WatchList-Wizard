@@ -16,6 +16,7 @@ export interface SimpleObject {
   popularity: number;
   runtime?: number;
   timesWatched: number;
+  status?: number;
 }
 
 export interface Spoken_Languages {
@@ -166,7 +167,6 @@ export const EmptyPerson  : Person = {
   deathday: '',
   biography: ''
 }
-
 
 export type SimpleCharacter = {
   id: number;
@@ -320,7 +320,6 @@ export class ApiService {
       })
     );
   }
-
 
   getPersonDetails(id: number): Observable<Person> {
     return this.http.get(`${this.BASE_API_URL}person/${id}`, { headers: this.headers }).pipe(

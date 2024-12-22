@@ -63,6 +63,16 @@ export interface Production_Country {
   name: string;
 }
 
+export const MovieStatus = {
+  0: 'Rumored',
+  1: 'Planned',
+  2: 'In Production',
+  3: 'Post Production',
+  4: 'Released',
+  5: 'Canceled'
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -175,13 +185,19 @@ export class ApiMoviesService {
       })
     )
   }
-
-
-
   
   //-------------------------------------------------------------------------------------//
   //----------------------------   MOVIES  FILE  ----------------------------------------//
   //-------------------------------------------------------------------------------------//
+
+    getMovieStatus(status: string): number {
+        for (const [key, value] of Object.entries(MovieStatus)) {
+          if (value === status) 
+            return parseInt(key, 10); 
+        }
+        return -1;
+    }
+
 
   async saveMoviesToFile(newMovie: ComplexMovie, timesWatched: number) {
     try {
@@ -221,7 +237,8 @@ export class ApiMoviesService {
           type: "movie",
           popularity: newMovie.popularity,
           runtime: newMovie.runtime,
-          timesWatched: timesWatched
+          timesWatched: timesWatched,
+          status: this.getMovieStatus(newMovie.status)
         };
 
         currentContentList.push(SimpleObject);

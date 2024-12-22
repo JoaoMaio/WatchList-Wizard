@@ -1,11 +1,3 @@
 <div class="page">
-    <div class="showList">
-        <div *ngFor="let object of allObjects" class="objectGrid">
-          <img *ngIf="api.doesBackDropExist(object.poster_path)" [src]="object.poster_path" alt="{{object.title}}" class="object-image" (click)="showInfo(object)" />
-          <div *ngIf="!api.doesBackDropExist(object.poster_path)" class="fallback-wrapper">
-            <img src="amongus.png" alt="{{object.title}}" class="object-image error" (click)="showInfo(object)" />
-            <p class="object-title">{{object.title}}</p>
-          </div>
-        </div>
-      </div>
+
 </div>

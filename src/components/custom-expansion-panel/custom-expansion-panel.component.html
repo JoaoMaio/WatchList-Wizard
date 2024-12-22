@@ -38,7 +38,7 @@
               </div>
               
             </div>
-            <div class="markAsWatched" *ngIf="api.doesBackDropExist(episode.still_path)">
+            <div class="markAsWatched" *ngIf="shows_api.getDaysUntiItsOut(episode) <= 0">
               <button *ngIf="!episode.watched" (click)="markEpisodeAsWatched(episode)" class="markAsWatchedbutton">
                 +
               </button>
@@ -47,7 +47,7 @@
                 <span class="biggerthanone"  *ngIf="episode.timesWatched! > 1">{{episode.timesWatched}} X</span>
               </button>
             </div>
-            <div class="tba_days" *ngIf="!api.doesBackDropExist(episode.still_path)">
+            <div class="tba_days" *ngIf="shows_api.getDaysUntiItsOut(episode) > 0">
                 <p>{{shows_api.getDaysUntiItsOut(episode)}} days </p>
             </div>
         </div>
