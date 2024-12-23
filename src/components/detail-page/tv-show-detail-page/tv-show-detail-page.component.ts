@@ -259,10 +259,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       return true;
 
     //if the last season as no episodes
-    if(this.seasons[this.seasons.length - 1].episodes.length === 0 && this.seasons[this.seasons.length - 1].season_number - 1 === season.season_number)
-      return true;
-      
-    return false;
+    return this.seasons[this.seasons.length - 1].episodes.length === 0 && this.seasons[this.seasons.length - 1].season_number - 1 === season.season_number;
+
+
 
   }
 
@@ -376,8 +375,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           title: this.tvshow.name,
           poster_path: this.tvshow.poster_path,
         };
-        
-        this.collectionsService.addToCollection(collectionId, GeneralItem);
+
+        await this.collectionsService.addToCollection(collectionId, GeneralItem);
         await this.shows_api.saveShowsToFile(this.tvshow!, 0);
       }
     });

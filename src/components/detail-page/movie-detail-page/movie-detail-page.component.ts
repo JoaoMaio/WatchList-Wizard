@@ -55,7 +55,7 @@ export class MovieDetailPageComponent implements OnInit {
           this.movies_api.movieExistsById(this.movie.id).then(object => {
             if (object.id > 0)
             {
-              this.watched = object.timesWatched || 0 > 0 ? true : false;
+              this.watched = !!(object.timesWatched || 0 > 0);
               this.timesWatched = object.timesWatched || 0;
             }
           });
@@ -142,8 +142,8 @@ export class MovieDetailPageComponent implements OnInit {
           title: this.movie.title,
           poster_path: this.movie.poster_path,
         };
-        
-        this.collectionsService.addToCollection(collectionId, GeneralItem);
+
+        await this.collectionsService.addToCollection(collectionId, GeneralItem);
         await this.movies_api.saveMoviesToFile(this.movie!, 0);
       }
     });

@@ -347,22 +347,21 @@ export class ApiService {
     if (!object.poster_path || !object.name || !object.original_name || !object.character) return false;
 
     // Check if the character is not a self role
-    if (object.character.includes('Self') || 
-        object.character.includes('self') || 
-        object.character.includes('Himself') || 
-        object.character.includes('himself') || 
-        object.character.includes('Herself') ||
-        object.character.includes('herself')
-      ) return false;
+    return !(object.character.includes('Self') ||
+      object.character.includes('self') ||
+      object.character.includes('Himself') ||
+      object.character.includes('himself') ||
+      object.character.includes('Herself') ||
+      object.character.includes('herself'));
 
-    return true;
+
   }
 
   isValidMovieCharacter(object: any): boolean {
     // Check if  has a poster, a title, an original title and a character
-    if (!object.poster_path || !object.title || !object.original_title) return false;
+    return !(!object.poster_path || !object.title || !object.original_title);
 
-    return true
+
   }
 
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {

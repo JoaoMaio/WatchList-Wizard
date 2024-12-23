@@ -246,10 +246,9 @@ export class ApiShowsService {
           }
 
           const show = showList.find(s => s.id === showID);
-          if (show && show.timesWatched !== undefined) 
-            return true;
+          return !!(show && show.timesWatched !== undefined);
 
-          return false;
+
         }
         return false;
       });
