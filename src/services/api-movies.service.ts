@@ -3,7 +3,6 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Directory, Encoding, Filesystem} from '@capacitor/filesystem';
 import {ApiService, EmptySimpleObject, Genre, SimpleObject, Spoken_Languages} from './api.service';
 import {Provider} from './api-shows.service';
 
@@ -185,15 +184,15 @@ export class ApiMoviesService {
       })
     )
   }
-  
+
   //-------------------------------------------------------------------------------------//
   //----------------------------   MOVIES  FILE  ----------------------------------------//
   //-------------------------------------------------------------------------------------//
 
     getMovieStatus(status: string): number {
         for (const [key, value] of Object.entries(MovieStatus)) {
-          if (value === status) 
-            return parseInt(key, 10); 
+          if (value === status)
+            return parseInt(key, 10);
         }
         return -1;
     }

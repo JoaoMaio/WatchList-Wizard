@@ -402,8 +402,8 @@ export class ApiShowsService {
 
   getShowStatus(status: string): number {
       for (const [key, value] of Object.entries(ShowStatus)) {
-        if (value === status) 
-          return parseInt(key, 10); 
+        if (value === status)
+          return parseInt(key, 10);
       }
       return -1;
   }
@@ -439,13 +439,13 @@ export class ApiShowsService {
           status: this.getShowStatus(newShow.status)
         };
 
-        var updatedContent = '';
+        let updatedContent = '';
 
         if (currentContentList.find(s => s.id === newShow.id)) {
           let index = currentContentList.findIndex(s => s.id === newShow.id);
           currentContentList[index] = SimpleObject;
            updatedContent = JSON.stringify(currentContentList, null, 2);
-        } 
+        }
         else
         {
           currentContentList.push(SimpleObject);

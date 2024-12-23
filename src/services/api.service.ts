@@ -241,7 +241,7 @@ export class ApiService {
   // Check if the backdrop exists
   doesBackDropExist(string: string | undefined): boolean {
     if (!string) return false;
-    
+
     return !string.endsWith('null');
   }
 
@@ -367,67 +367,67 @@ export class ApiService {
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
     return this.http.get(`${this.BASE_API_URL}person/${id}/combined_credits`, { headers: this.headers }).pipe(
       map((response: any) => {
-      var itemsCast = response.cast
-        .filter((object: any) => {
-            if (object.media_type === 'tv') 
+        let itemsCast = response.cast
+          .filter((object: any) => {
+            if (object.media_type === 'tv')
               return this.isValidTvCharacter(object);
-            else if (object.media_type === 'movie') 
+            else if (object.media_type === 'movie')
               return this.isValidMovieCharacter(object);
-        return false;
-        })
-        .map((object: any) => {
-          var SimpleObject: SimpleObject = {
-            id: object.id,
-            original_title: object.original_name,
-            title:  object.name,
-            poster_path: object.poster_path,
-            type: "tvshow",
-            popularity: object.popularity,
-            timesWatched: 0
-          };
+            return false;
+          })
+          .map((object: any) => {
+            const SimpleObject: SimpleObject = {
+              id: object.id,
+              original_title: object.original_name,
+              title: object.name,
+              poster_path: object.poster_path,
+              type: "tvshow",
+              popularity: object.popularity,
+              timesWatched: 0
+            };
 
-          if (object.media_type === 'movie')
-            SimpleObject.type = "movie";
+            if (object.media_type === 'movie')
+              SimpleObject.type = "movie";
 
-          const credit: Credits = {
-            object: SimpleObject,
-            character: object.character
-          };
+            const credit: Credits = {
+              object: SimpleObject,
+              character: object.character
+            };
 
-          return credit;
-        });
+            return credit;
+          });
 
-      var itemsCrew = response.crew
-        .filter((object: any) => {
-          if (object.media_type === 'tv') 
-            return this.isValidTvCharacter(object);
-          else if (object.media_type === 'movie') 
-            return this.isValidMovieCharacter(object);
-        return false;
-        })
-        .map((object: any) => {
-          var SimpleObject: SimpleObject = {
-            id: object.id,
-            original_title: object.original_title,
-            title: object.title,
-            poster_path: object.poster_path,
-            type: "tvshow",
-            popularity: object.popularity,
-            timesWatched: 0
-          };
+        let itemsCrew = response.crew
+          .filter((object: any) => {
+            if (object.media_type === 'tv')
+              return this.isValidTvCharacter(object);
+            else if (object.media_type === 'movie')
+              return this.isValidMovieCharacter(object);
+            return false;
+          })
+          .map((object: any) => {
+            const SimpleObject: SimpleObject = {
+              id: object.id,
+              original_title: object.original_title,
+              title: object.title,
+              poster_path: object.poster_path,
+              type: "tvshow",
+              popularity: object.popularity,
+              timesWatched: 0
+            };
 
-          if (object.media_type === 'movie')
-            SimpleObject.type = "movie";
+            if (object.media_type === 'movie')
+              SimpleObject.type = "movie";
 
-          const credit: Credits = {
-            object: SimpleObject,
-            job: object.job
-          };
+            const credit: Credits = {
+              object: SimpleObject,
+              job: object.job
+            };
 
-          return credit;
-        });
+            return credit;
+          });
 
-          // Remove duplicates by using a Set to track seen IDs
+        // Remove duplicates by using a Set to track seen IDs
           itemsCast = itemsCast.filter((item: Credits, index: number, self: Credits[]) => {
             return self.findIndex((i:Credits) => i.object.id === item.object.id) === index;
           });
@@ -468,7 +468,7 @@ export class ApiService {
       error: (err) => observer.error(err)
       });
     });
-    
+
   }
 
   // Remove object (show or movie) from file
@@ -602,7 +602,7 @@ export class ApiService {
   }
 
   // Create all files
-  async createAllFiles() 
+  async createAllFiles()
   {
     if(!await this.checkIfFileExists('movies.json')) {
       await Filesystem.writeFile({

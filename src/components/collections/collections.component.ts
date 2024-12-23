@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -41,7 +41,7 @@ export class CollectionsComponent {
 
   openCreateCollectionDialog(): void {
     const dialogRef = this.dialog.open(CreateCollectionDialogComponent);
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.collectionsService.createCollection(result.name);
@@ -51,4 +51,4 @@ export class CollectionsComponent {
 
   }
 
-} 
+}

@@ -23,7 +23,6 @@ import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { BaseChartDirective } from 'ng2-charts';
-import { scales } from 'chart.js';
 
 type seasonData = {
   data: number[];
@@ -94,15 +93,15 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           color: 'white', // Change the legend text color
         },
       },
-    },  
+    },
     elements: {
       line: {
-        borderColor: '#87edd8', 
-        borderWidth: 2, 
-        tension: 0.2, 
+        borderColor: '#87edd8',
+        borderWidth: 2,
+        tension: 0.2,
       },
       point: {
-        radius: 4, 
+        radius: 4,
         borderColor: '#87edd8',
       },
     },
@@ -207,7 +206,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           });
           this.nextEpisode = this.getNextEpisodeToWatch();
           this.createChartData();
-          
+
         }
       });
   }
@@ -217,13 +216,13 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       this.currentSeasonIndex--;
     }
   }
-  
+
   public nextSeason() {
     if (this.currentSeasonIndex < this.charts.data.length - 1) {
       this.currentSeasonIndex++;
     }
   }
-  
+
   createChartData()
   {
     this.seasons.forEach(season => {
@@ -251,7 +250,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   }
 
   isLastSeasonAvailable(season: Season): boolean {
-    
+
     if(this.seasons.length === 0)
       return false;
 
@@ -311,13 +310,13 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       {
         if(episode.episode_number === season!.episodes.length)
           return true;
-  
+
         //if its not the last episode of the season check if there are any episodes after it
         const nextEpisode = season!.episodes.find(e => e.episode_number === episode.episode_number + 1);
         if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
           return true;
       }
-      
+
       return false;
   }
 
@@ -360,7 +359,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   addToCollection(): void {
     const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
-      width: '400px',  
+      width: '400px',
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',

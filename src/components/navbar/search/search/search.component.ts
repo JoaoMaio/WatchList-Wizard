@@ -163,9 +163,4 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  showInfo(object: SimpleObject) {
-      this.router.navigate([`/info/${object.type}`, object.id]);
-  }
-
-
 }
