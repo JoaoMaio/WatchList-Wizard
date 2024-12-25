@@ -1,38 +1,9 @@
 <div class="pageList">
-    <div class="item-list">
-        
-        <div class="section-title">
-            <p class="text"> {{watchedShows.length}} Watched Shows </p> 
-    
-            <div class="percentage">
-                <mat-icon class="percentage-text"> remove_red_eye</mat-icon>
-                <p class="text percentage-text">{{watchedPercentage}}%</p>
-            </div>
-        </div>
-    
-        <app-show-items-in-grid [items]="watchedShows" [howManyColumns]="4" ></app-show-items-in-grid>
-    </div>
-    
-    <!---------------------------------------------->
+
+    <!----------------- WATCHING ----------------------------->
 
     <div class="item-list">
-    
-        <div class="section-title">
-            <p class="text"> {{ upToDateShows.length }} Up To Date Shows </p> 
-    
-            <div class="percentage">
-                <mat-icon class="percentage-text">remove_red_eye</mat-icon>
-                <p class="text percentage-text">{{upToDatePercentage}}%</p>
-            </div>
-        </div>
-    
-        <app-show-items-in-grid [items]="upToDateShowsGeneralItem" [howManyColumns]="4"></app-show-items-in-grid>
-    </div>
 
-    <!---------------------------------------------->
-
-    <div class="item-list">
-    
         <div class="section-title">
             <p class="text"> {{ watchingShows.length }} Watching Shows </p> 
     
@@ -45,9 +16,25 @@
         <app-show-items-in-grid [items]="watchingShowsGeneralItem" [howManyColumns]="4"></app-show-items-in-grid>
     </div>
 
-    <!---------------------------------------------->
+    <!------------------ UP TO DATE ---------------------------->
 
-    <div class="item-list">
+    <div class="item-list" *ngIf="upToDateShowsGeneralItem.length > 0">
+
+        <div class="section-title">
+            <p class="text"> {{ upToDateShows.length }} Up To Date Shows </p> 
+    
+            <div class="percentage">
+                <mat-icon class="percentage-text">remove_red_eye</mat-icon>
+                <p class="text percentage-text">{{upToDatePercentage}}%</p>
+            </div>
+        </div>
+    
+        <app-show-items-in-grid [items]="upToDateShowsGeneralItem" [howManyColumns]="4"></app-show-items-in-grid>
+    </div>
+
+    <!------------------- HAVENT STARTED --------------------------->
+
+    <div class="item-list" *ngIf="haventStartedShowsGeneralItem.length > 0">
     
         <div class="section-title">
             <p class="text"> {{ haventStartedShows.length }} Haven't Started Yet Shows </p> 
@@ -58,7 +45,24 @@
             </div>
         </div>
     
-        <app-show-items-in-grid [items]="haventStartedShowsGeneralItem" [howManyColumns]="4"></app-show-items-in-grid>
+        <app-show-items-in-grid  [items]="haventStartedShowsGeneralItem" [howManyColumns]="4"></app-show-items-in-grid>
     </div>
+
+    <!------------------- WATCHED --------------------------->
+
+    <div class="item-list">
+        
+        <div class="section-title">
+            <p class="text"> {{watchedShows.length}} Watched Shows </p> 
+    
+            <div class="percentage">
+                <mat-icon class="percentage-text"> remove_red_eye</mat-icon>
+                <p class="text percentage-text">{{watchedPercentage}}%</p>
+            </div>
+        </div>
+    
+        <app-show-items-in-grid [items]="watchedShowsGeneralItem" [howManyColumns]="4" ></app-show-items-in-grid>
+    </div>
+    
 
 </div>

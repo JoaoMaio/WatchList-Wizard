@@ -4,11 +4,12 @@ import { ApiShowsService } from '../../../services/api-shows.service';
 import { GeneralItem } from '../../../utils/collection.model';
 import { MatIconModule } from '@angular/material/icon';
 import { ShowItemsInGridComponent } from '../../show-items-in-grid/show-items-in-grid.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-show-list',
   standalone: true,
-  imports: [ShowItemsInGridComponent, MatIconModule],
+  imports: [ShowItemsInGridComponent, MatIconModule, CommonModule],
   templateUrl: './show-list.component.html',
   styleUrl: './show-list.component.scss',
   encapsulation: ViewEncapsulation.None
