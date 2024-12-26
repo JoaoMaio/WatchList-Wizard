@@ -95,6 +95,7 @@ export class MovieDetailPageComponent implements OnInit {
   async addMovieToWatchList() {
     this.watched = true;
     this.timesWatched++;
+    this.api.addMovieRuntimeToStorage(this.movie.runtime);
     await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
   }
 
@@ -110,6 +111,7 @@ export class MovieDetailPageComponent implements OnInit {
 
   async showRewatchedOrRemoveMovieModalCancel() {
     this.watched = false;
+    this.api.removeMovieRuntimeToStorage(this.movie.runtime);
     await this.api.removeFromFile(this.movie!.id, 'movie');
     this.showRewatchedOrRemoveMovieModal = false;
   }

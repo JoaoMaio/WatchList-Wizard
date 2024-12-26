@@ -38,11 +38,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   someMovies: SimpleObject[] = []
   timeList: Time[] = []
   isLoading: boolean = false;
-  totalShowRuntime: number = 0;
-  totalMovieRuntime: number = 0;
   totalEpisodesWatched: number = 0;
   totalMoviesWatched: number = 0;
   bannerImage = '';
+
+  totalShowWatchedRuntime: number = 0;
+  totalMovieWatchedRuntime: number = 0;
 
   private BANNER_IMAGE = 'bannerImage';
 
@@ -73,58 +74,45 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     })
 
+    
+    // Load from storage on initialization
+    const storedRuntime = localStorage.getItem('totalShowWatchedRuntime');
+    const storedEpisodes = localStorage.getItem('numberWatchedEpisodes');
+    const storedMovieRuntime = localStorage.getItem('totalMovieWatchedRuntime');
+    const storedMovies = localStorage.getItem('numberWatchedMovies');
+
+    this.totalShowWatchedRuntime = storedRuntime ? +storedRuntime : 0;
+    this.totalMovieWatchedRuntime = storedMovieRuntime ? +storedMovieRuntime : 0;
+
+    this.totalEpisodesWatched = storedEpisodes ? +storedEpisodes : 0;
+    this.totalMoviesWatched = storedMovies ? +storedMovies : 0;
+
     // Get the total time spent watching shows
-    const showTimePromise = this.api.getFromFile(0, 'tv').then(async shows => {
-      for (const show of shows) {
-        this.totalShowRuntime += await this.shows_api.calculateShowRuntime(show.id);
-      }
-      this.timeList.push(this.transformMinutesToBetterFormat(this.totalShowRuntime, 'Show'));
-    });
+    this.timeList.push(this.transformMinutesToBetterFormat(this.totalShowWatchedRuntime, 'Show'));
 
     // Get the total time spent watching movies
-    const movieTimePromise = this.api.getFromFile(0, 'movie').then(movies => {
-      for (const movie of movies) {
-        const timeswatched = movie.timesWatched ? movie.timesWatched : 0;
+    this.timeList.push(this.transformMinutesToBetterFormat(this.totalMovieWatchedRuntime, 'Movie'));
 
-        this.totalMovieRuntime += movie.runtime ? movie.runtime * timeswatched : 0;
+
+    let orderedTimeList: Time[] = [];
+
+    //find the show time
+    let i;
+    for (i = 0; i < this.timeList.length; i++) {
+      if (this.timeList[i].title == "Show") {
+        orderedTimeList.push(this.timeList[i]);
       }
-      this.timeList.push(this.transformMinutesToBetterFormat(this.totalMovieRuntime, 'Movie'));
-    });
+    }
 
-    // Get the total number of episodes watched
-    const showCountPromise = this.shows_api.countAllWatchedEpisodes().then((response) => {
-      this.totalEpisodesWatched = response;
-    });
-
-    // Get the total number of movies
-    const movieCountPromise = this.movies_api.getAllMoviesFromFile().then((response) => {
-      for (const movie of response)
-        this.totalMoviesWatched += movie.timesWatched ? movie.timesWatched : 0;
-    });
-
-    // Wait for both shows and movies to load
-    Promise.all([showTimePromise, movieTimePromise, showCountPromise, movieCountPromise]).then(() => {
-      let i;
-      this.isLoading = false;
-
-      let orderedTimeList: Time[] = [];
-
-      //find the show time
-      for (i = 0; i < this.timeList.length; i++) {
-        if (this.timeList[i].title == "Show") {
-          orderedTimeList.push(this.timeList[i]);
-        }
+    //find the movie time
+    for (i = 0; i < this.timeList.length; i++) {
+      if (this.timeList[i].title == "Movie") {
+        orderedTimeList.push(this.timeList[i]);
       }
+    }
 
-      //find the movie time
-      for (i = 0; i < this.timeList.length; i++) {
-        if (this.timeList[i].title == "Movie") {
-          orderedTimeList.push(this.timeList[i]);
-        }
-      }
-
-      this.timeList = orderedTimeList;
-    });
+    this.timeList = orderedTimeList;
+    this.isLoading = false;
   }
 
   showInfo(object: SimpleObject) {
@@ -178,8 +166,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.someShows = [];
     this.someMovies = [];
     this.timeList = [];
-    this.totalShowRuntime = 0;
-    this.totalMovieRuntime = 0;
+    this.totalShowWatchedRuntime = 0;
+    this.totalMovieWatchedRuntime = 0;
     this.totalEpisodesWatched = 0;
     this.totalMoviesWatched = 0;
   }

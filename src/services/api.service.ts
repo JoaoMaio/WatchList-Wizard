@@ -642,4 +642,81 @@ export class ApiService {
 
   }
 
+  addShowRuntimeToStorage(episoderuntime : number): void {
+    var totalShowWatchedRuntime = Number(localStorage.getItem('totalShowWatchedRuntime'));
+    var watchedEpisodes = Number(localStorage.getItem('numberWatchedEpisodes'));
+
+    if(totalShowWatchedRuntime != null && watchedEpisodes != null)
+    {
+      totalShowWatchedRuntime += episoderuntime;
+      watchedEpisodes += 1;
+    }
+    else
+    {
+      totalShowWatchedRuntime = episoderuntime;
+      watchedEpisodes = 1;
+    }
+
+    localStorage.setItem('totalShowWatchedRuntime', totalShowWatchedRuntime.toString());
+    localStorage.setItem('numberWatchedEpisodes', watchedEpisodes.toString());
+  }
+
+  removeShowRuntimeToStorage(episoderuntime : number): void {
+    var totalShowWatchedRuntime = Number(localStorage.getItem('totalShowWatchedRuntime'));
+    var watchedEpisodes = Number(localStorage.getItem('numberWatchedEpisodes'));
+
+    if(totalShowWatchedRuntime != null && watchedEpisodes != null)
+    {
+      totalShowWatchedRuntime -= episoderuntime;
+      watchedEpisodes -= 1;
+    }
+    else
+    {
+      totalShowWatchedRuntime = 0;
+      watchedEpisodes = 0;
+    }
+
+    localStorage.setItem('totalShowWatchedRuntime', totalShowWatchedRuntime.toString());
+    localStorage.setItem('numberWatchedEpisodes', watchedEpisodes.toString());
+  }
+
+  addMovieRuntimeToStorage(movieruntime : number): void {
+    var totalMovieWatchedRuntime = Number(localStorage.getItem('totalMovieWatchedRuntime'));
+    var watchedMovies = Number(localStorage.getItem('numberWatchedMovies'));
+
+    if(totalMovieWatchedRuntime != null && watchedMovies != null)
+    {
+      totalMovieWatchedRuntime += movieruntime;
+      watchedMovies += 1;
+    }
+    else
+    {
+      totalMovieWatchedRuntime = movieruntime;
+      watchedMovies = 1;
+    }
+
+    localStorage.setItem('totalMovieWatchedRuntime', totalMovieWatchedRuntime.toString());
+    localStorage.setItem('numberWatchedMovies', watchedMovies.toString());
+  }
+
+  removeMovieRuntimeToStorage(movieruntime : number): void {
+    var totalMovieWatchedRuntime = Number(localStorage.getItem('totalMovieWatchedRuntime'));
+    var watchedMovies = Number(localStorage.getItem('numberWatchedMovies'));
+
+    if(totalMovieWatchedRuntime != null && watchedMovies != null)
+    {
+      totalMovieWatchedRuntime -= movieruntime;
+      watchedMovies -= 1;
+    }
+    else
+    {
+      totalMovieWatchedRuntime = 0;
+      watchedMovies = 0;
+    }
+
+    localStorage.setItem('totalMovieWatchedRuntime', totalMovieWatchedRuntime.toString());
+    localStorage.setItem('numberWatchedMovies', watchedMovies.toString());
+  }
+
+
 }

@@ -301,7 +301,6 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     return EmptyEpisode;
   }
 
-
   isLastEpisodeOfShow(episode: Episode) {
     const season = this.seasons.find(s => s.season_number === episode.season_number);
     const isLastSeason = this.isLastSeasonAvailable(season!);
@@ -333,12 +332,14 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     episode.watched = true;
     episode.timesWatched += 1;
     await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+    this.api.addShowRuntimeToStorage(episode.runtime);
 
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   markEpisodeAsUnWatched(episode: Episode) {
     this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id).then(() => {
+      this.api.removeShowRuntimeToStorage(episode.runtime);
       episode.watched = false;
       this.nextEpisode = this.getNextEpisodeToWatch();
     });

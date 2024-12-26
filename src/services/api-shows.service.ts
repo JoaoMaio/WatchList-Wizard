@@ -85,7 +85,6 @@ export type SavedEpisodeInfo = {
 export type EInfo = {
   seasonNumber: number
   episodeNumber: number
-  runtime?: number
   timesWatched: number;
 }
 
@@ -287,7 +286,6 @@ export class ApiShowsService {
             einfo: [{
               seasonNumber: newEpisode.season_number,
               episodeNumber: newEpisode.episode_number,
-              runtime: newEpisode.runtime ? newEpisode.runtime : 0,
               timesWatched: newEpisode.timesWatched
             }]
           };
@@ -301,7 +299,6 @@ export class ApiShowsService {
             show.einfo.push({
               seasonNumber: newEpisode.season_number,
               episodeNumber: newEpisode.episode_number,
-              runtime: newEpisode.runtime ? newEpisode.runtime : 0,
               timesWatched: newEpisode.timesWatched
             });
           }
@@ -490,57 +487,4 @@ export class ApiShowsService {
     }
   }
 
-  calculateShowRuntime(showId: number): Promise<number> {
-    return new Promise(async (resolve) => {
-      let total = 0;
-      let episodes = await this.getAllEpisodesFromFile(showId);
-      episodes.forEach(e => {
-
-        if (e.timesWatched)
-          total += e.runtime ? e.runtime * e.timesWatched : 0;
-        else
-          total += e.runtime ? e.runtime : 0;
-
-      });
-      resolve(total);
-    });
-  }
-
-  async countAllWatchedEpisodes(): Promise<number> {
-    try {
-      if (!await this.generalApi.checkIfFileExists(this.episodes_filename)) {
-        return 0;
-      }
-
-      let episodeList: SavedEpisodeInfo[] = [];
-
-      return await  this.generalApi.readFromFile(this.episodes_filename).then((data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            episodeList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-
-          let total = 0;
-          episodeList.forEach(show => {
-            show.einfo.forEach(e => {
-              if (e.timesWatched)
-                total = total + e.timesWatched;
-              else
-                total++;
-            });
-          });
-
-          return total;
-        }
-        return 0;
-      });
-
-    } catch (e) {
-      console.error('Error checking if episodes exists', e);
-      return 0;
-    }
-  }
 }

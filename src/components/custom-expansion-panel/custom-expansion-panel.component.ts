@@ -135,6 +135,7 @@ export class CustomExpansionPanelComponent implements OnInit {
     episode.watched = true;
     episode.timesWatched = episode.timesWatched + 1;
     await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+    this.api.addShowRuntimeToStorage(episode.runtime);
 
     //emit event to parent component
     this.addOrRemoveEpisode.emit();
@@ -149,6 +150,7 @@ export class CustomExpansionPanelComponent implements OnInit {
     this.selectedEpisode!.watched = false;
     this.selectedEpisode!.timesWatched =  0;
     await this.shows_api.removeEpisodeFromFile(this.selectedEpisode!, this.tvshow!.id);
+    this.api.removeShowRuntimeToStorage(this.selectedEpisode.runtime);
     this.addOrRemoveEpisode.emit();
     this.showRewatchedOrRemoveEpisodeModal = false;
   }
@@ -156,6 +158,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   async RewatchedOrRemoveEpisodeModalConfirm() {
     this.selectedEpisode!.timesWatched += 1;
     await this.shows_api.saveEpisodeToFile(this.selectedEpisode!, this.tvshow!.id);
+    this.api.addShowRuntimeToStorage(this.selectedEpisode.runtime);
     this.showRewatchedOrRemoveEpisodeModal = false;
   }
 
@@ -178,6 +181,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
         try {
           await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+          this.api.addShowRuntimeToStorage(episode.runtime);
           if(this.isLastEpisodeOfShow(episode))
             await this.markShowAsWatched();
         } catch (error) {
@@ -218,6 +222,7 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.timesWatched += 1;
           try {
             await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+            this.api.addShowRuntimeToStorage(episode.runtime);
             if(this.isLastEpisodeOfShow(episode))
               await this.markShowAsWatched();
         
@@ -281,6 +286,7 @@ export class CustomExpansionPanelComponent implements OnInit {
           this.season!.timesWatched = 0;
           try {
             await this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id);
+            this.api.removeShowRuntimeToStorage(episode.runtime);
           } catch (error) {
             console.error('Error deleting episode:', episode, error);
           }
