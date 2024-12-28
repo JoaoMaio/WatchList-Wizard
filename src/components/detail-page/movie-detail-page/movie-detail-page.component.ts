@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import {ApiService, EmptyMovie, SimpleCharacter} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -12,6 +12,7 @@ import { SelectCollectionDialogComponent } from '../../collections/select-collec
 import { MatDialog } from '@angular/material/dialog';
 import { CollectionsService } from '../../../services/collections.service';
 import { CrewListComponent } from "../crew-list/crew-list.component";
+import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../../services/sqlite.service';
 
 
 @Component({
@@ -37,12 +38,16 @@ export class MovieDetailPageComponent implements OnInit {
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
+  movieDb: SimpleDatabaseObject = EmptyDatabaseObject;
+
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
               private route: ActivatedRoute,
               private collectionsService: CollectionsService,
-              private dialog: MatDialog
+              private dialog: MatDialog,
+              private databaseService: DatabaseService
   ) { }
+
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -52,13 +57,22 @@ export class MovieDetailPageComponent implements OnInit {
           this.movie = response;
 
           // Check if movie is in watch list
-          this.movies_api.movieExistsById(this.movie.id).then(object => {
-            if (object.id > 0)
-            {
-              this.watched = !!(object.timesWatched || 0 > 0);
-              this.timesWatched = object.timesWatched || 0;
-            }
+          this.databaseService.getMovieById(this.movie.id).then((movie: SimpleDatabaseObject) => {
+            if (movie.id > 0)
+              {
+                this.watched = !!(movie.timesWatched || 0 > 0);
+                this.timesWatched = movie.timesWatched || 0;
+              }
           });
+
+          //transform movie to SimpleDatabaseObject
+          this.movieDb = {
+            id: this.movie.id,
+            original_title: this.movie.title,
+            poster_path: this.movie.poster_path,
+            status: this.movies_api.getMovieStatus(this.movie.status),
+            timesWatched: this.timesWatched
+          };
 
           // Check if movie is in see later collection
           this.collectionsService.collections$.subscribe(collections => {
@@ -95,8 +109,9 @@ export class MovieDetailPageComponent implements OnInit {
   async addMovieToWatchList() {
     this.watched = true;
     this.timesWatched++;
-    this.api.addMovieRuntimeToStorage(this.movie.runtime);
-    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
+    this.movieDb.timesWatched = this.timesWatched;
+    await this.api.addMovieRuntimeToStorage(this.movie.runtime);
+    await this.databaseService.addMovie(this.movieDb);
   }
 
   removeMovieFromWatchList() {
@@ -105,14 +120,16 @@ export class MovieDetailPageComponent implements OnInit {
 
   async showRewatchedOrRemoveMovieModalConfirm() {
     this.timesWatched++;
-    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
+    this.movieDb.timesWatched = this.timesWatched;
+    await this.api.addMovieRuntimeToStorage(this.movie.runtime);
+    await this.databaseService.updateMovie(this.movieDb);
     this.showRewatchedOrRemoveMovieModal = false;
   }
 
   async showRewatchedOrRemoveMovieModalCancel() {
     this.watched = false;
     this.api.removeMovieRuntimeToStorage(this.movie.runtime);
-    await this.api.removeFromFile(this.movie!.id, 'movie');
+    await this.databaseService.deleteMovie(this.movieDb.id)
     this.showRewatchedOrRemoveMovieModal = false;
   }
 

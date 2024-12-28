@@ -88,6 +88,22 @@ export type EInfo = {
   timesWatched: number;
 }
 
+export type SavedShowInfo = {
+  showId: number;
+  seasons: SeasonInfo[];
+};
+
+export type SeasonInfo = {
+  seasonNumber: number;
+  episodes: EpisodeInfo[]; 
+};
+
+export type EpisodeInfo = {
+    episodeNumber: number;
+    timesWatched: number;
+};
+
+
   // dictionary for status
   export const ShowStatus = {
     0: 'Returning Series',

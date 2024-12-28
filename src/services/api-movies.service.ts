@@ -189,14 +189,13 @@ export class ApiMoviesService {
   //----------------------------   MOVIES  FILE  ----------------------------------------//
   //-------------------------------------------------------------------------------------//
 
-    getMovieStatus(status: string): number {
-        for (const [key, value] of Object.entries(MovieStatus)) {
-          if (value === status)
-            return parseInt(key, 10);
-        }
-        return -1;
-    }
-
+  getMovieStatus(status: string): number {
+      for (const [key, value] of Object.entries(MovieStatus)) {
+        if (value === status)
+          return parseInt(key, 10);
+      }
+      return -1;
+  }
 
   async saveMoviesToFile(newMovie: ComplexMovie, timesWatched: number) {
     try {
