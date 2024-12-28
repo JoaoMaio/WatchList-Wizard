@@ -9,6 +9,7 @@ import {ApiMoviesService} from '../../services/api-movies.service';
 import {ApiShowsService} from '../../services/api-shows.service';
 import { CollectionsComponent } from '../collections/collections.component';
 import { MatIconModule } from '@angular/material/icon';
+import { DatabaseService } from '../../services/sqlite.service';
 
 
 type Time = {
@@ -31,7 +32,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(public movies_api: ApiMoviesService,
               public shows_api: ApiShowsService,
               private api: ApiService,
-              private router: Router
+              private router: Router,
+              private databaseService: DatabaseService
   ) { }
 
   someShows: SimpleObject[] = []
@@ -64,14 +66,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.api.getFromFile(6, 'tv').then((response) => {
       this.someShows.push(...response)
       this.someShows.reverse()
-      this.isLoading = false;
     })
 
     // Get the last 10 movies added to watchlist
-    this.api.getFromFile(6, 'movie').then((response) => {
-      this.someMovies.push(...response)
-      this.someMovies.reverse()
-      this.isLoading = false;
+    // this.api.getFromFile(6, 'movie').then((response) => {
+    //   this.someMovies.push(...response)
+    //   this.someMovies.reverse()
+    // })
+
+    this.databaseService.getLastXMovies(6).then((response) => {
+      //transform the response to the format we need
+      response.forEach((movie) => {
+        this.someMovies.push({
+          id: movie.id,
+          original_title: movie.original_title,
+          title: movie.original_title,
+          poster_path: movie.poster_path,
+          type: "movie",
+          popularity: 0,
+          timesWatched: 0
+        });
+      });
     })
 
     
@@ -117,6 +132,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   showInfo(object: SimpleObject) {
     this.router.navigate([`/info/${object.type}`, object.id]);
+  }
+
+
+  deleteTables()
+  {
+    this.databaseService.dropTables();
   }
 
   transformMinutesToBetterFormat(time: number, time_title: string): Time {

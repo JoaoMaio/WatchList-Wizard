@@ -9,7 +9,7 @@ import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom-expansion-panel.component";
 import {environment} from '../../../environment';
-import {ApiShowsService, ComplexTvshow, EInfo, Episode, Season} from '../../../services/api-shows.service';
+import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../../services/api-shows.service';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 import { CollectionsService } from '../../../services/collections.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -255,7 +255,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   async addShowToWatchListN() {
     this.isOnWatchList = true;
     this.showDb.timesWatched = -1;
-    await this.databaseService.addShow(this.showDb);
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   isLastSeasonAvailable(season: Season): boolean {
@@ -327,7 +327,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async markShowAsWatched() {
     this.showDb.timesWatched = 1;
-    await this.databaseService.updateShow(this.showDb);
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   async markEpisodeAsWatched(episode: Episode) {
@@ -386,7 +386,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
         await this.collectionsService.addToCollection(collectionId, GeneralItem);
         this.showDb.timesWatched = 0;
-        await this.databaseService.updateShow(this.showDb);
+        await this.databaseService.addOrUpdateShow(this.showDb);
       }
     });
   }
@@ -405,7 +405,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     this.collectionsService.addToSeeLater(GI);
     this.isOnWatchList = true;
     this.showDb.timesWatched = 0;
-    await this.databaseService.updateShow(this.showDb);
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   goBack(){

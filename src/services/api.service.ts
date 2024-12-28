@@ -471,55 +471,6 @@ export class ApiService {
 
   }
 
-  // Remove object (show or movie) from file
-  async removeFromFile(objectId: number, type: string) {
-    try {
-      let filename;
-
-      if (type === 'movie')
-        filename = 'movies.json';
-      else
-        filename = 'shows.json';
-
-      let currentContentList: SimpleObject[] = [];
-
-      if (await this.checkIfFileExists(filename)) {
-        const file = await Filesystem.readFile({
-          path: filename,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
-        });
-
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
-          }
-          catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-      }
-
-      //get the object from the list
-      let objectIndex = currentContentList.findIndex(s => s.id === objectId);
-      if (objectIndex === -1) return;
-
-      //remove the object from the list
-      currentContentList.splice(objectIndex, 1);
-      const updatedContent = JSON.stringify(currentContentList, null, 2);
-
-      await Filesystem.writeFile({
-        path: filename,
-        data: updatedContent,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-    catch (e) {
-      console.error('Error checking if object exists', e);
-    }
-  }
-
   // Get X quantity of Shows or Movies from file
   async getFromFile(quantity: number = 0, type: string): Promise<SimpleObject[]> {
     try {
@@ -604,33 +555,6 @@ export class ApiService {
   // Create all files
   async createAllFiles()
   {
-    if(!await this.checkIfFileExists('movies.json')) {
-      await Filesystem.writeFile({
-        path: 'movies.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
-    if(!await this.checkIfFileExists('shows.json')) {
-      await Filesystem.writeFile({
-        path: 'shows.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
-    if(!await this.checkIfFileExists('episodes.json')) {
-      await Filesystem.writeFile({
-        path: 'episodes.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
     if(!await this.checkIfFileExists('collections.json')) {
       await Filesystem.writeFile({
         path: 'collections.json',

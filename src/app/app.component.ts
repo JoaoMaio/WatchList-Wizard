@@ -26,12 +26,11 @@ export class AppComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.setupBackButtonListener();
     await this.cacheDateService.checkAndClearCache();
-    // await this.generalApi.createAllFiles();
+    await this.generalApi.createAllFiles();
     await this.databaseService.initializeDatabase();
   }
 
   async ngOnDestroy() {
-    console.log('Closing database');
     await this.databaseService.closeDatabase();
   }
 

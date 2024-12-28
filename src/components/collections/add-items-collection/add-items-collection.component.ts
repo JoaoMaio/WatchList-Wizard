@@ -8,6 +8,7 @@ import { CollectionsService } from '../../../services/collections.service';
 import { GeneralItem } from '../../../utils/collection.model';
 import { environment } from '../../../environment';
 import { MatIconModule } from '@angular/material/icon';
+import { DatabaseService } from '../../../services/sqlite.service';
 
 
 interface ItemList {
@@ -40,6 +41,7 @@ export class AddItemsCollectionComponent {
     public api: ApiService,
     private router: Router,
     private collectionsService: CollectionsService,
+     private databaseService: DatabaseService
   ) { }
 
   async ngOnInit() {

@@ -90,13 +90,13 @@ export class CustomExpansionPanelComponent implements OnInit {
   async addShowToWatchList() {
     this.isOnWatchList = true;
     this.showDb.timesWatched = 0;
-    await this.databaseService.updateShow(this.showDb);
+    await this.databaseService.addOrUpdateShow(this.showDb);
     this.addedShow.emit();
   }
 
   async markShowAsWatched() {
     this.showDb.timesWatched = 1;
-    await this.databaseService.updateShow(this.showDb);
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   getSeasonCountWatchedEpisodes(season: Season) {

@@ -111,7 +111,7 @@ export class MovieDetailPageComponent implements OnInit {
     this.timesWatched++;
     this.movieDb.timesWatched = this.timesWatched;
     await this.api.addMovieRuntimeToStorage(this.movie.runtime);
-    await this.databaseService.addMovie(this.movieDb);
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
   }
 
   removeMovieFromWatchList() {
@@ -122,7 +122,7 @@ export class MovieDetailPageComponent implements OnInit {
     this.timesWatched++;
     this.movieDb.timesWatched = this.timesWatched;
     await this.api.addMovieRuntimeToStorage(this.movie.runtime);
-    await this.databaseService.updateMovie(this.movieDb);
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
     this.showRewatchedOrRemoveMovieModal = false;
   }
 
@@ -163,7 +163,8 @@ export class MovieDetailPageComponent implements OnInit {
         };
 
         await this.collectionsService.addToCollection(collectionId, GeneralItem);
-        await this.movies_api.saveMoviesToFile(this.movie!, 0);
+        this.movieDb.timesWatched = 0;
+        await this.databaseService.addOrUpdateMovie(this.movieDb);
       }
     });
   }
@@ -180,7 +181,8 @@ export class MovieDetailPageComponent implements OnInit {
     };
 
     this.collectionsService.addToSeeLater(GI);
-    await this.movies_api.saveMoviesToFile(this.movie!, 0);
+    this.movieDb.timesWatched = 0;
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
   }
 
   goBack(){
