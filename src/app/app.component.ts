@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NavBarComponent } from "../components/navbar/nav-bar/nav-bar.component";
 import { App } from '@capacitor/app';

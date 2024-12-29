@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ApiService, EmptySimpleObject, Genre, SimpleObject, Spoken_Languages} from './api.service';
+import {ApiService, Genre, SimpleObject, Spoken_Languages} from './api.service';
 import {Provider} from './api-shows.service';
 
 export interface MovieResponse {

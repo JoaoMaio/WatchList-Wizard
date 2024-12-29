@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, SimpleObject } from '../../services/api.service';
+import { SimpleObject } from '../../services/api.service';
 import { Router } from '@angular/router';
 import {CommonModule} from '@angular/common';
 import { SuggestionComponent } from "../home/suggestion-component/suggestion.component";
@@ -57,7 +57,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (value)
       this.bannerImage = value;
-    else 
+    else
       this.bannerImage = environment.bannerDefault;
 
 
@@ -89,7 +89,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       });
     })
 
-    
+
     // Load from storage on initialization
     const storedRuntime = localStorage.getItem('totalShowWatchedRuntime');
     const storedEpisodes = localStorage.getItem('numberWatchedEpisodes');

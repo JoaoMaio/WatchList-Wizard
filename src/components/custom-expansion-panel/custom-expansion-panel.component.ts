@@ -12,7 +12,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {environment} from '../../environment';
 import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../services/api-shows.service';
-import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject, SimpleEpisodeObject } from '../../services/sqlite.service';
+import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../services/sqlite.service';
 
 
 @Component({
@@ -40,7 +40,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   @Input() isOnWatchList: boolean = false;
   @Output() addOrRemoveEpisode = new EventEmitter();
   @Output() addedShow = new EventEmitter();
-  
+
 
   expanded = false;
   showConfirmModal = false;
@@ -125,7 +125,7 @@ export class CustomExpansionPanelComponent implements OnInit {
       if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
         return true;
     }
-    
+
     return false;
   }
 
@@ -200,7 +200,7 @@ export class CustomExpansionPanelComponent implements OnInit {
         episode.watched = true;
         episode.timesWatched += 1;
 
-        try {                
+        try {
           await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
           this.api.addShowRuntimeToStorage(episode.runtime);
           if(this.isLastEpisodeOfShow(episode))
@@ -229,7 +229,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   async MarkAllSeasonAsWatched(event?: Event) {
     if(event)
       event.stopPropagation();
-    
+
     if(!this.isSeasonWatchedExcludingAiring())
     {
       await this.addShowToWatchList();
@@ -241,12 +241,12 @@ export class CustomExpansionPanelComponent implements OnInit {
         {
           episode.watched = true;
           episode.timesWatched += 1;
-          try {        
+          try {
             await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
             this.api.addShowRuntimeToStorage(episode.runtime);
             if(this.isLastEpisodeOfShow(episode))
               await this.markShowAsWatched();
-        
+
           } catch (error) {
             console.error('Error saving episode:', episode, error);
           }
@@ -281,11 +281,11 @@ export class CustomExpansionPanelComponent implements OnInit {
               episode.timesWatched = leastTimesWatched + 1;
 
               this.season!.timesWatched = episode.timesWatched;
-              try {            
+              try {
                 await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
                 if(this.isLastEpisodeOfShow(episode))
                   await this.markShowAsWatched();
-            
+
               } catch (error) {
                 console.error('Error saving episode:', episode, error);
               }
@@ -305,7 +305,7 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.watched = false;
           episode.timesWatched = 0;
           this.season!.timesWatched = 0;
-          try {        
+          try {
             await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
             this.showDb.timesWatched = 0;
             await this.databaseService.addOrUpdateShow(this.showDb);
