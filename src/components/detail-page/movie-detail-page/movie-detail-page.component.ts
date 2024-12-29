@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService, EmptyMovie, SimpleCharacter} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -7,10 +7,8 @@ import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.servi
 import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 import {MatIconModule} from '@angular/material/icon'
-import { GeneralItem } from '../../../utils/collection.model';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { CollectionsService } from '../../../services/collections.service';
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../../services/sqlite.service';
 
@@ -43,7 +41,6 @@ export class MovieDetailPageComponent implements OnInit {
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
               private route: ActivatedRoute,
-              private collectionsService: CollectionsService,
               private dialog: MatDialog,
               private databaseService: DatabaseService
   ) { }
@@ -75,16 +72,10 @@ export class MovieDetailPageComponent implements OnInit {
           };
 
           // Check if movie is in see later collection
-          this.collectionsService.collections$.subscribe(collections => {
-            collections.forEach(collection => {
-              if (collection.name === 'See Later') {
-                collection.items.forEach(item => {
-                  if (item.id === this.movie.id && item.type === 'movie')
-                    this.inToSeeLater = true;
-                });
-              }
-            });
+          this.databaseService.checkIfIsInSeeLater(this.movie.id, 'movie').then((isInSeeLater: boolean) => {
+            this.inToSeeLater = isInSeeLater;
           });
+
         },
         complete: () => {
 
@@ -145,24 +136,20 @@ export class MovieDetailPageComponent implements OnInit {
   }
 
   addToCollection(): void {
+
+
+
     const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
       width: '400px',  
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.movie.id, type: 'movie' }
+      data: { id: this.movie.id, type: 'movie' }
     });
 
-    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: number) => {
       if (collectionId) {
-        const GeneralItem: GeneralItem = {
-          id: this.movie.id,
-          type: 'movie',
-          title: this.movie.title,
-          poster_path: this.movie.poster_path,
-        };
-
-        await this.collectionsService.addToCollection(collectionId, GeneralItem);
+        this.databaseService.addCollectionItem(collectionId, this.movie.id, 'movie', this.movie.title, this.movie.poster_path);
         this.movieDb.timesWatched = 0;
         await this.databaseService.addOrUpdateMovie(this.movieDb);
       }
@@ -171,16 +158,7 @@ export class MovieDetailPageComponent implements OnInit {
 
   async addToSeeLater() {
     this.inToSeeLater = true;
-
-    //transform movie to GeneralItem
-    const GI: GeneralItem = {
-      id: this.movie.id,
-      type: 'movie',
-      title: this.movie.title,
-      poster_path: this.movie.poster_path,
-    };
-
-    this.collectionsService.addToSeeLater(GI);
+    this.databaseService.addToSeeLater(this.movie.id,'movie',this.movie.title,this.movie.poster_path);
     this.movieDb.timesWatched = 0;
     await this.databaseService.addOrUpdateMovie(this.movieDb);
   }

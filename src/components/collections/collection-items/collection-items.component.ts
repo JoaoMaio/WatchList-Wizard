@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CollectionsService } from '../../../services/collections.service';
-import { Collection } from '../../../utils/collection.model';
 import { ShowItemsInGridComponent } from "../../show-items-in-grid/show-items-in-grid.component";
 import { MatIconModule } from '@angular/material/icon';
 import { AddItemsCollectionComponent } from '../add-items-collection/add-items-collection.component';
 import { CommonModule } from '@angular/common';
+import { Collection, DatabaseService } from '../../../services/sqlite.service';
 
 @Component({
   selector: 'app-collection-items',
@@ -18,20 +17,20 @@ export class CollectionItemsComponent implements OnInit {
 
   showAddItems: boolean = false;
   isLoading: boolean = true;
-  collection: Collection = {id: '', name: '', items: [], created_at: '', updated_at: ''}; 
+  collection: Collection = {id: 0, name: '', items: []}; 
+  
 
   constructor(private route: ActivatedRoute,
-            private collectionsService: CollectionsService
+              private databaseService: DatabaseService,
         ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.isLoading  = true;
-
-      this.collectionsService.collections$.subscribe((collections) => {
-          this.collection = collections.find(collection => collection.id === params['id']) || this.collection;
+      this.databaseService.getCollection(params['id']).then((collection) => {
+        this.collection = collection;
+        this.isLoading = false;
       });
-
     });
   }
 
@@ -42,6 +41,9 @@ export class CollectionItemsComponent implements OnInit {
 
   toggleAddItems() {
       this.showAddItems = !this.showAddItems;
+      this.databaseService.getCollection(this.collection.id).then((collection) => {
+        this.collection = collection;
+      });
   }
 
 }

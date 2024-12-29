@@ -31,7 +31,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(public movies_api: ApiMoviesService,
               public shows_api: ApiShowsService,
-              private api: ApiService,
               private router: Router,
               private databaseService: DatabaseService
   ) { }
@@ -56,26 +55,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const { value } =  await Preferences.get({ key: this.BANNER_IMAGE });
 
-    if (value) {
+    if (value)
       this.bannerImage = value;
-    } else {
+    else 
       this.bannerImage = environment.bannerDefault;
-    }
 
-    // Get the last 10 shows added to watchlist
-    this.api.getFromFile(6, 'tv').then((response) => {
-      this.someShows.push(...response)
-      this.someShows.reverse()
-    })
 
-    // Get the last 10 movies added to watchlist
-    // this.api.getFromFile(6, 'movie').then((response) => {
-    //   this.someMovies.push(...response)
-    //   this.someMovies.reverse()
-    // })
+    this.databaseService.getLastXShows(6).then((response) => {
+      response.forEach((show) => {
+        this.someShows.push({
+          id: show.id,
+          original_title: show.original_title,
+          title: show.original_title,
+          poster_path: show.poster_path,
+          type: "tvshow",
+          popularity: 0,
+          timesWatched: 0
+        });
+      });
+    });
 
     this.databaseService.getLastXMovies(6).then((response) => {
-      //transform the response to the format we need
       response.forEach((movie) => {
         this.someMovies.push({
           id: movie.id,
@@ -132,12 +132,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   showInfo(object: SimpleObject) {
     this.router.navigate([`/info/${object.type}`, object.id]);
-  }
-
-
-  deleteTables()
-  {
-    this.databaseService.dropTables();
   }
 
   transformMinutesToBetterFormat(time: number, time_title: string): Time {

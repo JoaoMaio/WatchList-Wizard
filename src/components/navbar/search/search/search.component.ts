@@ -1,11 +1,9 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService, SimpleObject, SimplePerson } from '../../../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import { Router } from '@angular/router';
 import { environment } from '../../../../environment';
 import { ShowItemsInGridComponent } from "../../../show-items-in-grid/show-items-in-grid.component";
-import { GeneralItem } from '../../../../utils/collection.model';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -27,8 +25,7 @@ export class SearchComponent implements OnInit {
   totalPages = 0;
   searched = false;
 
-  constructor( public api: ApiService,
-                private router: Router
+  constructor( public api: ApiService
   ) { }
 
   ngOnInit() {
@@ -46,7 +43,6 @@ export class SearchComponent implements OnInit {
   }
 
   resetSearch() {
-    //this.searchTerm = ''
     this.response = []
     this.responsePerson = []
     this.page = 1

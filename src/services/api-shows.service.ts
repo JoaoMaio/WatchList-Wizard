@@ -95,9 +95,6 @@ export class ApiShowsService {
   private BASE_API_URL: string = environment.BASE_API_URL;
   private headers = new HttpHeaders(environment.headers);
 
-  shows_filename = 'shows.json';
-  episodes_filename = 'episodes.json';
-
   constructor(private http: HttpClient,
               private generalApi: ApiService) {}
 

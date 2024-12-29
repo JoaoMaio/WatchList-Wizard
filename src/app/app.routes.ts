@@ -10,6 +10,7 @@ import { CollectionItemsComponent } from '../components/collections/collection-i
 import { MovieListComponent } from '../components/profile/movie-list/movie-list.component';
 import { ShowListComponent } from '../components/profile/show-list/show-list.component';
 import { PersonDetailPageComponent } from '../components/detail-page/person-detail-page/person-detail-page.component';
+import { SettingsComponent } from '../components/settings/settings.component';
 
 export const routes: Routes = [
 
@@ -24,6 +25,7 @@ export const routes: Routes = [
     { path: 'collection/:id', component: CollectionItemsComponent },
     { path: 'shows', component: ShowListComponent },
     { path: 'movies', component: MovieListComponent },
+    { path: 'settings', component: SettingsComponent },
     { path: '**', redirectTo: '' }
     
 

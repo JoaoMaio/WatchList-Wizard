@@ -1,14 +1,12 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-import { Collection } from '../../../utils/collection.model';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
-import { map } from 'rxjs/operators';
+import { Collection, DatabaseService } from '../../../services/sqlite.service';
 
 @Component({
   selector: 'app-select-collection-dialog',
@@ -25,22 +23,21 @@ import { map } from 'rxjs/operators';
   ]
 })
 export class SelectCollectionDialogComponent {
-  selectedCollectionId: string = '';
-  collections$: Observable<Collection[]>;
+  selectedCollectionId: number = 0;
+  collections : Collection[] = [];
 
   constructor(
+    private databaseService: DatabaseService,
     public dialogRef: MatDialogRef<SelectCollectionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { collections$: Observable<Collection[]>, id: number, type: string }
-  ) {
-
-    // only show collections that don't already contain the item
-    this.collections$ = data.collections$.pipe(
-      map((collections: Collection[]) => collections.filter(collection => 
-        !collection.items.some(item => item.id === data.id && item.type === data.type)
-      ))
-    );
-
-  }
+    @Inject(MAT_DIALOG_DATA) public data: { id: number, type: string }
+    ) {
+        // only show collections that don't already have the item in them
+        this.databaseService.getCollections().then((collections) => {
+          this.collections = collections.filter((collection) => {
+            return collection.items.findIndex((item) => item.id === data.id) === -1;
+          });
+        });
+    }
 
   onCancel(): void {
     this.dialogRef.close();

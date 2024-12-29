@@ -168,6 +168,9 @@ export class CustomExpansionPanelComponent implements OnInit {
 
     await this.databaseService.deleteEpisode(this.tvshow.id, this.selectedEpisode.season_number, this.selectedEpisode.episode_number);
 
+    this.showDb.timesWatched = 0;
+    await this.databaseService.addOrUpdateShow(this.showDb);
+
     this.api.removeShowRuntimeToStorage(this.selectedEpisode.runtime);
     this.addOrRemoveEpisode.emit();
     this.showRewatchedOrRemoveEpisodeModal = false;
@@ -304,6 +307,8 @@ export class CustomExpansionPanelComponent implements OnInit {
           this.season!.timesWatched = 0;
           try {        
             await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
+            this.showDb.timesWatched = 0;
+            await this.databaseService.addOrUpdateShow(this.showDb);
             this.api.removeShowRuntimeToStorage(episode.runtime);
           } catch (error) {
             console.error('Error deleting episode:', episode, error);

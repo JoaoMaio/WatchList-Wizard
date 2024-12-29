@@ -4,11 +4,9 @@ import { ApiShowsService } from '../../../services/api-shows.service';
 import { ApiService, SimpleObject } from '../../../services/api.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CollectionsService } from '../../../services/collections.service';
-import { GeneralItem } from '../../../utils/collection.model';
 import { environment } from '../../../environment';
 import { MatIconModule } from '@angular/material/icon';
-import { DatabaseService } from '../../../services/sqlite.service';
+import { DatabaseService, SimpleCollectionItem } from '../../../services/sqlite.service';
 
 
 interface ItemList {
@@ -30,17 +28,16 @@ export class AddItemsCollectionComponent {
   Movies: SimpleObject[] = []
   selectedView: string = 'tvshow'; 
   items: ItemList[] = []; 
-  addedItems: GeneralItem[] = [];
+  addedItems: SimpleCollectionItem[] = [];
 
   imgPath = environment.imgPath;
 
-  @Input() collectionId: string = '';
+  @Input() collectionId: number = -1;
 
   constructor(public movies_api: ApiMoviesService,
     public shows_api: ApiShowsService,
     public api: ApiService,
     private router: Router,
-    private collectionsService: CollectionsService,
      private databaseService: DatabaseService
   ) { }
 
@@ -48,27 +45,50 @@ export class AddItemsCollectionComponent {
     this.isLoading = true;
 
     //Get all shows and movies
-    this.api.getFromFile(0, 'tv').then((response) => {
-      this.Shows.push(...response)
+    this.databaseService.getShows().then((response) => {
+      response.forEach((show) => {
+        this.Shows.push({
+          id: show.id,
+          original_title: show.original_title,
+          title: show.original_title,
+          poster_path: show.poster_path,
+          type: "tvshow",
+          popularity: 0,
+          timesWatched: show.timesWatched
+        });
+      });
+
       this.items = this.Shows.map(show => ({ item: show, added: false }));
 
       if (this.collectionId) 
-      {
-        this.collectionsService.collections$.subscribe((collections) => {
-          const collection = collections.find((collection) => collection.id === this.collectionId);
-          if (collection) 
-            this.addedItems = collection.items;
-        });
-        this.checkForAddedItems();
-      }
+        this.getItems();
+
       this.sortItems();
     })
 
-    this.api.getFromFile(0, 'movie').then((response) => {
-      this.Movies.push(...response)
+    this.databaseService.getMovies().then((response) => {
+      response.forEach((movie) => {
+        this.Movies.push({
+          id: movie.id,
+          original_title: movie.original_title,
+          title: movie.original_title,
+          poster_path: movie.poster_path,
+          type: "movie",
+          popularity: 0,
+          timesWatched: movie.timesWatched
+        });
+      });
       this.isLoading = false;
     })
   }
+
+  getItems(){
+    this.databaseService.getCollectionItems(this.collectionId).then((items) => {
+      this.addedItems = items;
+      this.checkForAddedItems();
+    });
+  }
+
 
   sortItems(){
       // order the items, showing the added items first
@@ -105,28 +125,20 @@ export class AddItemsCollectionComponent {
 
   async addOrRemoveFromCollection(item: SimpleObject) {
 
-      // if item id is already in the collection, remove it 
       const addedItem = this.addedItems.find((addedItem) => addedItem.id === item.id);
 
       if (addedItem)
       {
-        await this.collectionsService.removeFromCollection(this.collectionId, item.id);
+        this.databaseService.deleteCollectionItem(this.collectionId, item.id);
+        this.getItems();
       }
       else
       {
-        if (this.collectionId) 
-          {
-            const GeneralItem: GeneralItem = {
-              id: item.id,
-              type: item.type,
-              title: item.title ? item.title : item.original_title,
-              poster_path: item.poster_path,
-            };
-            
-            this.collectionsService.addToCollection(this.collectionId, GeneralItem);
-          }
+        if (this.collectionId) {
+          this.databaseService.addCollectionItem(this.collectionId, item.id, item.type, item.title, item.poster_path);
+          this.getItems();
+        }
       }
-
       this.checkForAddedItems();
   }
 }

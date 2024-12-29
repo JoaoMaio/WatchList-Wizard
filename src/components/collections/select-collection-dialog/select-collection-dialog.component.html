@@ -4,7 +4,7 @@
     <mat-form-field appearance="outline" class="custom-form-field">
       <mat-label class="select-label">Select Collection</mat-label>
       <mat-select [(ngModel)]="selectedCollectionId" panelClass="custom-select-panel">
-        <mat-option *ngFor="let collection of collections$ | async" [value]="collection.id">
+        <mat-option *ngFor="let collection of collections" [value]="collection.id">
           {{collection.name}}
         </mat-option>
       </mat-select>

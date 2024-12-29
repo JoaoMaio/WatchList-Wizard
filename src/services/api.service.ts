@@ -7,6 +7,13 @@ import {environment} from '../environment';
 import {ComplexMovie, MovieResponse} from './api-movies.service';
 import {ComplexTvshow, Episode, Provider, Season, TvShowResponse} from './api-shows.service';
 
+export interface GeneralItem {
+  id: number;
+  poster_path: string;
+  title: string;
+  type: string;
+}
+
 export interface SimpleObject {
   id: number;
   original_title: string;
@@ -471,56 +478,6 @@ export class ApiService {
 
   }
 
-  // Get X quantity of Shows or Movies from file
-  async getFromFile(quantity: number = 0, type: string): Promise<SimpleObject[]> {
-    try {
-
-      let filename ;
-
-      if (type === 'movie')
-        filename = 'movies.json';
-      else
-        filename = 'shows.json';
-
-      if (!await this.checkIfFileExists(filename)) {
-        return [];
-      }
-
-      const file = await Filesystem.readFile({
-        path: filename,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-
-      let objectList: SimpleObject[] = [];
-
-      if (file.data)
-      {
-        try {
-          objectList = JSON.parse(file.data as string);
-        } catch (error) {
-          console.error('Error parsing JSON file:', error);
-        }
-
-        if (quantity > 0)
-        {
-          if (objectList.length-quantity-1 < 0)
-            return objectList;
-
-          objectList = objectList.slice(objectList.length-quantity, objectList.length);
-          return objectList;
-        }
-        else
-          return objectList;
-      }
-
-      return [];
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-      return [];
-    }
-  }
-
   // Get images for object (show or movie)
   getImages(id: number, type: string): Observable<string[]> {
     return this.http.get(`${this.BASE_API_URL}${type}/${id}/images`, { headers: this.headers }).pipe(
@@ -641,6 +598,4 @@ export class ApiService {
     localStorage.setItem('totalMovieWatchedRuntime', totalMovieWatchedRuntime.toString());
     localStorage.setItem('numberWatchedMovies', watchedMovies.toString());
   }
-
-
 }

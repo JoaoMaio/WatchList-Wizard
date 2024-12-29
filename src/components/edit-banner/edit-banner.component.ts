@@ -7,6 +7,7 @@ import { environment } from '../../environment';
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import { CustomToastrComponent } from '../custom-toastr/custom-toastr.component';
+import { DatabaseService } from '../../services/sqlite.service';
 
 @Component({
   selector: 'app-edit-banner',
@@ -36,7 +37,8 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   constructor(private api: ApiService,
-              private router: Router
+              private router: Router,
+              private databaseService: DatabaseService
   ) { }
 
   ngAfterViewInit(): void {
@@ -46,12 +48,34 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.isLoading = true;
 
-    const shows = this.api.getFromFile(0, 'tv').then((response) => {
-      this.allShows.push(...response)
+    const shows = this.databaseService.getShows().then((response) => {
+      response.forEach((show) => {
+        this.allShows.push({
+          id: show.id,
+          original_title: show.original_title,
+          title: show.original_title,
+          poster_path: show.poster_path,
+          type: "tvshow",
+          popularity: 0,
+          timesWatched: show.timesWatched,
+          status: show.status
+        });
+      });
     })
 
-    const movies = this.api.getFromFile(0, 'movie').then((response) => {
-      this.allMovies.push(...response)
+    const movies = this.databaseService.getMovies().then((response) => {
+      response.forEach((movie) => {
+        this.allMovies.push({
+          id: movie.id,
+          original_title: movie.original_title,
+          title: movie.original_title,
+          poster_path: movie.poster_path,
+          type: "movie",
+          popularity: 0,
+          timesWatched: movie.timesWatched,
+          status: movie.status
+        });
+      });
     })
 
     Promise.all([shows, movies]).then(() => {
@@ -61,16 +85,13 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   }
 
-  order()
-  {
-    //order by name
+  order(){
     this.searchResults.sort((a, b) => {
       return a.title.localeCompare(b.title)
     })
   }
 
-  search()
-  {
+  search(){
     this.searchResults = [...this.allShows, ...this.allMovies].filter((item) => {
       return item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
     })
@@ -85,7 +106,6 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   seeMedia(media: SimpleObject) {
    this.selectedMedia = media;
 
-    //get images
     this.api.getImages(media.id, media.type == 'tvshow' ? 'tv' : 'movie').subscribe({
       next: (response) => {
         for (let i = 0; i < response.length; i++) {

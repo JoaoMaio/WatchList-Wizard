@@ -11,7 +11,6 @@ import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom
 import {environment} from '../../../environment';
 import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../../services/api-shows.service';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
-import { CollectionsService } from '../../../services/collections.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,7 +18,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
-import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { BaseChartDirective } from 'ng2-charts';
@@ -113,11 +111,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   public currentSeasonIndex = 0; // Start with the first season
 
-
   constructor(public api: ApiService,
               public shows_api: ApiShowsService,
               private route: ActivatedRoute,
-              private collectionsService: CollectionsService,
               private dialog: MatDialog,
               private databaseService: DatabaseService
     ) { }
@@ -152,16 +148,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
             }
           });
 
-          // Check if show is in see later collection
-          this.collectionsService.collections$.subscribe(collections => {
-            collections.forEach(collection => {
-              if (collection.name === 'See Later') {
-                collection.items.forEach(item => {
-                  if (item.id === this.tvshow.id && item.type === 'tvshow')
-                    this.inToSeeLater = true;
-                });
-              }
-            });
+          // Check if movie is in see later collection
+          this.databaseService.checkIfIsInSeeLater(this.tvshow.id, 'tvshow').then((isInSeeLater: boolean) => {
+            this.inToSeeLater = isInSeeLater;
           });
         },
         error: (error) => {
@@ -372,20 +361,16 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.tvshow.id, type: 'tvshow' }
+      data: {id: this.tvshow.id, type: 'tvshow' }
     });
 
-    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: number) => {
       if (collectionId) {
-        const GeneralItem: GeneralItem = {
-          id: this.tvshow.id,
-          type: 'tvshow',
-          title: this.tvshow.name,
-          poster_path: this.tvshow.poster_path,
-        };
+        this.databaseService.addCollectionItem(collectionId, this.tvshow.id, 'tvshow', this.tvshow.name, this.tvshow.poster_path);
 
-        await this.collectionsService.addToCollection(collectionId, GeneralItem);
-        this.showDb.timesWatched = 0;
+        if (this.showDb.timesWatched < 0) 
+          this.showDb.timesWatched = -1;
+
         await this.databaseService.addOrUpdateShow(this.showDb);
       }
     });
@@ -393,18 +378,10 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async addToSeeLater() {
     this.inToSeeLater = true;
-
-    //transform movie to GeneralItem
-    const GI: GeneralItem = {
-      id: this.tvshow.id,
-      type: 'tvshow',
-      title: this.tvshow.name,
-      poster_path: this.tvshow.poster_path,
-    };
-
-    this.collectionsService.addToSeeLater(GI);
+    this.databaseService.addToSeeLater(this.tvshow.id, 'tvshow',this.tvshow.name ,this.tvshow.poster_path);
     this.isOnWatchList = true;
-    this.showDb.timesWatched = 0;
+    if (this.showDb.timesWatched < 0) 
+        this.showDb.timesWatched = -1;
     await this.databaseService.addOrUpdateShow(this.showDb);
   }
 

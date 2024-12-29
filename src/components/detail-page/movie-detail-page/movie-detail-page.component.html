@@ -43,7 +43,7 @@
       <!-- Action Buttons -->
       <div class="action-buttons">
         <!-- Button 1: To See Later -->
-        <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
+        <div class="button" *ngIf="!inToSeeLater && !watched" (click)="addToSeeLater()">
           <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
           <span>To See Later</span>
         </div>
