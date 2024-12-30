@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 50px;
-  background-color: #11001ce3 ;
+  background-color: #11001ce3;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-around;
@@ -12,22 +12,32 @@
   z-index: 1000;
 
   .nav-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     color: var(--textColor2);
     text-decoration: none;
     font-size: 12px;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s;
 
     span {
       font-family: var(--fontFamily);
       font-weight: 200;
       font-size: 12px;
     }
-  }
-}
 
-.active {
-  color: var(--textColor) !important;
+    &.active {
+      color: var(--textColor);
+      font-weight: bold;
+      transform: scale(1.2); 
+      transition: transform 0.3s ease-in-out;
+      padding: 5px 10px;
+
+      i {
+        color: var(--textColor);
+      }
+
+    }
+  }
 }

@@ -14,7 +14,6 @@ export class SettingsComponent implements OnInit {
     constructor(private databaseService: DatabaseService) { }
 
     ngOnInit() {
-        console.log('SettingsComponent initialized');
     }
 
     async clearAllData() {
