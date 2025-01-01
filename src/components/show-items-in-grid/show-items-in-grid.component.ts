@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { GeneralItem } from '../../utils/collection.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../services/api.service';
+import { ApiService, GeneralItem } from '../../services/api.service';
 import { environment } from '../../environment';
 
 @Component({

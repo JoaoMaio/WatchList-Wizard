@@ -6,8 +6,8 @@
 
 .dialog-container {
   padding: 24px;
-  max-height: none !important; 
-  border-radius: 0px !important ;
+  max-height: none !important;
+  border-radius: 0 !important ;
 }
 
 .dialog-title {
@@ -22,7 +22,7 @@
   max-height: none !important;
   padding: 0 !important;
   margin: 0 !important;
-  border-radius: 0px !important ;
+  border-radius: 0 !important ;
 }
 
 ::ng-deep textarea.mat-input-element {
@@ -92,7 +92,7 @@
 .confirm-btn {
   min-width: 90px;
   color: var(--textColor) !important;
-  
+
   &:not(:disabled) {
     background-color: var(--a_quinaryColor);
   }
@@ -105,7 +105,7 @@
 
 .custom-form-field {
   width: 100%;
-  
+
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0;
   }
@@ -128,7 +128,7 @@
 
 ::ng-deep .mat-mdc-dialog-container {
   border-radius: 10px !important;
-  
+
   .mdc-dialog__surface {
     border-radius: 10px !important;
   }

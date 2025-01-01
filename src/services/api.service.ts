@@ -7,6 +7,13 @@ import {environment} from '../environment';
 import {ComplexMovie, MovieResponse} from './api-movies.service';
 import {ComplexTvshow, Episode, Provider, Season, TvShowResponse} from './api-shows.service';
 
+export interface GeneralItem {
+  id: number;
+  poster_path: string;
+  title: string;
+  type: string;
+}
+
 export interface SimpleObject {
   id: number;
   original_title: string;
@@ -178,6 +185,44 @@ export type SimpleCharacter = {
 
 export const buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
 export const flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
+
+export const ShowGenre = {
+  10759: 'Action & Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Documentary',
+  18: 'Drama',
+  10751: 'Family',
+  9648: 'Mystery',
+  10764: 'Reality',
+  10765: 'Sci-Fi & Fantasy',
+  10768: 'War & Politics',
+  37: 'Western'
+};
+
+export const MovieGenre = {
+  28: 'Action',
+  12: 'Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Documentary',
+  18: 'Drama',
+  10751: 'Family',
+  14: 'Fantasy',
+  36: 'History',
+  27: 'Horror',
+  10402: 'Music',
+  9648: 'Mystery',
+  10749: 'Romance',
+  878: 'Science Fiction',
+  10770: 'TV Movie',
+  53: 'Thriller',
+  10752: 'War',
+  37: 'Western'
+};
+
 
 
 @Injectable({
@@ -360,8 +405,6 @@ export class ApiService {
   isValidMovieCharacter(object: any): boolean {
     // Check if  has a poster, a title, an original title and a character
     return !(!object.poster_path || !object.title || !object.original_title);
-
-
   }
 
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
@@ -471,104 +514,88 @@ export class ApiService {
 
   }
 
-  // Remove object (show or movie) from file
-  async removeFromFile(objectId: number, type: string) {
-    try {
-      let filename;
-
-      if (type === 'movie')
-        filename = 'movies.json';
-      else
-        filename = 'shows.json';
-
-      let currentContentList: SimpleObject[] = [];
-
-      if (await this.checkIfFileExists(filename)) {
-        const file = await Filesystem.readFile({
-          path: filename,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
-        });
-
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
-          }
-          catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-      }
-
-      //get the object from the list
-      let objectIndex = currentContentList.findIndex(s => s.id === objectId);
-      if (objectIndex === -1) return;
-
-      //remove the object from the list
-      currentContentList.splice(objectIndex, 1);
-      const updatedContent = JSON.stringify(currentContentList, null, 2);
-
-      await Filesystem.writeFile({
-        path: filename,
-        data: updatedContent,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-    catch (e) {
-      console.error('Error checking if object exists', e);
-    }
-  }
-
-  // Get X quantity of Shows or Movies from file
-  async getFromFile(quantity: number = 0, type: string): Promise<SimpleObject[]> {
-    try {
-
-      let filename ;
-
-      if (type === 'movie')
-        filename = 'movies.json';
-      else
-        filename = 'shows.json';
-
-      if (!await this.checkIfFileExists(filename)) {
-        return [];
-      }
-
-      const file = await Filesystem.readFile({
-        path: filename,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-
-      let objectList: SimpleObject[] = [];
-
-      if (file.data)
-      {
-        try {
-          objectList = JSON.parse(file.data as string);
-        } catch (error) {
-          console.error('Error parsing JSON file:', error);
-        }
-
-        if (quantity > 0)
+  getSimilarShowOrMovie(id: number, type: string, page: number): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}${type}/${id}/similar?include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        if (type === 'movie') 
         {
-          if (objectList.length-quantity-1 < 0)
-            return objectList;
-
-          objectList = objectList.slice(objectList.length-quantity, objectList.length);
-          return objectList;
+          const items = response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
+            const SimpleObject: SimpleObject = {
+              id: movie.id,
+              original_title: movie.original_title,
+              title: movie.title,
+              poster_path: movie.poster_path,
+              type: "movie",
+              popularity: movie.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
         }
-        else
-          return objectList;
-      }
-
-      return [];
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-      return [];
-    }
+        else 
+        {
+          const items = response.results
+          .filter((tvshow: any) => tvshow.poster_path !== null)
+          .map((tvshow: any) => {
+            const SimpleObject: SimpleObject = {
+              id: tvshow.id,
+              original_title: tvshow.original_name,
+              title: tvshow.name,
+              poster_path: tvshow.poster_path,
+              type: "tvshow",
+              popularity: tvshow.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+      })
+    );
   }
+
+  getByGenreShowOrMovie(genre: string, type: string, page: number): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}discover/${type}?with_genres=${genre}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        if (type === 'movie') {
+          const items = response.results.map((movie: any) => {
+            const SimpleObject: SimpleObject = {
+              id: movie.id,
+              original_title: movie.original_title,
+              title: movie.title,
+              poster_path: movie.poster_path,
+              type: "movie",
+              popularity: movie.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+        else {
+          const items = response.results.map((tvshow: any) => {
+            const SimpleObject: SimpleObject = {
+              id: tvshow.id,
+              original_title: tvshow.original_name,
+              title: tvshow.name,
+              poster_path: tvshow.poster_path,
+              type: "tvshow",
+              popularity: tvshow.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+      })
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------//
+  //-----------------------------------------------------------------------------------------//
 
   // Get images for object (show or movie)
   getImages(id: number, type: string): Observable<string[]> {
@@ -604,33 +631,6 @@ export class ApiService {
   // Create all files
   async createAllFiles()
   {
-    if(!await this.checkIfFileExists('movies.json')) {
-      await Filesystem.writeFile({
-        path: 'movies.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
-    if(!await this.checkIfFileExists('shows.json')) {
-      await Filesystem.writeFile({
-        path: 'shows.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
-    if(!await this.checkIfFileExists('episodes.json')) {
-      await Filesystem.writeFile({
-        path: 'episodes.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
     if(!await this.checkIfFileExists('collections.json')) {
       await Filesystem.writeFile({
         path: 'collections.json',
@@ -718,5 +718,20 @@ export class ApiService {
     localStorage.setItem('numberWatchedMovies', watchedMovies.toString());
   }
 
+  getShowGenre(genre: string): number {
+      for (const [key, value] of Object.entries(ShowGenre)) {
+        if (value === genre)
+          return parseInt(key, 10);
+      }
+      return -1;
+  }
+
+  getMovieGenre(genre: string): number {
+    for (const [key, value] of Object.entries(MovieGenre)) {
+      if (value === genre)
+        return parseInt(key, 10);
+    }
+    return -1;
+}
 
 }

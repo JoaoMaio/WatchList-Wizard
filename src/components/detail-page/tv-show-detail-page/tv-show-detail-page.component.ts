@@ -3,15 +3,15 @@ import {
   ApiService,
   EmptyEpisode,
   EmptyTvShow,
-  SimpleCharacter
+  SimpleCharacter,
+  SimpleObject
 } from '../../../services/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {CustomExpansionPanelComponent} from "../../custom-expansion-panel/custom-expansion-panel.component";
 import {environment} from '../../../environment';
-import {ApiShowsService, ComplexTvshow, EInfo, Episode, Season} from '../../../services/api-shows.service';
+import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../../services/api-shows.service';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
-import { CollectionsService } from '../../../services/collections.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,10 +19,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
-import { GeneralItem } from '../../../utils/collection.model';
 import {MatIconModule} from '@angular/material/icon'
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { BaseChartDirective } from 'ng2-charts';
+import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject, SimpleEpisodeObject } from '../../../services/sqlite.service';
+import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
 
 type seasonData = {
   data: number[];
@@ -40,7 +41,7 @@ type chartData = {
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent, BaseChartDirective],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent, BaseChartDirective, SuggestionComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: './tv-show-detail-page.component.scss'
 })
@@ -60,6 +61,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
+  showDb: SimpleDatabaseObject = EmptyDatabaseObject;
+  
+  similarTvShows: SimpleObject[] = [];
 
   public charts: chartData = {
     data: [],
@@ -110,12 +114,11 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   public currentSeasonIndex = 0; // Start with the first season
 
-
   constructor(public api: ApiService,
               public shows_api: ApiShowsService,
               private route: ActivatedRoute,
-              private collectionsService: CollectionsService,
-                private dialog: MatDialog,
+              private dialog: MatDialog,
+              private databaseService: DatabaseService
     ) { }
 
   ngOnInit(): void {
@@ -127,6 +130,17 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           this.isTextClamped = this.tvshow.overview.length > 200;
           this.getSeasons();
           this.getIfShowIsOnWatchList();
+          this.similarTo();
+
+          //transform show to SimpleDatabaseObject
+          this.showDb = {
+            id: this.tvshow.id,
+            original_title: this.tvshow.name,
+            poster_path: this.tvshow.poster_path,
+            status: this.shows_api.getShowStatus(this.tvshow.status),
+            timesWatched: -2
+          };
+
         },
         complete: () => {
           this.api.getCredits(this.tvshow.id, 'tv').subscribe({
@@ -138,16 +152,9 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
             }
           });
 
-          // Check if show is in see later collection
-          this.collectionsService.collections$.subscribe(collections => {
-            collections.forEach(collection => {
-              if (collection.name === 'See Later') {
-                collection.items.forEach(item => {
-                  if (item.id === this.tvshow.id && item.type === 'tvshow')
-                    this.inToSeeLater = true;
-                });
-              }
-            });
+          // Check if movie is in see later collection
+          this.databaseService.checkIfIsInSeeLater(this.tvshow.id, 'tvshow').then((isInSeeLater: boolean) => {
+            this.inToSeeLater = isInSeeLater;
           });
         },
         error: (error) => {
@@ -156,10 +163,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  getIfShowIsOnWatchList() {
-    this.shows_api.isShowMarked(this.tvshow!.id).then(exists => {
-      this.isOnWatchList = exists;
-    });
+  async getIfShowIsOnWatchList() {
+    this.isOnWatchList = await this.databaseService.isShowInDatabase(this.tvshow.id);
   }
 
   async getSeasons() {
@@ -185,30 +190,31 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     }
 
     try {
-        this.getEpisodes();
+        await this.getEpisodes();
         this.seasons.sort((a, b) => a.season_number - b.season_number);
     } catch (error) {
         console.error('Error processing seasons:', error);
     }
   }
 
-  getEpisodes() {
-    this.shows_api.getAllEpisodesFromFile(this.tvshow?.id!).then(response => {
-        if (response)
-        {
-          this.seasons.forEach(season => {
-            season.episodes.forEach(episode => {
-              const watched = response .find((e: EInfo) => e.episodeNumber === episode.episode_number && e.seasonNumber === episode.season_number);
-              const timesWatched = watched ? watched.timesWatched : 0;
-              if (watched) episode.watched = true;
-              episode.timesWatched = timesWatched;
-            });
-          });
-          this.nextEpisode = this.getNextEpisodeToWatch();
-          this.createChartData();
+  async getEpisodes() {
+    const response = await this.databaseService.getEpisodesByShowId(this.tvshow.id).catch(error => {
+      console.error('Error fetching episodes from database:', error);
+    });
 
-        }
+    if (response)
+    {
+      this.seasons.forEach(season => {
+        season.episodes.forEach(episode => {
+          const watched = response.find((e: SimpleEpisodeObject) => e.episode_number === episode.episode_number && e.season_number === episode.season_number);
+          const timesWatched = watched ? watched.times_watched : 0;
+          if (watched) episode.watched = true;
+          episode.timesWatched = timesWatched;
+        });
       });
+    }
+    this.nextEpisode = this.getNextEpisodeToWatch();
+    this.createChartData();
   }
 
   public previousSeason() {
@@ -241,12 +247,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   async addShowToWatchListN() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, -1);
-  }
-
-  async addShowToWatchList() {
-    this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
+    this.showDb.timesWatched = -1;
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   isLastSeasonAvailable(season: Season): boolean {
@@ -259,15 +261,12 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
     //if the last season as no episodes
     return this.seasons[this.seasons.length - 1].episodes.length === 0 && this.seasons[this.seasons.length - 1].season_number - 1 === season.season_number;
-
-
-
   }
 
   async removeShowsFromWatchList() {
     this.isOnWatchList = false;
-    await this.api.removeFromFile(this.tvshow!.id, 'tv');
-    await this.shows_api.removeAllEpisodesFromFile(this.tvshow!.id);
+    await this.databaseService.deleteShow(this.showDb.id);
+    await this.databaseService.deleteAllEpisodesByShowId(this.showDb.id);
     this.seasons.forEach(season => {
       season.episodes.forEach(episode => {
         if (episode.watched) {
@@ -320,29 +319,31 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   }
 
   async markShowAsWatched() {
-    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
+    this.showDb.timesWatched = 1;
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   async markEpisodeAsWatched(episode: Episode) {
-    await this.addShowToWatchList();
+    
+    if(!this.isOnWatchList)
+      await this.addShowToWatchListN();
 
     if(this.isLastEpisodeOfShow(episode))
       await this.markShowAsWatched();
 
     episode.watched = true;
     episode.timesWatched += 1;
-    await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
-    this.api.addShowRuntimeToStorage(episode.runtime);
 
+    await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
+    this.api.addShowRuntimeToStorage(episode.runtime);
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
-  markEpisodeAsUnWatched(episode: Episode) {
-    this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id).then(() => {
-      this.api.removeShowRuntimeToStorage(episode.runtime);
-      episode.watched = false;
-      this.nextEpisode = this.getNextEpisodeToWatch();
-    });
+  async markEpisodeAsUnWatched(episode: Episode) {
+    await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
+    this.api.removeShowRuntimeToStorage(episode.runtime);
+    episode.watched = false;
+    this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   onAddOrRemoveEpisode(){
@@ -364,41 +365,64 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.tvshow.id, type: 'tvshow' }
+      data: {id: this.tvshow.id, type: 'tvshow' }
     });
 
-    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: number) => {
       if (collectionId) {
-        const GeneralItem: GeneralItem = {
-          id: this.tvshow.id,
-          type: 'tvshow',
-          title: this.tvshow.name,
-          poster_path: this.tvshow.poster_path,
-        };
+        this.databaseService.addCollectionItem(collectionId, this.tvshow.id, 'tvshow', this.tvshow.name, this.tvshow.poster_path);
 
-        await this.collectionsService.addToCollection(collectionId, GeneralItem);
-        await this.shows_api.saveShowsToFile(this.tvshow!, 0);
+        if (this.showDb.timesWatched < 0) 
+          this.showDb.timesWatched = -1;
+
+        await this.databaseService.addOrUpdateShow(this.showDb);
       }
     });
   }
 
   async addToSeeLater() {
     this.inToSeeLater = true;
-
-    //transform movie to GeneralItem
-    const GI: GeneralItem = {
-      id: this.tvshow.id,
-      type: 'tvshow',
-      title: this.tvshow.name,
-      poster_path: this.tvshow.poster_path,
-    };
-
-    this.collectionsService.addToSeeLater(GI);
+    this.databaseService.addToSeeLater(this.tvshow.id, 'tvshow',this.tvshow.name ,this.tvshow.poster_path);
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
+    if (this.showDb.timesWatched < 0) 
+        this.showDb.timesWatched = -1;
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
-  // go to the previous page
+  similarTo(){
+    this.isLoading = true;
+
+    const requests = [1, 2, 3].map(page => 
+      this.api.getSimilarShowOrMovie(this.tvshow.id, "tv", page).toPromise()
+    );
+
+    Promise.all(requests).then(responses => {
+      let allResults : SimpleObject[] = [];
+      responses.forEach(response => {
+          if (response) 
+            allResults = allResults.concat(response);
+      });
+
+      // remove duplicates
+      const seen = new Set();
+      const itemsFiltered = allResults.filter(el => {
+        const duplicate = seen.has(el.id);
+        seen.add(el.id);
+        return !duplicate;
+      });
+
+
+      itemsFiltered.sort((a, b) => b.popularity - a.popularity);
+      const top10Results = itemsFiltered.slice(0, 10);
+
+      this.similarTvShows = top10Results;
+      this.isLoading = false;
+
+    }).catch(error => {
+      console.error("Error fetching similar", error);
+    });
+  }
+
   goBack(){
     window.history.back();
   }

@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { CollectionsService } from '../../../services/collections.service';
-import { Collection } from '../../../utils/collection.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CreateCollectionDialogComponent } from '../create-collection-dialog/create-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { DeleteCollectionDialogComponent } from '../delete-collection-dialog/delete-collection-dialog.component';
+import { Collection, DatabaseService } from '../../../services/sqlite.service';
 
 @Component({
   selector: 'app-show-all-collections',
@@ -17,18 +16,17 @@ import { DeleteCollectionDialogComponent } from '../delete-collection-dialog/del
 })
 export class ShowAllCollectionsComponent {
 
-  collections: Collection[] = []; 
+  collections: Collection[] = [];
 
-  constructor(private collectionsService: CollectionsService,
-              private router: Router,
+  constructor(private router: Router,
               private dialog: MatDialog,
-            ) {
-    this.collectionsService.collections$.subscribe((collections) => {
+              private databaseService: DatabaseService
+            ) 
+  {
+    this.databaseService.getCollections().then((collections) => {
       this.collections = collections;
-      this.collections.sort((a, b) => a.name.localeCompare(b.name));
     });
   }
-
 
   goToCollection(collection: Collection){
     this.router.navigate(['/collection', collection.id]);
@@ -39,17 +37,21 @@ export class ShowAllCollectionsComponent {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) 
-        this.collectionsService.createCollection(result.name);
-    });
-  }
-
+            this.databaseService.addCollection(result.name);
+    
+          this.databaseService.getCollections().then((collections) => {
+            this.collections = collections;
+          });
+        });
+    };
+  
   deleteCollection(collection: Collection){
 
     const dialogRef = this.dialog.open(DeleteCollectionDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) 
-        this.collectionsService.deleteCollection(collection.id);
+        this.databaseService.deleteCollection(collection.id);
     });
   }
 

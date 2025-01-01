@@ -1,0 +1,23 @@
+.page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin: 0 auto;
+    
+}
+
+.button-container{
+    display: flex;
+    gap: 20px;
+    
+    .button{
+        border-radius: 5px;
+        border: 1px solid var(--a_tertiaryColor);
+        box-shadow: 0 4px 0 rgba(61, 123, 134, 0.10);
+        padding: 10px 10px;
+        background: transparent;
+        color: var(--textColor);
+    }
+}

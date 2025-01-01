@@ -12,6 +12,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {environment} from '../../environment';
 import {ApiShowsService, ComplexTvshow, Episode, Season} from '../../services/api-shows.service';
+import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../services/sqlite.service';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   @Output() addOrRemoveEpisode = new EventEmitter();
   @Output() addedShow = new EventEmitter();
 
+
   expanded = false;
   showConfirmModal = false;
   showRewatchedOrRemoveEpisodeModal = false;
@@ -47,9 +49,13 @@ export class CustomExpansionPanelComponent implements OnInit {
   selectedEpisode: Episode = EmptyEpisode;
   imgPath = environment.imgPath;
 
+  showDb: SimpleDatabaseObject = EmptyDatabaseObject;
+
 
   constructor(public shows_api: ApiShowsService,
-              public api: ApiService) { }
+              public api: ApiService,
+              private databaseService: DatabaseService
+            ) { }
 
   ngOnInit(): void {
       if(this.season!.episodes.length > 0)
@@ -71,16 +77,26 @@ export class CustomExpansionPanelComponent implements OnInit {
           this.season!.timesWatched = 0;
         }
       }
+
+    this.showDb = {
+      id: this.tvshow.id,
+      original_title: this.tvshow.name,
+      poster_path: this.tvshow.poster_path,
+      status: this.shows_api.getShowStatus(this.tvshow.status),
+      timesWatched: -2
+    };
   }
 
   async addShowToWatchList() {
     this.isOnWatchList = true;
-    await this.shows_api.saveShowsToFile(this.tvshow!, 0);
+    this.showDb.timesWatched = 0;
+    await this.databaseService.addOrUpdateShow(this.showDb);
     this.addedShow.emit();
   }
 
   async markShowAsWatched() {
-    await this.shows_api.saveShowsToFile(this.tvshow!, 1);
+    this.showDb.timesWatched = 1;
+    await this.databaseService.addOrUpdateShow(this.showDb);
   }
 
   getSeasonCountWatchedEpisodes(season: Season) {
@@ -109,7 +125,7 @@ export class CustomExpansionPanelComponent implements OnInit {
       if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
         return true;
     }
-    
+
     return false;
   }
 
@@ -134,7 +150,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
     episode.watched = true;
     episode.timesWatched = episode.timesWatched + 1;
-    await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+    await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
     this.api.addShowRuntimeToStorage(episode.runtime);
 
     //emit event to parent component
@@ -149,7 +165,12 @@ export class CustomExpansionPanelComponent implements OnInit {
   async RewatchedOrRemoveEpisodeModalCancel() {
     this.selectedEpisode!.watched = false;
     this.selectedEpisode!.timesWatched =  0;
-    await this.shows_api.removeEpisodeFromFile(this.selectedEpisode!, this.tvshow!.id);
+
+    await this.databaseService.deleteEpisode(this.tvshow.id, this.selectedEpisode.season_number, this.selectedEpisode.episode_number);
+
+    this.showDb.timesWatched = 0;
+    await this.databaseService.addOrUpdateShow(this.showDb);
+
     this.api.removeShowRuntimeToStorage(this.selectedEpisode.runtime);
     this.addOrRemoveEpisode.emit();
     this.showRewatchedOrRemoveEpisodeModal = false;
@@ -157,7 +178,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
   async RewatchedOrRemoveEpisodeModalConfirm() {
     this.selectedEpisode!.timesWatched += 1;
-    await this.shows_api.saveEpisodeToFile(this.selectedEpisode!, this.tvshow!.id);
+    await this.databaseService.addOrUpdateEpisode(this.tvshow.id, this.selectedEpisode.season_number, this.selectedEpisode.episode_number, this.selectedEpisode.timesWatched);
     this.api.addShowRuntimeToStorage(this.selectedEpisode.runtime);
     this.showRewatchedOrRemoveEpisodeModal = false;
   }
@@ -180,7 +201,7 @@ export class CustomExpansionPanelComponent implements OnInit {
         episode.timesWatched += 1;
 
         try {
-          await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);   // Await saving the episode before proceeding to the next one
+          await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
           this.api.addShowRuntimeToStorage(episode.runtime);
           if(this.isLastEpisodeOfShow(episode))
             await this.markShowAsWatched();
@@ -208,7 +229,7 @@ export class CustomExpansionPanelComponent implements OnInit {
   async MarkAllSeasonAsWatched(event?: Event) {
     if(event)
       event.stopPropagation();
-    
+
     if(!this.isSeasonWatchedExcludingAiring())
     {
       await this.addShowToWatchList();
@@ -221,11 +242,11 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.watched = true;
           episode.timesWatched += 1;
           try {
-            await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+            await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
             this.api.addShowRuntimeToStorage(episode.runtime);
             if(this.isLastEpisodeOfShow(episode))
               await this.markShowAsWatched();
-        
+
           } catch (error) {
             console.error('Error saving episode:', episode, error);
           }
@@ -261,10 +282,10 @@ export class CustomExpansionPanelComponent implements OnInit {
 
               this.season!.timesWatched = episode.timesWatched;
               try {
-                await this.shows_api.saveEpisodeToFile(episode, this.tvshow!.id);
+                await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
                 if(this.isLastEpisodeOfShow(episode))
                   await this.markShowAsWatched();
-            
+
               } catch (error) {
                 console.error('Error saving episode:', episode, error);
               }
@@ -285,7 +306,9 @@ export class CustomExpansionPanelComponent implements OnInit {
           episode.timesWatched = 0;
           this.season!.timesWatched = 0;
           try {
-            await this.shows_api.removeEpisodeFromFile(episode, this.tvshow!.id);
+            await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
+            this.showDb.timesWatched = 0;
+            await this.databaseService.addOrUpdateShow(this.showDb);
             this.api.removeShowRuntimeToStorage(episode.runtime);
           } catch (error) {
             console.error('Error deleting episode:', episode, error);

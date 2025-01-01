@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ApiService, SimpleObject } from '../../../services/api.service';
+import { GeneralItem, SimpleObject } from '../../../services/api.service';
 import { environment } from '../../../environment';
 import { ShowItemsInGridComponent } from "../../show-items-in-grid/show-items-in-grid.component";
-import { GeneralItem } from '../../../utils/collection.model';
 import { MatIconModule } from '@angular/material/icon';
+import { DatabaseService } from '../../../services/sqlite.service';
 
 @Component({
   selector: 'app-movie-list',
@@ -25,15 +25,24 @@ export class MovieListComponent implements OnInit {
 
   imgPath = environment.imgPath;
 
-  constructor(public api: ApiService,
-  ) { }
+  constructor(private databaseService: DatabaseService) { }
 
   async ngOnInit() {
     this.isLoading = true;
 
-    //Get all movies
-    this.api.getFromFile(0, 'movie').then((response) => {
-      this.AllMovies.push(...response)
+    this.databaseService.getMovies().then((response) => {
+      response.forEach((movie) => {
+        this.AllMovies.push({
+          id: movie.id,
+          original_title: movie.original_title,
+          title: movie.original_title,
+          poster_path: movie.poster_path,
+          type: "movie",
+          popularity: 0,
+          timesWatched: movie.timesWatched,
+          status: movie.status
+        });
+      });
       this.separateMovies();
     })
   }

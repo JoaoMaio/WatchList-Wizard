@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { HomeComponentComponent } from '../components/home/home-component.component';
 import { MovieDetailPageComponent } from '../components/detail-page/movie-detail-page/movie-detail-page.component';
 import { TvShowDetailPageComponent } from '../components/detail-page/tv-show-detail-page/tv-show-detail-page.component';
@@ -10,6 +10,9 @@ import { CollectionItemsComponent } from '../components/collections/collection-i
 import { MovieListComponent } from '../components/profile/movie-list/movie-list.component';
 import { ShowListComponent } from '../components/profile/show-list/show-list.component';
 import { PersonDetailPageComponent } from '../components/detail-page/person-detail-page/person-detail-page.component';
+import { SettingsComponent } from '../components/settings/settings.component';
+import { NgModule } from '@angular/core';
+import { RandomComponent } from '../components/random/random.component';
 
 export const routes: Routes = [
 
@@ -24,8 +27,14 @@ export const routes: Routes = [
     { path: 'collection/:id', component: CollectionItemsComponent },
     { path: 'shows', component: ShowListComponent },
     { path: 'movies', component: MovieListComponent },
+    { path: 'settings', component: SettingsComponent },
+    { path: 'random', component: RandomComponent },
     { path: '**', redirectTo: '' }
-    
 
 ];
 
+@NgModule({
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
+  })
+  export class AppRoutingModule {}

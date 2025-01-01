@@ -77,26 +77,15 @@ export type Episode = {
   timesWatched: number;
 }
 
-export type SavedEpisodeInfo = {
-  showId: number
-  einfo: EInfo[]
-}
-
-export type EInfo = {
-  seasonNumber: number
-  episodeNumber: number
-  timesWatched: number;
-}
-
-  // dictionary for status
-  export const ShowStatus = {
-    0: 'Returning Series',
-    1: 'Planned',
-    2: 'In Production',
-    3: 'Ended',
-    4: 'Canceled',
-    5: 'Pilot'
-  };
+// dictionary for status
+export const ShowStatus = {
+  0: 'Returning Series',
+  1: 'Planned',
+  2: 'In Production',
+  3: 'Ended',
+  4: 'Canceled',
+  5: 'Pilot'
+};
 
 @Injectable({
   providedIn: 'root'
@@ -105,9 +94,6 @@ export class ApiShowsService {
 
   private BASE_API_URL: string = environment.BASE_API_URL;
   private headers = new HttpHeaders(environment.headers);
-
-  shows_filename = 'shows.json';
-  episodes_filename = 'episodes.json';
 
   constructor(private http: HttpClient,
               private generalApi: ApiService) {}
@@ -197,6 +183,10 @@ export class ApiShowsService {
     const today = new Date();
     const releaseDate = new Date(episode.air_date);
     const timeDiff = releaseDate.getTime() - today.getTime();
+
+    if (timeDiff < 0) 
+      return -1;
+
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
 
@@ -221,270 +211,12 @@ export class ApiShowsService {
     )
   }
 
-  //------------------------------------------------------------------------------------//
-  //----------------------------   SHOWS  FILE  ----------------------------------------//
-  //------------------------------------------------------------------------------------//
-
-  async isShowMarked(showID: number): Promise<boolean> {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.shows_filename)) {
-        return false;
-      }
-
-      let showList: SimpleObject[] = [];
-
-
-      return await  this.generalApi.readFromFile(this.shows_filename).then((data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            showList = JSON.parse(file.data as string);
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-
-          const show = showList.find(s => s.id === showID);
-          return !!(show && show.timesWatched !== undefined);
-
-
-        }
-        return false;
-      });
-
-    } catch (e) {
-      console.error('Error checking if show exists', e);
-      return false;
-    }
-  }
-
-  async saveEpisodeToFile(newEpisode: Episode, showID: number) {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.episodes_filename)) {
-        return ;
-      }
-
-      let currentContentList: SavedEpisodeInfo[] = [];
-
-      await this.generalApi.readFromFile(this.episodes_filename).then(async (data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-          } catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-
-        let show = currentContentList.find(s => s.showId === showID);
-
-        if (!show)
-        {
-          show = {
-            showId: showID,
-            einfo: [{
-              seasonNumber: newEpisode.season_number,
-              episodeNumber: newEpisode.episode_number,
-              timesWatched: newEpisode.timesWatched
-            }]
-          };
-          currentContentList.push(show);
-        }
-        else {
-          let episode = show.einfo.find(e => e.seasonNumber === newEpisode.season_number && e.episodeNumber === newEpisode.episode_number);
-
-          if (!episode)
-          {
-            show.einfo.push({
-              seasonNumber: newEpisode.season_number,
-              episodeNumber: newEpisode.episode_number,
-              timesWatched: newEpisode.timesWatched
-            });
-          }
-          else
-          {
-            episode.timesWatched = episode.timesWatched ? episode.timesWatched + 1 : 1;
-          }
-        }
-
-        const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
-      });
-
-    } catch (e) {
-      console.error('Unable to write file', e);
-    }
-  }
-
-  async removeEpisodeFromFile(episode: Episode, showID: number) {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.episodes_filename)) {
-        return ;
-      }
-
-      let currentContentList: SavedEpisodeInfo[] = [];
-
-      await this.generalApi.readFromFile(this.episodes_filename).then((data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-          } catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-      });
-
-      let show = currentContentList.find(s => s.showId === showID);
-      if (!show)
-        return;
-      else {
-        //get the episode from the show
-        let episodeIndex = show.einfo.findIndex(e => e.seasonNumber === episode.season_number && e.episodeNumber === episode.episode_number);
-
-        //if the episode is not in the show, return
-        if (episodeIndex === -1) return;
-
-        show.einfo.splice(episodeIndex, 1);
-      }
-
-      //if currentContentList is empty, remove the show from the list
-      if (show.einfo.length === 0) {
-        let showIndex = currentContentList.findIndex(s => s.showId === showID);
-        currentContentList.splice(showIndex, 1);
-      }
-
-      const updatedContent = JSON.stringify(currentContentList, null, 2);
-
-      await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-    }
-  }
-
-  async getAllEpisodesFromFile(showId: number): Promise<EInfo[]> {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.episodes_filename)) {
-        return [];
-      }
-
-      let episodeList: SavedEpisodeInfo[] = [];
-
-      return await this.generalApi.readFromFile(this.episodes_filename).then((data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            episodeList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-            episodeList = episodeList.filter(s => s.showId === showId);
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-
-          if (episodeList.length > 0)
-            return episodeList[0].einfo;
-          else
-            return [];
-        }
-        return [];
-      });
-
-    } catch (e) {
-      console.error('Error checking if episodes exists', e);
-      return [];
-    }
-  }
-
   getShowStatus(status: string): number {
       for (const [key, value] of Object.entries(ShowStatus)) {
         if (value === status)
           return parseInt(key, 10);
       }
       return -1;
-  }
-
-  async saveShowsToFile(newShow: ComplexTvshow, watched_times: number) {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.shows_filename)) {
-        return;
-      }
-
-      let currentContentList: SimpleObject[] = [];
-
-      await this.generalApi.readFromFile(this.shows_filename).then(async (data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
-          } catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-
-        //transform complexMOvie to SimpleObject
-        const SimpleObject: SimpleObject = {
-          id: newShow.id,
-          original_title: newShow.original_name,
-          title: newShow.name,
-          poster_path: newShow.poster_path,
-          type: "tvshow",
-          popularity: newShow.popularity,
-          timesWatched: watched_times,
-          status: this.getShowStatus(newShow.status)
-        };
-
-        let updatedContent = '';
-
-        if (currentContentList.find(s => s.id === newShow.id)) {
-          let index = currentContentList.findIndex(s => s.id === newShow.id);
-          currentContentList[index] = SimpleObject;
-           updatedContent = JSON.stringify(currentContentList, null, 2);
-        }
-        else
-        {
-          currentContentList.push(SimpleObject);
-           updatedContent = JSON.stringify(currentContentList, null, 2);
-        }
-
-        await this.generalApi.writeToFile(this.shows_filename, updatedContent);
-      });
-
-    } catch (e) {
-      console.error('Unable to write file', e);
-    }
-  }
-
-  async removeAllEpisodesFromFile(showID: number) {
-    try {
-      if (!await this.generalApi.checkIfFileExists(this.episodes_filename)) {
-        return;
-      }
-
-      let currentContentList: SavedEpisodeInfo[] = [];
-
-      await this.generalApi.readFromFile(this.episodes_filename).then(async (data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SavedEpisodeInfo[];
-          } catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-
-        let showIndex = currentContentList.findIndex(s => s.showId === showID);
-        currentContentList.splice(showIndex, 1);
-
-        const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFile(this.episodes_filename, updatedContent);
-      });
-
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-    }
   }
 
 }

@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ApiService, EmptySimpleObject, Genre, SimpleObject, Spoken_Languages} from './api.service';
+import {ApiService, Genre, SimpleObject, Spoken_Languages} from './api.service';
 import {Provider} from './api-shows.service';
 
 export interface MovieResponse {
@@ -42,14 +42,12 @@ export interface ComplexMovie {
   vote_count: number;
   watch_providers: Provider[];
 }
-
 export interface Collection {
   id: number;
   name: string;
   poster_path: string;
   backdrop_path: string;
 }
-
 export interface Production_Company {
   id: number;
   logo_path: string;
@@ -70,7 +68,6 @@ export const MovieStatus = {
   4: 'Released',
   5: 'Canceled'
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -184,183 +181,12 @@ export class ApiMoviesService {
       })
     )
   }
-
-  //-------------------------------------------------------------------------------------//
-  //----------------------------   MOVIES  FILE  ----------------------------------------//
-  //-------------------------------------------------------------------------------------//
-
-    getMovieStatus(status: string): number {
-        for (const [key, value] of Object.entries(MovieStatus)) {
-          if (value === status)
-            return parseInt(key, 10);
-        }
-        return -1;
-    }
-
-
-  async saveMoviesToFile(newMovie: ComplexMovie, timesWatched: number) {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.movies_filename)) {
-        return;
+  
+  getMovieStatus(status: string): number {
+      for (const [key, value] of Object.entries(MovieStatus)) {
+        if (value === status)
+          return parseInt(key, 10);
       }
-
-      let currentContentList: SimpleObject[] = [];
-
-      await this.generalApi.readFromFile(this.movies_filename).then(async (data) => {
-        let file = data;
-        if (file.data) {
-          try {
-            currentContentList = JSON.parse(file.data as string) as SimpleObject[];
-          } catch (error) {
-            console.error('Error parsing existing JSON file:', error);
-          }
-        }
-
-        // check if movie already in the list
-        let objectIndex = currentContentList.findIndex(s => s.id === newMovie.id);
-
-        //if movie already in the list, update the times watched
-        if (objectIndex > -1) {
-          currentContentList[objectIndex].timesWatched = timesWatched;
-          const updatedContent = JSON.stringify(currentContentList, null, 2);
-          await this.generalApi.writeToFile(this.movies_filename, updatedContent);
-          return
-        }
-
-        const SimpleObject: SimpleObject = {
-          id: newMovie.id,
-          original_title: newMovie.original_title,
-          title: newMovie.title,
-          poster_path: newMovie.poster_path,
-          type: "movie",
-          popularity: newMovie.popularity,
-          runtime: newMovie.runtime,
-          timesWatched: timesWatched,
-          status: this.getMovieStatus(newMovie.status)
-        };
-
-        currentContentList.push(SimpleObject);
-        const updatedContent = JSON.stringify(currentContentList, null, 2);
-        await this.generalApi.writeToFile(this.movies_filename, updatedContent);
-      });
-
-    } catch (e) {
-      console.error('Unable to write file', e);
-    }
+      return -1;
   }
-
-  async movieExistsById(movieId: number): Promise<SimpleObject> {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.movies_filename)) {
-        return EmptySimpleObject;
-      }
-
-      let movieList: SimpleObject[] = [];
-
-      return await this.generalApi.readFromFile(this.movies_filename).then((data) => {
-        let file = data;
-
-        if (file.data) {
-          try {
-
-            movieList = JSON.parse(file.data as string) as SimpleObject[];
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-
-          //get the object from the list
-          if (movieList.length > 0)
-          {
-            let objectIndex = movieList.findIndex(s => s.id === movieId);
-            if (objectIndex === -1) return EmptySimpleObject;
-
-            return movieList[objectIndex];
-          }
-          return EmptySimpleObject;
-        }
-        return EmptySimpleObject;
-      });
-
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-      return EmptySimpleObject;
-    }
-  }
-
-  async getAllMoviesFromFile(): Promise<SimpleObject[]> {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.movies_filename)) {
-        return [];
-      }
-
-      let movieList: SimpleObject[] = [];
-
-      return await this.generalApi.readFromFile(this.movies_filename).then((data) => {
-        let file = data;
-        if (file.data)
-        {
-          try {
-
-            movieList = JSON.parse(file.data as string) as SimpleObject[];
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-        }
-
-        return movieList;
-      });
-
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-      return [];
-    }
-  }
-
-  async getLastWatchedMovie(): Promise<SimpleObject> {
-    try {
-
-      if (!await this.generalApi.checkIfFileExists(this.movies_filename)) {
-        return EmptySimpleObject;
-      }
-
-      let movieList: SimpleObject[] = [];
-
-      return await this.generalApi.readFromFile(this.movies_filename).then((data) => {
-        let file = data;
-        if (file.data)
-        {
-          try {
-
-            movieList = JSON.parse(file.data as string) as SimpleObject[];
-          } catch (error) {
-            console.error('Error parsing JSON file:', error);
-          }
-        }
-
-        if (movieList.length > 0)
-        {
-          //invert the list order
-          movieList = movieList.reverse();
-
-          //get the first movie that timesWatched > 0
-          let objectIndex = movieList.findIndex(s => s.timesWatched > 0);
-          if (objectIndex === -1) return EmptySimpleObject;
-
-          return movieList[objectIndex];
-
-        }
-
-        return EmptySimpleObject;
-      });
-
-    } catch (e) {
-      console.error('Error checking if movie exists', e);
-      return EmptySimpleObject;
-    }
-
-  }
-
 }

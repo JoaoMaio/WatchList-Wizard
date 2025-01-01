@@ -1,0 +1,31 @@
+<div class="page">
+
+    <div class="buttons">
+        <i (click)="switchType()" class="material-symbols-outlined">shuffle</i>
+        <button *ngIf="type=='tv'" (click)="discoverByGenre()">Suggest Me a Show</button>
+        <button *ngIf="type!='tv'" (click)="discoverByGenre()">Sugegst Me a Movie</button>
+    </div>
+
+    
+    <div class="genre-list">
+        <label *ngFor="let genre of baseGenres" [class.active]="isInSelectedGenres(genre)">
+            <input type="radio" name="filter" value='{{genre}}' (click)="addToGenres(genre)" /> 
+            {{genre}}
+        </label>
+    </div>
+
+    <div class="labels">
+        <p *ngIf="!isLoading" class="label">You Should Try:</p>
+        <p *ngIf="!isLoading" class="label-value"> {{suggestedObjects[currentIndex].title}}</p>
+    </div>
+    <div *ngIf="suggestedObjects[currentIndex]" class="item">
+        <img *ngIf="api.doesBackDropExist(suggestedObjects[currentIndex].poster_path)" [src]="imgPath + suggestedObjects[currentIndex].poster_path" alt="{{ suggestedObjects[currentIndex].title }}" class="item-image" (click)="showInfo(suggestedObjects[currentIndex])"/>
+        <div *ngIf="!api.doesBackDropExist(suggestedObjects[currentIndex].poster_path)" class="fallback-wrapper">
+            <img src="amongus.png" alt="{{ suggestedObjects[currentIndex].title }}" class="item-image error" (click)="showInfo(suggestedObjects[currentIndex])"/>
+            <p class="item-title">{{ suggestedObjects[currentIndex].title }}</p>
+        </div>
+    </div>
+
+    <button *ngIf="suggestedObjects[currentIndex+1]" (click)="getNextSuggestion()">Get Next Suggestion</button>
+
+</div>

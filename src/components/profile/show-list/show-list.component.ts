@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ApiService, SimpleObject } from '../../../services/api.service';
-import { ApiShowsService } from '../../../services/api-shows.service';
-import { GeneralItem } from '../../../utils/collection.model';
+import { ApiService, GeneralItem, SimpleObject } from '../../../services/api.service';
 import { MatIconModule } from '@angular/material/icon';
 import { ShowItemsInGridComponent } from '../../show-items-in-grid/show-items-in-grid.component';
 import { CommonModule } from '@angular/common';
+import { DatabaseService } from '../../../services/sqlite.service';
 
 @Component({
   selector: 'app-show-list',
@@ -18,7 +17,7 @@ export class ShowListComponent implements OnInit {
 
 
   constructor(public api: ApiService,
-              private shows_api: ApiShowsService,
+              private databaseService: DatabaseService,
   ) { }
 
   allShows: SimpleObject[] = []
@@ -41,8 +40,20 @@ export class ShowListComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading = true;
-    this.api.getFromFile(0, 'tv').then((response) => {
-      this.allShows.push(...response)
+
+    this.databaseService.getShows().then((response) => {
+      response.forEach((show) => {
+        this.allShows.push({
+          id: show.id,
+          original_title: show.original_title,
+          title: show.original_title,
+          poster_path: show.poster_path,
+          type: "tvshow",
+          popularity: 0,
+          timesWatched: show.timesWatched,
+          status: show.status
+        });
+      });
       this.separateShows();
     })
   }
@@ -66,8 +77,6 @@ export class ShowListComponent implements OnInit {
 
     this.isLoading = false;
   }
-
-  
 
   goBack(){
     window.history.back();

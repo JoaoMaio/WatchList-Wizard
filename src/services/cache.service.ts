@@ -22,7 +22,6 @@ export class CacheDateService {
 
     // If it's a new day, clear the cache
     const indexedDBService = new IndexedDBService();
-    console.log('Clearing cache...');
     await indexedDBService.clear();
 
     

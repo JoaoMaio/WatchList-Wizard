@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {ApiService, EmptyMovie, SimpleCharacter} from '../../../services/api.service';
+import {Component, OnInit} from '@angular/core';
+import {ApiService, EmptyMovie, SimpleCharacter, SimpleObject} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule} from '@angular/common';
 import { environment } from '../../../environment';
@@ -7,17 +7,17 @@ import {ApiMoviesService, ComplexMovie} from '../../../services/api-movies.servi
 import {ConfirmModalComponent} from '../../confirm-modal/confirm-modal.component';
 import {LoadingContainerComponent} from '../../loading-container/loading-container.component';
 import {MatIconModule} from '@angular/material/icon'
-import { GeneralItem } from '../../../utils/collection.model';
 import { SelectCollectionDialogComponent } from '../../collections/select-collection-dialog/select-collection-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { CollectionsService } from '../../../services/collections.service';
 import { CrewListComponent } from "../crew-list/crew-list.component";
+import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../../services/sqlite.service';
+import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
 
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule, CrewListComponent],
+  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule, CrewListComponent, SuggestionComponent],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
@@ -37,12 +37,17 @@ export class MovieDetailPageComponent implements OnInit {
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
 
+  movieDb: SimpleDatabaseObject = EmptyDatabaseObject;
+  similarMovies: SimpleObject[] = [];
+  
+
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
               private route: ActivatedRoute,
-              private collectionsService: CollectionsService,
-              private dialog: MatDialog
+              private dialog: MatDialog,
+              private databaseService: DatabaseService
   ) { }
+
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -52,25 +57,28 @@ export class MovieDetailPageComponent implements OnInit {
           this.movie = response;
 
           // Check if movie is in watch list
-          this.movies_api.movieExistsById(this.movie.id).then(object => {
-            if (object.id > 0)
-            {
-              this.watched = !!(object.timesWatched || 0 > 0);
-              this.timesWatched = object.timesWatched || 0;
-            }
+          this.databaseService.getMovieById(this.movie.id).then((movie: SimpleDatabaseObject) => {
+            if (movie.id > 0)
+              {
+                this.watched = !!(movie.timesWatched || 0 > 0);
+                this.timesWatched = movie.timesWatched || 0;
+              }
           });
 
+          //transform movie to SimpleDatabaseObject
+          this.movieDb = {
+            id: this.movie.id,
+            original_title: this.movie.title,
+            poster_path: this.movie.poster_path,
+            status: this.movies_api.getMovieStatus(this.movie.status),
+            timesWatched: this.timesWatched
+          };
+
           // Check if movie is in see later collection
-          this.collectionsService.collections$.subscribe(collections => {
-            collections.forEach(collection => {
-              if (collection.name === 'See Later') {
-                collection.items.forEach(item => {
-                  if (item.id === this.movie.id && item.type === 'movie')
-                    this.inToSeeLater = true;
-                });
-              }
-            });
+          this.databaseService.checkIfIsInSeeLater(this.movie.id, 'movie').then((isInSeeLater: boolean) => {
+            this.inToSeeLater = isInSeeLater;
           });
+
         },
         complete: () => {
 
@@ -82,7 +90,7 @@ export class MovieDetailPageComponent implements OnInit {
               console.error('Error fetching credits:', error);
             },
             complete: () => {
-              this.isLoading = false;
+              this.similarTo();
             }
           });
         },
@@ -95,8 +103,9 @@ export class MovieDetailPageComponent implements OnInit {
   async addMovieToWatchList() {
     this.watched = true;
     this.timesWatched++;
-    this.api.addMovieRuntimeToStorage(this.movie.runtime);
-    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
+    this.movieDb.timesWatched = this.timesWatched;
+    await this.api.addMovieRuntimeToStorage(this.movie.runtime);
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
   }
 
   removeMovieFromWatchList() {
@@ -105,14 +114,16 @@ export class MovieDetailPageComponent implements OnInit {
 
   async showRewatchedOrRemoveMovieModalConfirm() {
     this.timesWatched++;
-    await this.movies_api.saveMoviesToFile(this.movie!, this.timesWatched);
+    this.movieDb.timesWatched = this.timesWatched;
+    await this.api.addMovieRuntimeToStorage(this.movie.runtime);
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
     this.showRewatchedOrRemoveMovieModal = false;
   }
 
   async showRewatchedOrRemoveMovieModalCancel() {
     this.watched = false;
     this.api.removeMovieRuntimeToStorage(this.movie.runtime);
-    await this.api.removeFromFile(this.movie!.id, 'movie');
+    await this.databaseService.deleteMovie(this.movieDb.id)
     this.showRewatchedOrRemoveMovieModal = false;
   }
 
@@ -133,38 +144,58 @@ export class MovieDetailPageComponent implements OnInit {
       maxHeight: 'auto',
       autoFocus: false,
       backdropClass: 'select-collection-dialog-backdrop',
-      data: { collections$: this.collectionsService.collections$, id: this.movie.id, type: 'movie' }
+      data: { id: this.movie.id, type: 'movie' }
     });
 
-    dialogRef.afterClosed().subscribe(async (collectionId: string) => {
+    dialogRef.afterClosed().subscribe(async (collectionId: number) => {
       if (collectionId) {
-        const GeneralItem: GeneralItem = {
-          id: this.movie.id,
-          type: 'movie',
-          title: this.movie.title,
-          poster_path: this.movie.poster_path,
-        };
-
-        await this.collectionsService.addToCollection(collectionId, GeneralItem);
-        await this.movies_api.saveMoviesToFile(this.movie!, 0);
+        this.databaseService.addCollectionItem(collectionId, this.movie.id, 'movie', this.movie.title, this.movie.poster_path);
+        this.movieDb.timesWatched = 0;
+        await this.databaseService.addOrUpdateMovie(this.movieDb);
       }
     });
   }
 
   async addToSeeLater() {
     this.inToSeeLater = true;
-
-    //transform movie to GeneralItem
-    const GI: GeneralItem = {
-      id: this.movie.id,
-      type: 'movie',
-      title: this.movie.title,
-      poster_path: this.movie.poster_path,
-    };
-
-    this.collectionsService.addToSeeLater(GI);
-    await this.movies_api.saveMoviesToFile(this.movie!, 0);
+    this.databaseService.addToSeeLater(this.movie.id,'movie',this.movie.title,this.movie.poster_path);
+    this.movieDb.timesWatched = 0;
+    await this.databaseService.addOrUpdateMovie(this.movieDb);
   }
+
+  similarTo(){
+    this.isLoading = true;
+
+    const requests = [1, 2, 3].map(page => 
+      this.api.getSimilarShowOrMovie(this.movie.id, "movie", page).toPromise()
+    );
+
+    Promise.all(requests).then(responses => {
+      let allResults : SimpleObject[] = [];
+      responses.forEach(response => {
+          if (response) 
+            allResults = allResults.concat(response);
+      });
+
+        // remove duplicates
+        const seen = new Set();
+        const itemsFiltered = allResults.filter(el => {
+          const duplicate = seen.has(el.id);
+          seen.add(el.id);
+          return !duplicate;
+        });
+
+      itemsFiltered.sort((a, b) => b.popularity - a.popularity);
+      const top10Results = itemsFiltered.slice(0, 10);
+
+      this.similarMovies = top10Results;
+      this.isLoading = false;
+
+    }).catch(error => {
+      console.error("Error fetching similar", error);
+    });
+  }
+
 
   goBack(){
     window.history.back();

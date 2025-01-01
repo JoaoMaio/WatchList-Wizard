@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, SimpleObject } from '../../services/api.service';
+import { SimpleObject } from '../../services/api.service';
 import { Router } from '@angular/router';
 import {CommonModule} from '@angular/common';
 import { SuggestionComponent } from "../home/suggestion-component/suggestion.component";
@@ -9,6 +9,7 @@ import {ApiMoviesService} from '../../services/api-movies.service';
 import {ApiShowsService} from '../../services/api-shows.service';
 import { CollectionsComponent } from '../collections/collections.component';
 import { MatIconModule } from '@angular/material/icon';
+import { DatabaseService } from '../../services/sqlite.service';
 
 
 type Time = {
@@ -30,8 +31,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(public movies_api: ApiMoviesService,
               public shows_api: ApiShowsService,
-              private api: ApiService,
-              private router: Router
+              private router: Router,
+              private databaseService: DatabaseService
   ) { }
 
   someShows: SimpleObject[] = []
@@ -54,27 +55,41 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const { value } =  await Preferences.get({ key: this.BANNER_IMAGE });
 
-    if (value) {
+    if (value)
       this.bannerImage = value;
-    } else {
+    else
       this.bannerImage = environment.bannerDefault;
-    }
 
-    // Get the last 10 shows added to watchlist
-    this.api.getFromFile(6, 'tv').then((response) => {
-      this.someShows.push(...response)
-      this.someShows.reverse()
-      this.isLoading = false;
+
+    this.databaseService.getLastXShows(6).then((response) => {
+      response.forEach((show) => {
+        this.someShows.push({
+          id: show.id,
+          original_title: show.original_title,
+          title: show.original_title,
+          poster_path: show.poster_path,
+          type: "tvshow",
+          popularity: 0,
+          timesWatched: 0
+        });
+      });
+    });
+
+    this.databaseService.getLastXMovies(6).then((response) => {
+      response.forEach((movie) => {
+        this.someMovies.push({
+          id: movie.id,
+          original_title: movie.original_title,
+          title: movie.original_title,
+          poster_path: movie.poster_path,
+          type: "movie",
+          popularity: 0,
+          timesWatched: 0
+        });
+      });
     })
 
-    // Get the last 10 movies added to watchlist
-    this.api.getFromFile(6, 'movie').then((response) => {
-      this.someMovies.push(...response)
-      this.someMovies.reverse()
-      this.isLoading = false;
-    })
 
-    
     // Load from storage on initialization
     const storedRuntime = localStorage.getItem('totalShowWatchedRuntime');
     const storedEpisodes = localStorage.getItem('numberWatchedEpisodes');

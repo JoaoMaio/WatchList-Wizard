@@ -43,7 +43,7 @@
       <!-- Action Buttons -->
       <div class="action-buttons">
         <!-- Button 1: To See Later -->
-        <div class="button" *ngIf="!inToSeeLater" (click)="addToSeeLater()">
+        <div class="button" *ngIf="!inToSeeLater && !watched" (click)="addToSeeLater()">
           <mat-icon class="add-to-collection-icon">timelapse</mat-icon>
           <span>To See Later</span>
         </div>
@@ -106,6 +106,11 @@
       <div class="divider"></div>
 
       <app-crew-list [crew]="crew"></app-crew-list>
+
+      <div class="divider" *ngIf="similarMovies.length > 0"></div>
+      <p class="section_title" *ngIf="similarMovies.length > 0">Similar Movies:</p>
+      <app-suggestion-component  *ngIf="similarMovies.length > 0" class="last" [suggestions]="similarMovies"></app-suggestion-component>
+    
 
       <div class="empty_space"></div>
     </div>
