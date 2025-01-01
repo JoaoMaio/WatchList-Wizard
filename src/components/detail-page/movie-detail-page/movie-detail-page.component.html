@@ -107,6 +107,11 @@
 
       <app-crew-list [crew]="crew"></app-crew-list>
 
+      <div class="divider" *ngIf="similarMovies.length > 0"></div>
+      <p class="section_title" *ngIf="similarMovies.length > 0">Similar Movies:</p>
+      <app-suggestion-component  *ngIf="similarMovies.length > 0" class="last" [suggestions]="similarMovies"></app-suggestion-component>
+    
+
       <div class="empty_space"></div>
     </div>
   </div>

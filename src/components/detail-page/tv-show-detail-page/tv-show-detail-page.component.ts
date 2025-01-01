@@ -3,7 +3,8 @@ import {
   ApiService,
   EmptyEpisode,
   EmptyTvShow,
-  SimpleCharacter
+  SimpleCharacter,
+  SimpleObject
 } from '../../../services/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -22,6 +23,7 @@ import {MatIconModule} from '@angular/material/icon'
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { BaseChartDirective } from 'ng2-charts';
 import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject, SimpleEpisodeObject } from '../../../services/sqlite.service';
+import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
 
 type seasonData = {
   data: number[];
@@ -39,7 +41,7 @@ type chartData = {
 @Component({
   selector: 'app-tv-show-detail-page',
   standalone: true,
-  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent, BaseChartDirective],
+  imports: [CommonModule, CustomExpansionPanelComponent, LoadingContainerComponent, MatDialogModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, MatIconModule, CrewListComponent, BaseChartDirective, SuggestionComponent],
   templateUrl: './tv-show-detail-page.component.html',
   styleUrl: './tv-show-detail-page.component.scss'
 })
@@ -61,6 +63,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
 
   showDb: SimpleDatabaseObject = EmptyDatabaseObject;
   
+  similarTvShows: SimpleObject[] = [];
 
   public charts: chartData = {
     data: [],
@@ -127,6 +130,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
           this.isTextClamped = this.tvshow.overview.length > 200;
           this.getSeasons();
           this.getIfShowIsOnWatchList();
+          this.similarTo();
 
           //transform show to SimpleDatabaseObject
           this.showDb = {
@@ -383,6 +387,40 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     if (this.showDb.timesWatched < 0) 
         this.showDb.timesWatched = -1;
     await this.databaseService.addOrUpdateShow(this.showDb);
+  }
+
+  similarTo(){
+    this.isLoading = true;
+
+    const requests = [1, 2, 3].map(page => 
+      this.api.getSimilarShowOrMovie(this.tvshow.id, "tv", page).toPromise()
+    );
+
+    Promise.all(requests).then(responses => {
+      let allResults : SimpleObject[] = [];
+      responses.forEach(response => {
+          if (response) 
+            allResults = allResults.concat(response);
+      });
+
+      // remove duplicates
+      const seen = new Set();
+      const itemsFiltered = allResults.filter(el => {
+        const duplicate = seen.has(el.id);
+        seen.add(el.id);
+        return !duplicate;
+      });
+
+
+      itemsFiltered.sort((a, b) => b.popularity - a.popularity);
+      const top10Results = itemsFiltered.slice(0, 10);
+
+      this.similarTvShows = top10Results;
+      this.isLoading = false;
+
+    }).catch(error => {
+      console.error("Error fetching similar", error);
+    });
   }
 
   goBack(){

@@ -4,6 +4,10 @@
     <mat-icon>arrow_back</mat-icon>
   </button>
 
+  <button mat-button (click)="similarTo()" class="above-button right-button">
+    <mat-icon>find_replace</mat-icon>
+  </button>
+
   <div class="card">
     <div class="backdrop">
       <img *ngIf="api.doesBackDropExist(tvshow .backdrop_path)"  src="{{backdropPath + tvshow .backdrop_path}}" alt="backdrop" />
@@ -173,6 +177,10 @@
     </div>
 
   </div>
+  <div class="divider" *ngIf="similarTvShows.length > 0"></div>
+  <p class="section_title" *ngIf="similarTvShows.length > 0">Similar Shows:</p>
+  <app-suggestion-component  *ngIf="similarTvShows.length > 0" class="last" [suggestions]="similarTvShows"></app-suggestion-component>
+
 </div>
 
 

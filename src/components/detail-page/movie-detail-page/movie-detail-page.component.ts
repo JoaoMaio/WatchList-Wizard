@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService, EmptyMovie, SimpleCharacter} from '../../../services/api.service';
+import {ApiService, EmptyMovie, SimpleCharacter, SimpleObject} from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import {CommonModule} from '@angular/common';
 import { environment } from '../../../environment';
@@ -11,12 +11,13 @@ import { SelectCollectionDialogComponent } from '../../collections/select-collec
 import { MatDialog } from '@angular/material/dialog';
 import { CrewListComponent } from "../crew-list/crew-list.component";
 import { DatabaseService, EmptyDatabaseObject, SimpleDatabaseObject } from '../../../services/sqlite.service';
+import { SuggestionComponent } from "../../home/suggestion-component/suggestion.component";
 
 
 @Component({
   selector: 'app-movie-detail-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule, CrewListComponent],
+  imports: [CommonModule, ConfirmModalComponent, LoadingContainerComponent, MatIconModule, CrewListComponent, SuggestionComponent],
   templateUrl: './movie-detail-page.component.html',
   styleUrl: './movie-detail-page.component.scss'
 })
@@ -37,6 +38,8 @@ export class MovieDetailPageComponent implements OnInit {
   backdropPath = environment.backdropPath;
 
   movieDb: SimpleDatabaseObject = EmptyDatabaseObject;
+  similarMovies: SimpleObject[] = [];
+  
 
   constructor(private movies_api: ApiMoviesService,
               public api: ApiService,
@@ -87,7 +90,7 @@ export class MovieDetailPageComponent implements OnInit {
               console.error('Error fetching credits:', error);
             },
             complete: () => {
-              this.isLoading = false;
+              this.similarTo();
             }
           });
         },
@@ -136,9 +139,6 @@ export class MovieDetailPageComponent implements OnInit {
   }
 
   addToCollection(): void {
-
-
-
     const dialogRef = this.dialog.open(SelectCollectionDialogComponent, {
       width: '400px',  
       maxHeight: 'auto',
@@ -162,6 +162,40 @@ export class MovieDetailPageComponent implements OnInit {
     this.movieDb.timesWatched = 0;
     await this.databaseService.addOrUpdateMovie(this.movieDb);
   }
+
+  similarTo(){
+    this.isLoading = true;
+
+    const requests = [1, 2, 3].map(page => 
+      this.api.getSimilarShowOrMovie(this.movie.id, "movie", page).toPromise()
+    );
+
+    Promise.all(requests).then(responses => {
+      let allResults : SimpleObject[] = [];
+      responses.forEach(response => {
+          if (response) 
+            allResults = allResults.concat(response);
+      });
+
+        // remove duplicates
+        const seen = new Set();
+        const itemsFiltered = allResults.filter(el => {
+          const duplicate = seen.has(el.id);
+          seen.add(el.id);
+          return !duplicate;
+        });
+
+      itemsFiltered.sort((a, b) => b.popularity - a.popularity);
+      const top10Results = itemsFiltered.slice(0, 10);
+
+      this.similarMovies = top10Results;
+      this.isLoading = false;
+
+    }).catch(error => {
+      console.error("Error fetching similar", error);
+    });
+  }
+
 
   goBack(){
     window.history.back();
