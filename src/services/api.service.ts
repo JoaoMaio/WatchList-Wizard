@@ -186,6 +186,44 @@ export type SimpleCharacter = {
 export const buyProviders = ['Apple TV', 'Amazon Video', 'Google Play Movies', 'YouTube', 'Disney Plus'];
 export const flatrateProviders = ['Netflix', 'Amazon Prime Video', 'Disney Plus', 'Max'];
 
+export const ShowGenre = {
+  10759: 'Action & Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Documentary',
+  18: 'Drama',
+  10751: 'Family',
+  9648: 'Mystery',
+  10764: 'Reality',
+  10765: 'Sci-Fi & Fantasy',
+  10768: 'War & Politics',
+  37: 'Western'
+};
+
+export const MovieGenre = {
+  28: 'Action',
+  12: 'Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Documentary',
+  18: 'Drama',
+  10751: 'Family',
+  14: 'Fantasy',
+  36: 'History',
+  27: 'Horror',
+  10402: 'Music',
+  9648: 'Mystery',
+  10749: 'Romance',
+  878: 'Science Fiction',
+  10770: 'TV Movie',
+  53: 'Thriller',
+  10752: 'War',
+  37: 'Western'
+};
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -367,8 +405,6 @@ export class ApiService {
   isValidMovieCharacter(object: any): boolean {
     // Check if  has a poster, a title, an original title and a character
     return !(!object.poster_path || !object.title || !object.original_title);
-
-
   }
 
   getPersonKnownFor(id: number): Observable<[Credits[], Credits[]]> {
@@ -477,6 +513,89 @@ export class ApiService {
     });
 
   }
+
+  getSimilarShowOrMovie(id: number, type: string, page: number): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}${type}/${id}/similar?include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        if (type === 'movie') 
+        {
+          const items = response.results
+          .filter((movie: any) => movie.poster_path !== null)
+          .map((movie: any) => {
+            const SimpleObject: SimpleObject = {
+              id: movie.id,
+              original_title: movie.original_title,
+              title: movie.title,
+              poster_path: movie.poster_path,
+              type: "movie",
+              popularity: movie.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+        else 
+        {
+          const items = response.results
+          .filter((tvshow: any) => tvshow.poster_path !== null)
+          .map((tvshow: any) => {
+            const SimpleObject: SimpleObject = {
+              id: tvshow.id,
+              original_title: tvshow.original_name,
+              title: tvshow.name,
+              poster_path: tvshow.poster_path,
+              type: "tvshow",
+              popularity: tvshow.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+      })
+    );
+  }
+
+  getByGenreShowOrMovie(genre: string, type: string, page: number): Observable<SimpleObject[]> {
+    return this.http.get<MovieResponse | TvShowResponse>(`${this.BASE_API_URL}discover/${type}?with_genres=${genre}&include_adult=false&language=en-US&page=${page}`, { headers: this.headers }).pipe(
+      map((response: MovieResponse | TvShowResponse) => {
+        if (type === 'movie') {
+          const items = response.results.map((movie: any) => {
+            const SimpleObject: SimpleObject = {
+              id: movie.id,
+              original_title: movie.original_title,
+              title: movie.title,
+              poster_path: movie.poster_path,
+              type: "movie",
+              popularity: movie.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+        else {
+          const items = response.results.map((tvshow: any) => {
+            const SimpleObject: SimpleObject = {
+              id: tvshow.id,
+              original_title: tvshow.original_name,
+              title: tvshow.name,
+              poster_path: tvshow.poster_path,
+              type: "tvshow",
+              popularity: tvshow.popularity,
+              timesWatched: 0
+            };
+            return SimpleObject;
+          });
+          return items;
+        }
+      })
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------//
+  //-----------------------------------------------------------------------------------------//
 
   // Get images for object (show or movie)
   getImages(id: number, type: string): Observable<string[]> {
@@ -598,4 +717,21 @@ export class ApiService {
     localStorage.setItem('totalMovieWatchedRuntime', totalMovieWatchedRuntime.toString());
     localStorage.setItem('numberWatchedMovies', watchedMovies.toString());
   }
+
+  getShowGenre(genre: string): number {
+      for (const [key, value] of Object.entries(ShowGenre)) {
+        if (value === genre)
+          return parseInt(key, 10);
+      }
+      return -1;
+  }
+
+  getMovieGenre(genre: string): number {
+    for (const [key, value] of Object.entries(MovieGenre)) {
+      if (value === genre)
+        return parseInt(key, 10);
+    }
+    return -1;
+}
+
 }

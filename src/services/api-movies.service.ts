@@ -42,14 +42,12 @@ export interface ComplexMovie {
   vote_count: number;
   watch_providers: Provider[];
 }
-
 export interface Collection {
   id: number;
   name: string;
   poster_path: string;
   backdrop_path: string;
 }
-
 export interface Production_Company {
   id: number;
   logo_path: string;
@@ -70,7 +68,6 @@ export const MovieStatus = {
   4: 'Released',
   5: 'Canceled'
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -184,7 +181,7 @@ export class ApiMoviesService {
       })
     )
   }
-
+  
   getMovieStatus(status: string): number {
       for (const [key, value] of Object.entries(MovieStatus)) {
         if (value === status)

@@ -442,8 +442,7 @@ export class DatabaseService {
         );
     
         if (existingItem.values && existingItem.values.length > 0) {
-            console.log('Item already exists in the collection.');
-            return; // Exit early to prevent duplicate insert
+            return; 
         }
     
         // Insert the new record

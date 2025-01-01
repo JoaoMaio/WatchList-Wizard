@@ -183,6 +183,10 @@ export class ApiShowsService {
     const today = new Date();
     const releaseDate = new Date(episode.air_date);
     const timeDiff = releaseDate.getTime() - today.getTime();
+
+    if (timeDiff < 0) 
+      return -1;
+
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
 

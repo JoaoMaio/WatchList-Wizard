@@ -142,7 +142,7 @@
         <div class="text_container">
           <p class="episode-title">Episode {{ nextEpisode.episode_number }} - {{ nextEpisode.name }}</p>
         </div>
-        <div class="markAsWatched" *ngIf="api.doesBackDropExist(nextEpisode.still_path)">
+        <div class="markAsWatched" *ngIf="shows_api.getDaysUntiItsOut(nextEpisode) >= -1">
           <button *ngIf="!nextEpisode.watched" (click)="markEpisodeAsWatched(nextEpisode)" class="markAsWatchedbutton">
             +
           </button>
@@ -150,7 +150,7 @@
             ✓
           </button>
         </div>
-        <div class="tba_days" *ngIf="!api.doesBackDropExist(nextEpisode.still_path)">
+        <div class="tba_days" *ngIf="!api.doesBackDropExist(nextEpisode.still_path) && shows_api.getDaysUntiItsOut(nextEpisode) > 0">
             <p>{{shows_api.getDaysUntiItsOut(nextEpisode)}} days </p>
         </div>
       </div>
