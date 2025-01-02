@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { DatabaseService, SimpleDatabaseObject } from '../../services/sqlite.service';
 import { Preferences } from '@capacitor/preferences';
 import { ApiService, SimpleObject } from '../../services/api.service';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { CustomToastrComponent } from '../custom-toastr/custom-toastr.component';
+import { LoadingContainerComponent } from "../loading-container/loading-container.component";
+import { CommonModule } from '@angular/common';
 
 
 interface MovieImport{
@@ -14,21 +17,28 @@ interface MovieImport{
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [],
+  imports: [LoadingContainerComponent, CommonModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
 
+
+    @ViewChild('toastrContainer', { read: ViewContainerRef }) toastrContainer!: ViewContainerRef;
+  
+    toastrRef!: ComponentRef<CustomToastrComponent>;
+
+    isLoading = false;
+
+
     constructor(private databaseService: DatabaseService,
-                private generalApi: ApiService
-    ) { }
+                private generalApi: ApiService) { }
 
     ngOnInit() {
-      this.getAllMoviesFromFile();
     }
 
     async clearAllData() {
+      this.isLoading = true;
       await this.databaseService.resetDatabase();
       localStorage.clear();
 
@@ -37,10 +47,12 @@ export class SettingsComponent implements OnInit {
       for (const key of keys.keys) {
         await Preferences.remove({ key });
       }
+
+      this.showToastr('Deleted everything successfully', 'green');
     }
 
-
     async getAllMoviesFromFile() {
+      this.isLoading = true;
       var filename = 'movies.json';
 
       const result = await FilePicker.pickFiles({
@@ -52,7 +64,7 @@ export class SettingsComponent implements OnInit {
 
       // if file name is not equal to the filename, return
       if (result.files[0].name !== filename) {
-        console.log('Invalid file selected');
+        this.showToastr('Invalid File Selected', 'red');
         return;
       }
 
@@ -70,20 +82,25 @@ export class SettingsComponent implements OnInit {
         is_watched: movie.is_watched,
       }));
 
-      console.log('Mapped Movies:', movieList);
       const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-      for (const element of movieList) {
+      for (const element of movieList) 
+      {
         await delay(100); 
-        this.generalApi.findByIMDBId(element.imdb_id).subscribe(async (data) => {
-          const movie: SimpleDatabaseObject = data[0];
-          movie.timesWatched = element.is_watched ? 1 : 0;    
-          await this.databaseService.addOrUpdateMovie(movie);
-          if (element.is_watched) 
-            await this.generalApi.addMovieRuntimeToStorage(data[1]);
-        });
-      }
 
+        if(element.imdb_id != '-1')
+        {
+          this.generalApi.findByIMDBId(element.imdb_id).subscribe(async (data) => {
+            const movie: SimpleDatabaseObject = data[0];
+            movie.timesWatched = element.is_watched ? 1 : 0;    
+            await this.databaseService.addOrUpdateMovie(movie);
+            if (element.is_watched) 
+              await this.generalApi.addMovieRuntimeToStorage(data[1]);
+          });
+        }
+
+        this.showToastr('Movie import ended successfully', 'green');
+      }
     }
 
     async readFileAsText(file: File): Promise<string> {
@@ -104,6 +121,106 @@ export class SettingsComponent implements OnInit {
       }
       const blob = new Blob([int8Array], { type: 'application/json' });    
       return blob;
-  }
+    }
   
+    async importMoviesFromApp()
+    {
+      this.isLoading = true;
+      var filename = 'movies_backup.json';
+
+      const result = await FilePicker.pickFiles({
+        types: ['application/json'],
+        limit: 1,
+        readData: true,
+      });
+
+
+      // if file name is not equal to the filename, return
+      if (result.files[0].name !== filename) {
+        this.showToastr('Invalid File Selected', 'red');
+        return;
+      }
+
+      const fileBlob = this.dataURItoBlob(result.files[0].data);
+      const rawFile = new File([fileBlob as BlobPart], filename, {
+          type: 'application/json',
+      });
+
+      // Read the file content as text
+      const fileContent = await this.readFileAsText(rawFile);
+      const parsedData = JSON.parse(fileContent);
+      const movieList: SimpleDatabaseObject[] = parsedData;
+
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+      for (const element of movieList) {
+        await delay(100); 
+        this.databaseService.addOrUpdateMovie(element);
+        this.generalApi.getMovieStatusAndRuntimeById(element.id).subscribe(async (data) => {
+          if (element.timesWatched > 0) 
+            await this.generalApi.addMovieRuntimeToStorage(data[1]);
+        });
+      }
+
+      this.showToastr('Movie import ended successfully', 'green');
+    }
+
+    async importShowsFromApp()
+    {
+      console.log('Importing shows from app');
+    }
+
+    async importEpisodesFromApp()
+    {
+      console.log('Importing episodes from app');
+    }
+
+    async exportEverything() {
+      try {
+        // Fetch movies from the database
+        this.isLoading = true;
+        const movies = await this.databaseService.getAllMovies();
+        const moviesJson = JSON.stringify(movies);
+        await this.generalApi.writeToFile('movies_backup.json', moviesJson);
+
+        const shows = await this.databaseService.getAllShows();
+        const showsJson = JSON.stringify(shows);
+        await this.generalApi.writeToFile('shows_backup.json', showsJson);
+
+        const episodes = await this.databaseService.getAllEpisodes();
+        const episodesJson = JSON.stringify(episodes);
+        await this.generalApi.writeToFile('episodes_backup.json', episodesJson);
+
+        this.showToastr('Export ended successfully', 'green');
+
+      } catch (error) {
+        this.showToastr('Error exporting data', 'red');
+      }
+    }
+    
+    // Dynamically create the CustomToastrComponent
+    showToastr(message: string, bgColor: string) {
+      this.isLoading = false;
+      if (this.toastrRef) {
+        this.toastrRef.destroy();
+      }
+  
+      this.toastrRef = this.toastrContainer.createComponent(CustomToastrComponent);
+      this.toastrRef.instance.message = message;
+      this.toastrRef.instance.bgColor = "var(--a_quinaryColor)";
+
+      if(bgColor === 'red')
+        this.toastrRef.instance.bgColor = "var(--a_errorColor)";
+
+  
+      // Set the toastr to disappear after 4 seconds, but with animation
+      setTimeout(() => {
+        this.toastrRef.instance.hideToastr();
+      }, 4000);
+  
+      this.toastrRef.instance.animationStateChange.subscribe(() => {
+          this.toastrRef.destroy();
+      });
+    }
+
 }

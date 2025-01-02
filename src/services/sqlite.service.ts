@@ -256,6 +256,13 @@ export class DatabaseService {
         return result.values || [];
     }
 
+    async getAllMovies(): Promise<SimpleDatabaseObject[]> {
+        await this.ensureDatabaseConnection();
+        if (!this.db) throw new Error('Database connection is not open');
+        const result = await this.db.query('SELECT * FROM movies;');
+        return result.values || [];
+    }
+
     // -------------------------------- CRUD OPERATIONS FOR SHOWS -------------------------------- //
 
     async addOrUpdateShow(show: SimpleDatabaseObject): Promise<void> {
@@ -309,6 +316,13 @@ export class DatabaseService {
         return result.values || [];
     }
 
+    async getAllShows(): Promise<SimpleDatabaseObject[]> {
+        await this.ensureDatabaseConnection();
+        if (!this.db) throw new Error('Database connection is not open');
+        const result = await this.db.query('SELECT * FROM shows;');
+        return result.values || [];
+    }
+
     // -------------------------------- CRUD OPERATIONS FOR EPISODES -------------------------------- //
 
     async addOrUpdateEpisode(show_id: number, season_number: number, episode_number: number, times_watched: number): Promise<void> {
@@ -346,6 +360,13 @@ export class DatabaseService {
         if (!this.db) throw new Error('Database connection is not open');
         const deleteQuery = `DELETE FROM episodes WHERE show_id = ?;`;
         await this.db.run(deleteQuery, [showId]);
+    }
+
+    async getAllEpisodes(): Promise<SimpleEpisodeObject[]> {
+        await this.ensureDatabaseConnection();
+        if (!this.db) throw new Error('Database connection is not open');
+        const result = await this.db.query('SELECT * FROM episodes;');
+        return result.values || [];
     }
 
     /// -------------------------------- CRUD OPERATIONS FOR COLLECTIONS -------------------------------- ///

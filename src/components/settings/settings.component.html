@@ -1,6 +1,32 @@
+<ng-container  *ngIf="!isLoading" #toastrContainer></ng-container>
+
 <div class="page">
-    <p>Use at your own risk MARCIA!</p>
-    <div class="button-container">
-        <button class="button" (click)="clearAllData()"> DELETE EVERYTHING </button>
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button" (click)="getAllMoviesFromFile()"> Import Movies From TvTime </button>
+    </div>
+
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button" (click)="importMoviesFromApp()"> Import Movies From Our App </button>
+    </div>
+
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button" (click)="importShowsFromApp()"> Import Shows From Our App</button>
+    </div>
+
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button" (click)="importEpisodesFromApp()"> Import Episodes From Our App</button>
+    </div>
+
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button" (click)="exportEverything()"> Export Movies and Shows</button>
+    </div>
+
+    <div *ngIf="!isLoading" class="button-container">
+        <button class="button delete" (click)="clearAllData()"> DELETE EVERYTHING </button>
     </div>
 </div>
+
+<app-loading-container
+    [isLoading]="isLoading"
+    *ngIf="isLoading">
+</app-loading-container>

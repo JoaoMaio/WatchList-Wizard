@@ -105,7 +105,6 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   seeMedia(media: SimpleObject) {
-    console.log(media)
    this.selectedMedia = media;
 
     this.api.getImages(media.id, media.type == 'tvshow' ? 'tv' : 'movie').subscribe({
@@ -125,7 +124,6 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async saveImageAsBanner(url: string) {
-    console.log(url)
     await Preferences.set({
       key: this.BANNER_IMAGE,
       value: url,

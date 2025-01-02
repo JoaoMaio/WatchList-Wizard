@@ -631,7 +631,7 @@ export class ApiService {
       return -1;
   }
 
-  getMovieStatusAndRuntimeById(id: string): Observable<[string, number]> {
+  getMovieStatusAndRuntimeById(id: number): Observable<[string, number]> {
     return this.http.get<ComplexMovie>(`${this.BASE_API_URL}/movie/${id}`, { headers: this.headers }).pipe(
       map((movie: any) => {
         return [movie.status, movie.runtime];
@@ -753,6 +753,37 @@ export class ApiService {
         return parseInt(key, 10);
     }
     return -1;
-}
+  }
+
+    // Write to file
+    async writeToFile(filename: string, updatedContent: string) {
+      await this.createFile(filename);
+  
+      await Filesystem.writeFile({
+        path: filename,
+        data: updatedContent,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+    }
+  
+    // Read from file
+    async readFromFile(filename: string): Promise<ReadFileResult> {
+      return await Filesystem.readFile({
+        path: filename,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+    }
+  
+    // Create all files
+    async createFile(filename: string) {
+        await Filesystem.writeFile({
+          path: filename,
+          data: '',
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
+    }
 
 }
