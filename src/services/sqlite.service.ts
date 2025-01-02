@@ -316,7 +316,7 @@ export class DatabaseService {
 
     // -------------------------------- CRUD OPERATIONS FOR EPISODES -------------------------------- //
 
-    async addOrUpdateEpisode(show_id: number, season_number: number, episode_number: number, times_watched: number): Promise<void> {
+    async addOrUpdateEpisode(show_id: number, season_number: number, episode_number: number, times_watched: number, runtime: number): Promise<void> {
         await this.ensureDatabaseConnection();
         if (!this.db) throw new Error('Database connection is not open');
         
@@ -327,8 +327,8 @@ export class DatabaseService {
             const updateQuery = `UPDATE episodes SET times_watched = ? WHERE show_id = ? AND season_number = ? AND episode_number = ?;`;
             await this.db.run(updateQuery, [times_watched, show_id, season_number, episode_number]);
         } else {
-            const insertQuery = `INSERT INTO episodes (show_id, season_number, episode_number, times_watched) VALUES (?, ?, ?, ?);`;
-            await this.db.run(insertQuery, [show_id, season_number, episode_number, times_watched]);
+            const insertQuery = `INSERT INTO episodes (show_id, season_number, episode_number, times_watched, runtime) VALUES (?, ?, ?, ?, ?);`;
+            await this.db.run(insertQuery, [show_id, season_number, episode_number, times_watched, runtime]);
         }
     }
 
@@ -461,7 +461,6 @@ export class DatabaseService {
         await this.db.run(insertQuery, [1, id, type, title, poster_path]);
     }
     
-
     async getCollection(id: number): Promise<Collection> {
         await this.ensureDatabaseConnection();
         if (!this.db) throw new Error('Database connection is not open');

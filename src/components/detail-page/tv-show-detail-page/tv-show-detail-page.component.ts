@@ -336,7 +336,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     episode.watched = true;
     episode.timesWatched += 1;
 
-    await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
+    await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched, episode.runtime ? episode.runtime : 0);
     this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
     this.nextEpisode = this.getNextEpisodeToWatch();
   }

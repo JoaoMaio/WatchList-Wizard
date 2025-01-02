@@ -198,7 +198,7 @@ export class SettingsComponent implements OnInit {
         this.databaseService.addOrUpdateShow(element);
       }
       this.isLoading = false;
-      this.showToastr('Movie import ended successfully', 'green');
+      this.showToastr('Shows import ended successfully', 'green');
 
     }
 
@@ -231,15 +231,14 @@ export class SettingsComponent implements OnInit {
       const parsedData = JSON.parse(fileContent);
       const episodesList: SimpleEpisodeObject[] = parsedData;
 
-      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
       for (const element of episodesList) {
-        await delay(100); 
-        this.databaseService.addOrUpdateEpisode(element.show_id, element.season_number, element.episode_number, element.times_watched);
+        this.databaseService.addOrUpdateEpisode(element.show_id, element.season_number, element.episode_number, element.times_watched, element.runtime ? element.runtime : 0);
+        if (element.times_watched > 0)
+          this.generalApi.addShowRuntimeToStorage(element.runtime);
       }
 
       this.isLoading = false;
-      this.showToastr('Movie import ended successfully', 'green');
+      this.showToastr('Episodes import ended successfully', 'green');
     }
 
     async exportEverything() {
