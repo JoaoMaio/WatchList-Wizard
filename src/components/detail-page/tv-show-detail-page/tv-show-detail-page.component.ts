@@ -139,7 +139,8 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
             original_title: this.tvshow.name,
             poster_path: this.tvshow.poster_path,
             status: this.shows_api.getShowStatus(this.tvshow.status),
-            timesWatched: -2
+            timesWatched: -2,
+            runtime: 0
           };
 
         },

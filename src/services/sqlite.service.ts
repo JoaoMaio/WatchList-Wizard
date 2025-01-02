@@ -8,6 +8,7 @@ export interface SimpleDatabaseObject {
     poster_path: string;
     status: number;
     timesWatched: number;
+    runtime: number;
 }
 
 export const EmptyDatabaseObject: SimpleDatabaseObject = {
@@ -15,7 +16,8 @@ export const EmptyDatabaseObject: SimpleDatabaseObject = {
     original_title: '',
     poster_path: '',
     status: 0,
-    timesWatched: 0
+    timesWatched: 0,
+    runtime: 0
 }
 
 
@@ -24,6 +26,7 @@ export interface SimpleEpisodeObject {
     season_number: number;
     episode_number: number;
     times_watched: number;
+    runtime: number;
 }
 
 
@@ -100,7 +103,8 @@ export class DatabaseService {
             show_id INTEGER NOT NULL,
             season_number INTEGER NOT NULL,
             episode_number INTEGER NOT NULL,
-            times_watched INTEGER DEFAULT 0
+            times_watched INTEGER DEFAULT 0,
+            runtime INTEGER DEFAULT 0
         );
         `;
         await this.db.execute(createTableQuery);
@@ -113,6 +117,7 @@ export class DatabaseService {
                 poster_path TEXT NOT NULL,
                 status INTEGER NOT NULL,
                 timesWatched INTEGER NOT NULL,
+                runtime INTEGER DEFAULT 0,
                 timeAdded TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             `;
@@ -220,11 +225,11 @@ export class DatabaseService {
         const result = await this.db.query(selectQuery, [movie.id]);
         
         if (result.values && result.values.length > 0) {
-            const updateQuery = `UPDATE movies SET original_title = ?, poster_path = ?, status = ?, timesWatched = ? WHERE id = ?;`;
-            await this.db.run(updateQuery, [movie.original_title, movie.poster_path, movie.status, movie.timesWatched, movie.id]);
+            const updateQuery = `UPDATE movies SET original_title = ?, poster_path = ?, status = ?, timesWatched = ?, runtime = ?, WHERE id = ?;`;
+            await this.db.run(updateQuery, [movie.original_title, movie.poster_path, movie.status, movie.timesWatched, movie.runtime, movie.id]);
         } else {
-            const insertQuery = `INSERT INTO movies (id, original_title, poster_path, status, timesWatched, timeAdded) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP);`;
-            await this.db.run(insertQuery, [movie.id, movie.original_title, movie.poster_path, movie.status, movie.timesWatched]);
+            const insertQuery = `INSERT INTO movies (id, original_title, poster_path, status, timesWatched, runtime,  timeAdded) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);`;
+            await this.db.run(insertQuery, [movie.id, movie.original_title, movie.poster_path, movie.status, movie.timesWatched,  movie.runtime]);
         }
     }
 
@@ -253,13 +258,6 @@ export class DatabaseService {
         await this.ensureDatabaseConnection();
         if (!this.db) throw new Error('Database connection is not open');
         const result = await this.db.query('SELECT * FROM movies ORDER BY timeAdded DESC LIMIT ?;', [limit]);
-        return result.values || [];
-    }
-
-    async getAllMovies(): Promise<SimpleDatabaseObject[]> {
-        await this.ensureDatabaseConnection();
-        if (!this.db) throw new Error('Database connection is not open');
-        const result = await this.db.query('SELECT * FROM movies;');
         return result.values || [];
     }
 
@@ -313,13 +311,6 @@ export class DatabaseService {
         await this.ensureDatabaseConnection();
         if (!this.db) throw new Error('Database connection is not open');
         const result = await this.db.query('SELECT * FROM shows ORDER BY timeAdded DESC LIMIT ?;', [limit]);
-        return result.values || [];
-    }
-
-    async getAllShows(): Promise<SimpleDatabaseObject[]> {
-        await this.ensureDatabaseConnection();
-        if (!this.db) throw new Error('Database connection is not open');
-        const result = await this.db.query('SELECT * FROM shows;');
         return result.values || [];
     }
 

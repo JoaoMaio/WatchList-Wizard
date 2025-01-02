@@ -1,4 +1,9 @@
-<ng-container  *ngIf="!isLoading" #toastrContainer></ng-container>
+<app-loading-container
+    [isLoading]="isLoading"
+    *ngIf="isLoading">
+</app-loading-container>
+
+<ng-container #toastrContainer></ng-container>
 
 <div class="page">
     <div *ngIf="!isLoading" class="button-container">
@@ -26,7 +31,3 @@
     </div>
 </div>
 
-<app-loading-container
-    [isLoading]="isLoading"
-    *ngIf="isLoading">
-</app-loading-container>

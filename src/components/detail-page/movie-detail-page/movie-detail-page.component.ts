@@ -72,7 +72,8 @@ export class MovieDetailPageComponent implements OnInit {
             original_title: this.movie.title,
             poster_path: this.movie.poster_path,
             status: this.movies_api.getMovieStatus(this.movie.status),
-            timesWatched: this.timesWatched
+            timesWatched: this.timesWatched,
+            runtime: this.movie.runtime,
           };
 
           // Check if movie is in see later collection

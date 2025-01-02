@@ -588,7 +588,8 @@ export class ApiService {
           original_title: object.original_title || object.original_name,
           poster_path: object.poster_path,
           status: -1,
-          timesWatched: 0
+          timesWatched: 0,
+          runtime: 0,
         };
   
         // Create a new observable that will resolve both the status and the runtime sequentially
