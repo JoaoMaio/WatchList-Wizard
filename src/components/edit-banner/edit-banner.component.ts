@@ -22,6 +22,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   allMovies: SimpleObject[] = []
   searchResults: SimpleObject[] = []
   imgPath = environment.imgPath;
+  backdrop = environment.backdropPath;
   selectedMedia: SimpleObject = EmptySimpleObject;
   selectedMediaImages: string[] = [];
 
@@ -104,13 +105,14 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   seeMedia(media: SimpleObject) {
+    console.log(media)
    this.selectedMedia = media;
 
     this.api.getImages(media.id, media.type == 'tvshow' ? 'tv' : 'movie').subscribe({
       next: (response) => {
-        for (let i = 0; i < response.length; i++) {
-          this.selectedMediaImages.push(this.imgPath +  response[i])
-        }
+        for (let i = 0; i < response.length; i++) 
+          this.selectedMediaImages.push(this.backdrop +  response[i])
+        
         this.showMediamodal = true;
       }
     })
@@ -123,6 +125,7 @@ export class EditBannerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async saveImageAsBanner(url: string) {
+    console.log(url)
     await Preferences.set({
       key: this.BANNER_IMAGE,
       value: url,

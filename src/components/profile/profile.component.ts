@@ -60,6 +60,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     else
       this.bannerImage = environment.bannerDefault;
 
+      console.log(this.bannerImage);
+
 
     this.databaseService.getLastXShows(6).then((response) => {
       response.forEach((show) => {

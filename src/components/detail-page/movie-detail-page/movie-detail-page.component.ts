@@ -33,6 +33,7 @@ export class MovieDetailPageComponent implements OnInit {
   showRewatchedOrRemoveMovieModal: boolean = false;
   inToSeeLater: boolean = false;
   isOverviewExpanded = false;
+  isSimilarLoading: boolean = false;
 
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
@@ -164,7 +165,7 @@ export class MovieDetailPageComponent implements OnInit {
   }
 
   similarTo(){
-    this.isLoading = true;
+    this.isSimilarLoading = true;
 
     const requests = [1, 2, 3].map(page => 
       this.api.getSimilarShowOrMovie(this.movie.id, "movie", page).toPromise()
@@ -189,6 +190,7 @@ export class MovieDetailPageComponent implements OnInit {
       const top10Results = itemsFiltered.slice(0, 10);
 
       this.similarMovies = top10Results;
+      this.isSimilarLoading = false;
       this.isLoading = false;
 
     }).catch(error => {

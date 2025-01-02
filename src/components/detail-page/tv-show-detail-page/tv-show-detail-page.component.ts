@@ -57,6 +57,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   isOverviewExpanded = false;
   inToSeeLater: boolean = false;
   isTextClamped: boolean = false;
+  isSimilarLoading: boolean = false;
 
   imgPath = environment.imgPath;
   backdropPath = environment.backdropPath;
@@ -335,19 +336,31 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
     episode.timesWatched += 1;
 
     await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
-    this.api.addShowRuntimeToStorage(episode.runtime);
+    this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   async markEpisodeAsUnWatched(episode: Episode) {
     await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
-    this.api.removeShowRuntimeToStorage(episode.runtime);
+    this.api.removeShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
     episode.watched = false;
     this.nextEpisode = this.getNextEpisodeToWatch();
   }
 
   onAddOrRemoveEpisode(){
     this.nextEpisode = this.getNextEpisodeToWatch();
+
+    //see if all the episodes are watched
+    let allWatched = true;
+    this.seasons.forEach(season => {
+      season.episodes.forEach(episode => {
+        if(!episode.watched && episode.air_date != null)
+          allWatched = false;
+      });
+    });
+
+    if(allWatched)
+      this.markShowAsWatched();
   }
 
   onAddedShow(){
@@ -390,8 +403,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
   }
 
   similarTo(){
-    this.isLoading = true;
-
+    this.isSimilarLoading = true;
     const requests = [1, 2, 3].map(page => 
       this.api.getSimilarShowOrMovie(this.tvshow.id, "tv", page).toPromise()
     );
@@ -416,8 +428,7 @@ export class TvShowDetailPageComponent implements OnInit, OnDestroy {
       const top10Results = itemsFiltered.slice(0, 10);
 
       this.similarTvShows = top10Results;
-      this.isLoading = false;
-
+      this.isSimilarLoading = false;
     }).catch(error => {
       console.error("Error fetching similar", error);
     });

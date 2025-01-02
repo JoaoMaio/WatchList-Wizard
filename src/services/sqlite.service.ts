@@ -87,7 +87,6 @@ export class DatabaseService {
             this.isDatabaseInitialized = true;
         } catch (error) {
             console.error('Error initializing the database:', error);
-            throw error;
         }
     }
   

@@ -1,11 +1,12 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {forkJoin, Observable} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
 import {Directory, Encoding, Filesystem, ReadFileResult} from '@capacitor/filesystem';
 import {environment} from '../environment';
-import {ComplexMovie, MovieResponse} from './api-movies.service';
-import {ComplexTvshow, Episode, Provider, Season, TvShowResponse} from './api-shows.service';
+import {ComplexMovie, MovieResponse, MovieStatus} from './api-movies.service';
+import {ComplexTvshow, Episode, Provider, Season, ShowStatus, TvShowResponse} from './api-shows.service';
+import { SimpleDatabaseObject } from './sqlite.service';
 
 export interface GeneralItem {
   id: number;
@@ -264,22 +265,6 @@ export class ApiService {
     } catch (error) {
       console.error('Error fetching watch providers:', error);
       return [];
-    }
-  }
-
-  // Check if the file exists
-  async checkIfFileExists(filename: string): Promise<boolean> {
-    try {
-      // Try to get the file's statistics
-      await Filesystem.stat({
-        path: filename,
-        directory: Directory.Documents,
-      });
-      // If no error, the file exists
-      return true;
-    } catch (e) {
-      // If an error occurs, it means the file doesn't exist
-      return false;
     }
   }
 
@@ -594,6 +579,75 @@ export class ApiService {
     );
   }
 
+  findByIMDBId(imdb_id: string): Observable<[SimpleDatabaseObject, number]> {
+    return this.http.get(`${this.BASE_API_URL}find/${imdb_id}?external_source=imdb_id`, { headers: this.headers }).pipe(
+      switchMap((response: any) => {
+        const object = response.movie_results[0] || response.tv_results[0];
+        const SimpleObject: SimpleDatabaseObject = {
+          id: object.id,
+          original_title: object.original_title || object.original_name,
+          poster_path: object.poster_path,
+          status: -1,
+          timesWatched: 0
+        };
+  
+        // Create a new observable that will resolve both the status and the runtime sequentially
+        if (object.media_type === 'movie') {
+          return this.getMovieStatusAndRuntimeById(object.id).pipe(
+            map(status => {
+              SimpleObject.status = this.getMovieStatus(status[0]);
+              const runtime = status[1]; // get runtime from the status
+              return [SimpleObject, runtime] as [SimpleDatabaseObject, number]; // Return a tuple
+            })
+          );
+        } else {
+          return this.getTvShowStatusById(object.id).pipe(
+            map(status => {
+              SimpleObject.status = this.getShowStatus(status);
+              const runtime = 0; // TV shows may not have runtime, or handle as needed
+              return [SimpleObject, runtime] as [SimpleDatabaseObject, number]; // Return a tuple
+            })
+          );
+        }
+      })
+    );
+  }
+  
+  
+
+  getMovieStatus(status: string): number {
+      for (const [key, value] of Object.entries(MovieStatus)) {
+        if (value === status)
+          return parseInt(key, 10);
+      }
+      return -1;
+  }
+
+  getShowStatus(status: string): number {
+      for (const [key, value] of Object.entries(ShowStatus)) {
+        if (value === status)
+          return parseInt(key, 10);
+      }
+      return -1;
+  }
+
+  getMovieStatusAndRuntimeById(id: string): Observable<[string, number]> {
+    return this.http.get<ComplexMovie>(`${this.BASE_API_URL}/movie/${id}`, { headers: this.headers }).pipe(
+      map((movie: any) => {
+        return [movie.status, movie.runtime];
+      })
+    )
+  }
+
+  getTvShowStatusById(id: string): Observable<string> {
+    return this.http.get<ComplexTvshow>(`${this.BASE_API_URL}/tv/${id}`, {headers: this.headers}).pipe(
+      map((tvshow: any) => {
+        return tvshow.status;
+      })
+    );
+  }
+
+
   //-----------------------------------------------------------------------------------------//
   //-----------------------------------------------------------------------------------------//
 
@@ -607,39 +661,6 @@ export class ApiService {
         });
       })
     )
-  }
-
-  // Write to file
-  async writeToFile(filename: string, updatedContent: string) {
-    await Filesystem.writeFile({
-      path: filename,
-      data: updatedContent,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
-    });
-  }
-
-  // Read from file
-  async readFromFile(filename: string): Promise<ReadFileResult> {
-    return await Filesystem.readFile({
-      path: filename,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
-    });
-  }
-
-  // Create all files
-  async createAllFiles()
-  {
-    if(!await this.checkIfFileExists('collections.json')) {
-      await Filesystem.writeFile({
-        path: 'collections.json',
-        data: '',
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
-    }
-
   }
 
   addShowRuntimeToStorage(episoderuntime : number): void {

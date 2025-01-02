@@ -28,7 +28,7 @@
             <span class="close" (click)="closeMediaModal()">&times;</span>
         </div>
         <div class="media-modal-body" *ngFor="let media of selectedMediaImages" (click)="saveImageAsBanner(media)">
-            <img class="item-image" [src]="imgPath + media" alt="poster">
+            <img class="item-image" [src]="media" alt="poster">
         </div>
     </div>
 </div>

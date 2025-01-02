@@ -30,7 +30,7 @@
             <div class="text_container">
               <p class="episode-title">Episode {{ episode.episode_number }} - {{ episode.name }}</p>
               <div class="episode-details-bottom">
-                <p class="episode-runtime"> {{episode.runtime}} min </p>
+                <p class="episode-runtime"> {{episode.runtime ? episode.runtime : 0}} min </p>
                 <div class="episode-vote">
                   <p>{{ episode.vote_average | number:'1.2-2' }}</p> 
                   <mat-icon>star</mat-icon>

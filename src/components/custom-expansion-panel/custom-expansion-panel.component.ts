@@ -114,21 +114,6 @@ export class CustomExpansionPanelComponent implements OnInit {
     return (watchedEpisodes / totalEpisodes) * 100;
   }
 
-  isLastEpisodeOfShow(episode: Episode) {
-    if(this.isLastSeason)
-    {
-      if(episode.episode_number === this.season!.episodes.length)
-        return true;
-
-      //if its not the last episode of the season check if there are any episodes after it
-      const nextEpisode = this.season!.episodes.find(e => e.episode_number === episode.episode_number + 1);
-      if(nextEpisode == null || this.shows_api.getDaysUntiItsOut(nextEpisode) > 0)
-        return true;
-    }
-
-    return false;
-  }
-
   //--------------------- EPISODE RELATED --------------------------------//
 
   async markEpisodeAsWatched(episode: Episode) {
@@ -145,13 +130,10 @@ export class CustomExpansionPanelComponent implements OnInit {
       }
     }
 
-    if(this.isLastEpisodeOfShow(episode))
-      await this.markShowAsWatched();
-
     episode.watched = true;
     episode.timesWatched = episode.timesWatched + 1;
     await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
-    this.api.addShowRuntimeToStorage(episode.runtime);
+    this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
 
     //emit event to parent component
     this.addOrRemoveEpisode.emit();
@@ -202,9 +184,7 @@ export class CustomExpansionPanelComponent implements OnInit {
 
         try {
           await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
-          this.api.addShowRuntimeToStorage(episode.runtime);
-          if(this.isLastEpisodeOfShow(episode))
-            await this.markShowAsWatched();
+          this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
         } catch (error) {
           console.error('Error saving episode:', episode, error);
         }
@@ -237,20 +217,15 @@ export class CustomExpansionPanelComponent implements OnInit {
       this.season!.timesWatched += 1;
 
       for (const episode of this.season!.episodes) {
-        if(episode.runtime != null )
-        {
           episode.watched = true;
           episode.timesWatched += 1;
           try {
             await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
-            this.api.addShowRuntimeToStorage(episode.runtime);
-            if(this.isLastEpisodeOfShow(episode))
-              await this.markShowAsWatched();
+            this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
 
           } catch (error) {
             console.error('Error saving episode:', episode, error);
           }
-        }
       }
 
       this.addOrRemoveEpisode.emit();
@@ -273,24 +248,20 @@ export class CustomExpansionPanelComponent implements OnInit {
     });
 
     for (const episode of this.season!.episodes) {
-          if(episode.runtime != null )
-          {
-            episode.watched = true;
+        episode.watched = true;
 
-            if(episode.timesWatched <= leastTimesWatched) {
-              episode.timesWatched = leastTimesWatched + 1;
+        if(episode.timesWatched <= leastTimesWatched) {
+          episode.timesWatched = leastTimesWatched + 1;
 
-              this.season!.timesWatched = episode.timesWatched;
-              try {
-                await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
-                if(this.isLastEpisodeOfShow(episode))
-                  await this.markShowAsWatched();
-
-              } catch (error) {
-                console.error('Error saving episode:', episode, error);
-              }
-            }
+          this.season!.timesWatched = episode.timesWatched;
+          try {
+            await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched);
+            this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
+          } catch (error) {
+            console.error('Error saving episode:', episode, error);
           }
+        }
+          
       }
 
     this.showRewatchedOrRemoveSeasonModal = false;
@@ -309,7 +280,7 @@ export class CustomExpansionPanelComponent implements OnInit {
             await this.databaseService.deleteEpisode(this.tvshow.id, episode.season_number, episode.episode_number);
             this.showDb.timesWatched = 0;
             await this.databaseService.addOrUpdateShow(this.showDb);
-            this.api.removeShowRuntimeToStorage(episode.runtime);
+            this.api.removeShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
           } catch (error) {
             console.error('Error deleting episode:', episode, error);
           }
