@@ -121,3 +121,9 @@ To set up the project on your machine, follow these steps:
     ```bash
     npx cap open android
     ```
+
+
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).  
+You may use, share, and adapt this project for non-commercial purposes, but you must provide appropriate attribution.
