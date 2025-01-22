@@ -15,31 +15,44 @@ This app was created  with [Angular CLI](https://angular.dev) for the Front-End 
 
 # Screenshots
 
-### Home
-![](./readme_images\Home.jpg)
 
-### Search
-![](readme_images\Search.jpg)
+<div align="center">
+    <h2>Home</h2>
+    <img src="readme_images/Home.jpg" width="45%" />
+</div>
 
-### Profile
-![](readme_images\Profile.jpg)
+<div align="center">
+    <h2>Search</h2>
+    <img src="readme_images/Search.jpg" width="45%" />
+</div>
 
-### Random Suggestion
-![](readme_images\Suggestion.jpg)
 
-### All Shows and Movies
-<p float="left">
+<div align="center">
+    <h2>Profile</h2>
+    <img src="readme_images/Profile.jpg" width="45%" />
+</div>
+
+
+<div align="center">
+    <h2>Random Suggestion</h2>
+    <img src="readme_images/Suggestion.jpg" width="45%" />
+</div>
+
+<div align="center">
+    <h2>All Shows And Movies</h2>
     <img src="readme_images/Shows.jpg" width="45%" />
     <img src="readme_images/Movies.jpg" width="45%" />
-</p>
+</div>
 
-### Movie/Shows Details
-<p float="left">
+<div align="center">
+    <h2>Movies/Shows Details</h2>
     <img src="readme_images/Details1.jpg" width="30%" />
     <img src="readme_images/Details2.jpg" width="30%" />
     <img src="readme_images/Details3.jpg" width="30%" />
 </p
 
-### Person Details
-![](readme_images\Person.jpg)
+<div align="center">
+    <h2>Person Details</h2>
+    <img src="readme_images/Person.jpg" width="45%" />
+</div>
 
