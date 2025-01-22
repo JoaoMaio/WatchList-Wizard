@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService, EmptySimpleObject, GeneralItem, MovieGenre, ShowGenre, SimpleObject } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { environment } from '../../environment';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -26,7 +25,7 @@ export class RandomComponent implements OnInit {
     genres : number[] = []
     baseGenres: string[] = [];
 
-    imgPath = environment.imgPath;
+    imgPath: string = "https://image.tmdb.org/t/p/w780/";
 
   constructor(public api: ApiService, 
               private router: Router

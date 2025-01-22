@@ -18,7 +18,7 @@ export class SuggestionComponent implements OnInit, OnChanges {
 
   visibleSuggestions: SimpleObject[] = [];
 
-  imgPath: string = environment.imgPath;
+  imgPath: string = "https://image.tmdb.org/t/p/w342/";
 
   constructor(private router: Router) {}
 

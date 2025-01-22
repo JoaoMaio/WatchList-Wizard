@@ -1,6 +1,6 @@
 <div *ngIf="!isLoading">
   <div class="page">
-    <div class="header" [ngStyle]="{'background-image': 'url(' + (knownForCast.length > 0 ? imgPath + backgroundImg : 'fallback-image.png') + ')'}">
+    <div class="header" [ngStyle]="{'background-image': 'url(' + (knownForCast.length > 0 ? backdropPath + backgroundImg : 'fallback-image.png') + ')'}">
       <img *ngIf="api.doesBackDropExist(person.profile_path)" [src]="imgPath + person.profile_path" alt="{{person.name}}" class="header-image" />
       <div *ngIf="!api.doesBackDropExist(person.profile_path)" class="fallback-wrapper">
         <img src="amongus.png" alt="{{person.name}}" class="header-image error" />
