@@ -1,6 +1,6 @@
 # Watchlist Wizard - Personal App to easily track favorite movies and shows!
 
-This app was created  with [Angular CLI](https://angular.dev) for the Front-End and "Back-end", with [Capacitator](https://capacitorjs.com) to transform it into an android App and [The Movie Database](https://www.themoviedb.org) for API.
+This app was created  with [Angular CLI](https://angular.dev) for the Front-End and "Back-end", with [Capacitor](https://capacitorjs.com) to transform it into an android App and [The Movie Database](https://www.themoviedb.org) for API.
 
 
 # Features 
