@@ -211,10 +211,8 @@ export class CustomExpansionPanelComponent implements OnInit {
     if(event)
       event.stopPropagation();
 
-    if(!this.isSeasonWatchedExcludingAiring())
+    if (this.isFullSseasonWatched() || this.isSeasonWatchedExcludingAiring())
     {
-      await this.addShowToWatchList();
-
       this.season!.timesWatched += 1;
 
       for (const episode of this.season!.episodes) {
@@ -228,9 +226,29 @@ export class CustomExpansionPanelComponent implements OnInit {
             console.error('Error saving episode:', episode, error);
           }
       }
-
-      this.addOrRemoveEpisode.emit();
+    } 
+    else
+    {
+        await this.addShowToWatchList();
+        this.season!.timesWatched += 1;
+    
+        for (const episode of this.season!.episodes) {
+          if(!episode.watched) // we only want to mark the episodes that are not watched
+          {
+            episode.watched = true;
+            episode.timesWatched += 1;
+            try {
+              await this.databaseService.addOrUpdateEpisode(this.tvshow.id, episode.season_number, episode.episode_number, episode.timesWatched, episode.runtime ? episode.runtime : 0);
+              this.api.addShowRuntimeToStorage(episode.runtime ? episode.runtime : 0);
+  
+            } catch (error) {
+              console.error('Error saving episode:', episode, error);
+            }
+          }
+        }
     }
+
+    this.addOrRemoveEpisode.emit();
   }
 
   async RewatchedOrRemoveSeasonModalConfirm(event?: Event) {
