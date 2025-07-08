@@ -225,7 +225,7 @@ export class DatabaseService {
         const result = await this.db.query(selectQuery, [movie.id]);
         
         if (result.values && result.values.length > 0) {
-            const updateQuery = `UPDATE movies SET original_title = ?, poster_path = ?, status = ?, timesWatched = ?, runtime = ?, WHERE id = ?;`;
+            const updateQuery = `UPDATE movies SET original_title = ?, poster_path = ?, status = ?, timesWatched = ?, runtime = ? WHERE id = ?;`;
             await this.db.run(updateQuery, [movie.original_title, movie.poster_path, movie.status, movie.timesWatched, movie.runtime, movie.id]);
         } else {
             const insertQuery = `INSERT INTO movies (id, original_title, poster_path, status, timesWatched, runtime,  timeAdded) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);`;
